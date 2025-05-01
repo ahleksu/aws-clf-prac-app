@@ -1,0 +1,140 @@
+<div class="max-w-6xl mx-auto px-4 py-10 text-center" [@fadeIn]>
+  <!-- Title -->
+  <h1 class="text-3xl font-bold mb-2">AWS CLF-C02 Practice Exam</h1>
+  <p class="text-sm text-gray-500">Developed by: ahleksu.dev</p>
+
+  <!-- Social Icons -->
+  <div class="flex justify-center space-x-6 mt-3 text-gray-600 text-xl">
+    <a
+      href="https://youtube.com/@ahleksu"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <i
+        class="pi pi-youtube hover:text-red-600 cursor-pointer transition duration-150 ease-in-out"
+      ></i>
+    </a>
+    <a
+      href="https://www.linkedin.com/in/ahleksu"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <i
+        class="pi pi-linkedin hover:text-blue-700 cursor-pointer transition duration-150 ease-in-out"
+      ></i>
+    </a>
+    <a
+      href="https://www.facebook.com/ahleksu"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <i
+        class="pi pi-facebook hover:text-blue-600 cursor-pointer transition duration-150 ease-in-out"
+      ></i>
+    </a>
+  </div>
+
+  <!-- Grid Layout -->
+  <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 mt-10">
+    <!-- All Domains -->
+    <div
+      class="col-span-1 sm:col-span-2 lg:col-span-12 border rounded-lg p-6 text-left shadow-sm hover:shadow-lg transform hover:scale-105 transition duration-300"
+    >
+      <h2 class="text-xl font-semibold mb-2">All Domains Quiz</h2>
+      <p class="mb-4">Take a comprehensive quiz covering all domains.</p>
+      <p-button label="Start Quiz" (onClick)="startQuiz('all')" />
+    </div>
+
+    <!-- Domain Sections -->
+    <div
+      class="col-span-1 sm:col-span-1 lg:col-span-6 border rounded-lg p-6 text-left shadow-sm hover:shadow-lg transform hover:scale-105 transition duration-300"
+    >
+      <h2 class="text-xl font-semibold mb-2">Domain 1: Cloud Concepts</h2>
+      <p class="mb-4">Covers fundamental cloud principles and definitions.</p>
+      <p-button label="Start Quiz" (onClick)="startQuiz('cloud_concepts')" />
+    </div>
+
+    <div
+      class="col-span-1 sm:col-span-1 lg:col-span-6 border rounded-lg p-6 text-left shadow-sm hover:shadow-lg transform hover:scale-105 transition duration-300"
+    >
+      <h2 class="text-xl font-semibold mb-2">
+        Domain 2: Security & Compliance
+      </h2>
+      <p class="mb-4">
+        Covers IAM, data protection, and responsibility models.
+      </p>
+      <p-button
+        label="Start Quiz"
+        (onClick)="startQuiz('security_compliance')"
+      />
+    </div>
+
+    <div
+      class="col-span-1 sm:col-span-1 lg:col-span-6 border rounded-lg p-6 text-left shadow-sm hover:shadow-lg transform hover:scale-105 transition duration-300"
+    >
+      <h2 class="text-xl font-semibold mb-2">
+        Domain 3: Cloud Technology and Services
+      </h2>
+      <p class="mb-4">Covers AWS core services and cloud infrastructure.</p>
+      <p-button label="Start Quiz" (onClick)="startQuiz('cloud_tech')" />
+    </div>
+
+    <div
+      class="col-span-1 sm:col-span-1 lg:col-span-6 border rounded-lg p-6 text-left shadow-sm hover:shadow-lg transform hover:scale-105 transition duration-300"
+    >
+      <h2 class="text-xl font-semibold mb-2">
+        Domain 4: Billing, Pricing, and Support
+      </h2>
+      <p class="mb-4">Focuses on pricing models, budgets, and AWS Support.</p>
+      <p-button label="Start Quiz" (onClick)="startQuiz('billing_support')" />
+    </div>
+  </div>
+
+  <!-- Disclaimer Section -->
+  <div class="mt-16 text-sm text-gray-500 max-w-4xl mx-auto border-t pt-6">
+    <p>
+      <strong>Disclaimer:</strong> This practice exam web application is based
+      on content from a
+      <span class="italic">purchased Udemy Practice Exam Course</span>. It is
+      provided for educational and review purposes only.
+    </p>
+    <p class="mt-2">
+      If you discover any incorrect information or discrepancies, please
+      <a
+        href="https://github.com/ahleksu/aws-practice-quiz/issues"
+        target="_blank"
+        rel="noopener noreferrer"
+        class= "underline"
+      >
+        file an issue in the GitHub repository </a
+      >.
+    </p>
+  </div>
+
+  <!-- Support Developer Section -->
+  <div class="mt-12 text-gray-700 max-w-3xl mx-auto text-center">
+    <p class="text-base md:text-lg font-medium">
+      ☕ Enjoying this app? Help keep it brewing!
+    </p>
+    <p class="mt-1 text-sm text-gray-500 px-4 md:px-0">
+      This project is powered by caffeine and code. If you found this helpful,
+      consider donating a cup of coffee by clicking on my profile icon below. Every little bit helps me keep the
+      quizzes free and fresh!
+    </p>
+
+    <div class="mt-6 flex flex-col items-center justify-center">
+      <a
+        href="https://gcash-donations-qr.s3.ap-southeast-2.amazonaws.com/GCash-QR.jpg"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="transform hover:scale-105 transition duration-200"
+      >
+        <img
+          src="quiz/ahleksu-notion-face.png"
+          alt="Buy me a coffee"
+          class="w-30 h-30 mx-auto"
+        />
+      </a>
+    </div>
+  </div>
+</div>

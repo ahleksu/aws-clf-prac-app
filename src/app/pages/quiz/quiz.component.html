@@ -1,0 +1,221 @@
+<div class="max-w-3xl mx-auto px-4 py-6" [@fadeIn]>
+  <!-- Progress Bar + Finish -->
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+    <div class="card w-full">
+      <p-progressbar [value]="progressValue" styleClass="h-3">
+        <ng-template pTemplate="content" let-value>
+          <span class="text-xs font-semibold">
+            {{ currentQuestionIndex + 1 }}/{{ questions.length }}
+          </span>
+        </ng-template>
+      </p-progressbar>
+    </div>
+    <p-button
+      label="Finish Test"
+      icon="pi pi-flag"
+      severity="danger"
+      (onClick)="finishTest()"
+      styleClass="w-full sm:w-auto"
+    />
+  </div>
+
+  <!-- Question -->
+  <div class="mb-4">
+    <p class="text-sm text-gray-600">
+      Question {{ currentQuestionIndex + 1 }} of {{ questions.length }}
+    </p>
+    <h2 class="text-lg font-medium">{{ currentQuestion.question }}</h2>
+  </div>
+
+  <!-- Answers (Single Choice) -->
+  <ng-container *ngIf="currentQuestion.type === 'single'">
+    <div class="space-y-4 my-6">
+      <div
+        *ngFor="let answer of currentQuestion.answers"
+        class="flex items-start border rounded p-3 cursor-pointer"
+        (click)="!showExplanation && toggleAnswer(answer.text)"
+        [ngClass]="{
+          'border-purple-600': isSelected(answer.text) && !showExplanation,
+          'border-green-500 bg-green-50':
+            showExplanation && answer.status === 'correct',
+          'border-red-500 bg-red-50':
+            showExplanation &&
+            isSelected(answer.text) &&
+            answer.status !== 'correct',
+          'hover:shadow-sm': !showExplanation
+        }"
+      >
+        <p-radiobutton
+          name="option"
+          [value]="answer.text"
+          [(ngModel)]="selectedOption"
+          class="mt-1 mr-3"
+        ></p-radiobutton>
+
+        <div>
+          <p class="font-medium">{{ answer.text }}</p>
+          <p *ngIf="showExplanation" class="text-sm text-gray-700 mt-1">
+            <strong>Explanation:</strong> {{ answer.explanation }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Answers (Multiple Choice) -->
+  <ng-container *ngIf="currentQuestion.type === 'multiple'">
+    <div class="space-y-4 my-6">
+      <div
+        *ngFor="let answer of currentQuestion.answers"
+        class="flex items-start border rounded p-3"
+        [ngClass]="{
+          'border-purple-600':
+            selectedOptions.includes(answer.text) && !showExplanation,
+          'border-green-500 bg-green-50':
+            showExplanation && answer.status === 'correct',
+          'border-red-500 bg-red-50':
+            showExplanation &&
+            selectedOptions.includes(answer.text) &&
+            answer.status !== 'correct',
+          'hover:shadow-sm': !showExplanation
+        }"
+      >
+        <p-checkbox
+          [value]="answer.text"
+          [(ngModel)]="selectedOptions"
+          class="mt-1 mr-3"
+          [disabled]="showExplanation"
+        ></p-checkbox>
+
+        <div>
+          <p class="font-medium">{{ answer.text }}</p>
+          <p *ngIf="showExplanation" class="text-sm text-gray-700 mt-1">
+            <strong>Explanation:</strong> {{ answer.explanation }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Result Feedback -->
+  <div
+    *ngIf="showExplanation"
+    class="p-4 rounded text-sm mb-4"
+    [ngClass]="
+      isCorrect
+        ? 'bg-green-100 text-green-700 border border-green-400'
+        : 'bg-red-100 text-red-700 border border-red-400'
+    "
+  >
+    {{
+      isCorrect
+        ? "Correct answer. Good job!"
+        : "Incorrect answer. Review the explanation."
+    }}
+  </div>
+
+  <!-- Domain and Resource Info -->
+  <div *ngIf="showExplanation" class="mb-6">
+    <div class="text-sm text-gray-700 mb-2">
+      <span class="font-semibold">Domain:</span> {{ currentQuestion.domain }}
+    </div>
+    <div *ngIf="currentQuestion.resource">
+      <a
+        [href]="currentQuestion.resource"
+        class="text-blue-600 underline text-sm"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        🔗 View Resource
+      </a>
+    </div>
+  </div>
+
+  <!-- Navigation Buttons -->
+  <div class="flex flex-col sm:flex-row justify-between gap-4 mt-6">
+    <p-button
+      label="Back"
+      icon="pi pi-arrow-left"
+      severity="secondary"
+      (onClick)="goBack()"
+      [disabled]="currentQuestionIndex === 0"
+      styleClass="w-full sm:w-auto"
+    />
+
+    <ng-container *ngIf="!showExplanation">
+      <p-button
+        label="Check Answer"
+        icon="pi pi-check"
+        iconPos="right"
+        severity="info"
+        [disabled]="
+          currentQuestion.type === 'single'
+            ? !selectedOption
+            : selectedOptions.length === 0
+        "
+        (onClick)="checkAnswer()"
+        styleClass="w-full sm:w-auto"
+      />
+    </ng-container>
+
+    <ng-container *ngIf="showExplanation">
+      <p-button
+        label="Next Question"
+        icon="pi pi-arrow-right"
+        iconPos="right"
+        severity="success"
+        (onClick)="goNext()"
+        styleClass="w-full sm:w-auto"
+      />
+    </ng-container>
+  </div>
+
+  <!-- Confirm Finish Test Dialog -->
+  <p-dialog
+    header="Finish Test?"
+    [(visible)]="showConfirmDialog"
+    [modal]="true"
+    [style]="{ width: '25rem' }"
+  >
+    <p class="text-sm text-gray-700">
+      You haven’t answered all questions. Are you sure you want to finish and
+      view results?
+    </p>
+    <div class="flex justify-end gap-2 mt-6">
+      <p-button
+        label="Cancel"
+        severity="secondary"
+        (onClick)="showConfirmDialog = false"
+      />
+      <p-button
+        label="Finish Anyway"
+        icon="pi pi-check"
+        (onClick)="finalizeQuiz()"
+      />
+    </div>
+  </p-dialog>
+  <!-- Confirm Finish Test Dialog -->
+  <p-dialog
+    header="Finish Test?"
+    [(visible)]="showConfirmDialog"
+    [modal]="true"
+    [style]="{ width: '25rem' }"
+  >
+    <p class="text-sm text-gray-700">
+      You haven’t answered all questions. Are you sure you want to finish and
+      view results?
+    </p>
+    <div class="flex justify-end gap-2 mt-6">
+      <p-button
+        label="Cancel"
+        severity="secondary"
+        (onClick)="showConfirmDialog = false"
+      />
+      <p-button
+        label="Finish Anyway"
+        icon="pi pi-check"
+        (onClick)="finalizeQuiz()"
+      />
+    </div>
+  </p-dialog>
+</div>

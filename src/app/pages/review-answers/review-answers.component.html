@@ -1,0 +1,124 @@
+<div class="max-w-5xl mx-auto px-4 py-8 space-y-8">
+    <!-- Back Button -->
+    <p-button
+      icon="pi pi-arrow-left"
+      label="Back to Result Overview"
+      class="mb-6"
+      (onClick)="goBack()"
+    />
+  
+    <!-- Header + Filters -->
+    <div class="flex flex-col md:flex-row justify-between items-center gap-6 mt-4">
+      <p-select
+        [options]="domainOptions"
+        [(ngModel)]="selectedDomain"
+        optionLabel="name"
+        optionValue="value"
+        placeholder="All domains"
+        class="w-full md:w-64"
+        (onChange)="filterQuestions()"
+      />
+  
+      <div class="flex flex-wrap gap-4 justify-center">
+        <p-chip label="{{ totalQuestions }} Total" />
+        <p-chip label="{{ correctAnswers }} Correct" class="bg-green-200 text-green-900" />
+        <p-chip label="{{ incorrectAnswers }} Incorrect" class="bg-red-200 text-red-900" />
+        <p-chip label="{{ skippedAnswers }} Skipped" class="bg-gray-200 text-gray-700" />
+      </div>
+    </div>
+  
+    <!-- Collapse All Button -->
+    <div class="flex justify-end">
+      <p-button
+        [label]="showAll ? 'Collapse all questions' : 'Expand all questions'"
+        icon="pi pi-minus"
+        (onClick)="toggleCollapseAll()"
+        class="p-button-sm"
+      />
+    </div>
+  
+    <!-- Question Review Cards -->
+    <div
+      *ngFor="let question of filteredQuestions"
+      class="mb-6 border rounded p-6 shadow-sm bg-white space-y-4"
+    >
+      <!-- Domain -->
+      <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">
+        {{ question.domain }}
+      </p>
+  
+      <!-- Question -->
+      <h3 class="text-base md:text-lg font-semibold text-gray-800">
+        {{ question.question }}
+      </h3>
+  
+      <!-- Resource (if available) -->
+      <div *ngIf="question.resource" class="text-sm">
+        <a
+          [href]="question.resource"
+          class="text-blue-600 underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          🔗 View Resource
+        </a>
+      </div>
+  
+      <!-- Answers -->
+      <div class="space-y-4" *ngIf="showAll">
+        <div
+          *ngFor="let answer of question.answers"
+          class="p-4 rounded border"
+          [ngClass]="{
+            'bg-green-100 border-green-400': answer.status === 'correct',
+            'bg-red-100 border-red-400': isUserIncorrect(question, answer),
+            'bg-white border-gray-300': answer.status !== 'correct' && !isUserIncorrect(question, answer)
+          }"
+        >
+          <p class="font-medium text-sm md:text-base">
+            {{ answer.text }}
+          </p>
+          <p class="text-xs text-gray-600 mt-2">
+            <strong>Explanation:</strong> {{ answer.explanation }}
+          </p>
+        </div>
+      </div>
+  
+      <!-- Correctness Feedback -->
+      <div
+        class="mt-4 text-sm px-4 py-2 rounded font-medium"
+        [ngClass]="{
+          'bg-green-100 text-green-700': question.isCorrect,
+          'bg-red-100 text-red-700': !question.isCorrect && !question.isSkipped,
+          'bg-gray-100 text-gray-600': question.isSkipped
+        }"
+      >
+        {{
+          question.isSkipped
+            ? 'Skipped'
+            : question.isCorrect
+            ? 'Correct answer'
+            : 'Incorrect answer'
+        }}
+      </div>
+    </div>
+  
+    <!-- Footer Buttons -->
+    <div class="flex flex-col md:flex-row justify-center gap-6 mt-10">
+      <p-button
+        label="Retake Test"
+        icon="pi pi-refresh"
+        severity="warn"
+        (onClick)="retakeTest()"
+        styleClass="w-full md:w-auto"
+      />
+      <p-button
+        label="Go to Homepage"
+        icon="pi pi-home"
+        severity="secondary"
+        (onClick)="goHome()"
+        styleClass="w-full md:w-auto"
+      />
+    </div>
+  </div>
+  

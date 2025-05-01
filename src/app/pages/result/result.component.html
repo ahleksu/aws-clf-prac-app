@@ -1,0 +1,65 @@
+<div class="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-10 text-center">
+  <h1 class="text-2xl font-bold mb-1">
+    AWS Certified Cloud Practitioner - Results
+  </h1>
+  <p class="text-gray-600 mb-6">You completed {{ totalQuestions }} questions</p>
+
+  <!-- Score Chart -->
+  <div class="card flex flex-col items-center justify-center mb-8">
+    <p-chart
+      type="doughnut"
+      [data]="chartData"
+      [options]="chartOptions"
+      styleClass="w-full max-w-xs"
+    ></p-chart>
+    <p class="text-xl font-semibold mt-3">
+      {{ score }}% correct ({{ correctAnswers }}/{{ totalQuestions }})
+    </p>
+    <p class="text-sm text-gray-500">
+      {{ skippedAnswers }} skipped out of {{ totalQuestions }} questions.
+    </p>
+    <p class="text-sm text-gray-500">
+      Completed on {{ finishedAt | date : "fullDate" }} at
+      {{ finishedAt | date : "shortTime" }}
+    </p>
+  </div>
+
+  <!-- Stacked Bar Chart for Domains -->
+  <div *ngIf="quizType === 'all'" class="text-left mb-8">
+    <h2 class="text-lg font-semibold mb-4">Domains</h2>
+    <div class="card overflow-x-auto">
+      <div class="min-w-[500px] w-full">
+        <p-chart
+          type="bar"
+          [data]="barChartData"
+          [options]="barChartOptions"
+          styleClass="w-full h-[24rem]"
+        ></p-chart>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-4">
+    <p-button
+      label="Review Questions"
+      icon="pi pi-eye"
+      (onClick)="goToReview()"
+      styleClass="w-full sm:w-auto"
+    />
+    <p-button
+      label="Retake Test"
+      icon="pi pi-refresh"
+      severity="warn"
+      (onClick)="retakeQuiz()"
+      styleClass="w-full sm:w-auto"
+    />
+    <p-button
+      label="Go to Homepage"
+      icon="pi pi-home"
+      severity="secondary"
+      (onClick)="goHome()"
+      styleClass="w-full sm:w-auto"
+    />
+  </div>
+</div>
