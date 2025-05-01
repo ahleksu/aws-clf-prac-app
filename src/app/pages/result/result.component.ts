@@ -50,7 +50,7 @@ export class ResultComponent {
       });
 
       // Count skipped
-      this.skippedAnswers = this.domainBreakdown.reduce((acc, d) => acc + d.skipped, 0);
+      this.skippedAnswers = state['skipped'] ?? this.domainBreakdown.reduce((acc, d) => acc + d.skipped, 0);
     }
 
     this.setupChart();
@@ -139,7 +139,7 @@ export class ResultComponent {
   goToReview() {
     this.router.navigate(['/review'], {
       state: {
-        questions: history.state.questions ?? []  // ensure questions are passed along
+        questions: history.state.questions ?? []
       }
     });
   }

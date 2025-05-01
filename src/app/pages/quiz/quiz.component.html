@@ -1,22 +1,25 @@
 <div class="max-w-3xl mx-auto px-4 py-6" [@fadeIn]>
   <!-- Progress Bar + Finish -->
-  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+  <div
+    class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6"
+  >
     <div class="card w-full">
       <p-progressbar [value]="progressValue" styleClass="h-3">
         <ng-template pTemplate="content" let-value>
-          <span class="text-xs font-semibold">
-            {{ currentQuestionIndex + 1 }}/{{ questions.length }}
-          </span>
         </ng-template>
       </p-progressbar>
     </div>
-    <p-button
-      label="Finish Test"
-      icon="pi pi-flag"
-      severity="danger"
-      (onClick)="finishTest()"
-      styleClass="w-full sm:w-auto"
-    />
+
+    <!-- Prevent text wrapping on button -->
+    <div class="sm:shrink-0">
+      <p-button
+        label="Finish Test"
+        icon="pi pi-flag"
+        severity="danger"
+        (onClick)="finishTest()"
+        styleClass="whitespace-nowrap"
+      />
+    </div>
   </div>
 
   <!-- Question -->

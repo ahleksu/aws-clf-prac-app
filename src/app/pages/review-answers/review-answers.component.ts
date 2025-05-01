@@ -56,14 +56,14 @@ export class ReviewAnswersComponent {
           hasAnswer &&
           correctAnswers.length === q.userAnswer.length &&
           correctAnswers.every(ans => q.userAnswer.includes(ans));
-  
+
         return {
           ...q,
           isCorrect,
           isSkipped: !hasAnswer
         };
       });
-  
+
       this.totalQuestions = this.allQuestions.length;
       this.correctAnswers = this.allQuestions.filter(q => q.isCorrect).length;
       this.incorrectAnswers = this.allQuestions.filter(q => !q.isCorrect && !q.isSkipped).length;
@@ -95,30 +95,36 @@ export class ReviewAnswersComponent {
       state: {
         total: this.totalQuestions,
         correct: this.correctAnswers,
+        skipped: this.skippedAnswers,
         domainSummary: this.generateDomainSummary(),
-        timestamp: new Date(), // or persist original if available
+        timestamp: new Date(), 
         type: 'all',
         questions: this.allQuestions
       }
     });
   }
 
-  private generateDomainSummary(): Record<string, { correct: number; total: number }> {
-    const summary: Record<string, { correct: number; total: number }> = {};
+
+  private generateDomainSummary(): Record<string, { correct: number; total: number; skipped: number }> {
+    const summary: Record<string, { correct: number; total: number; skipped: number }> = {};
     this.allQuestions.forEach((q) => {
       const domain = q.domain;
       if (!summary[domain]) {
-        summary[domain] = { correct: 0, total: 0 };
+        summary[domain] = { correct: 0, total: 0, skipped: 0 };
       }
       summary[domain].total += 1;
       if (q.isCorrect) {
         summary[domain].correct += 1;
       }
+      if (q.isSkipped) {
+        summary[domain].skipped += 1;
+      }
     });
     return summary;
   }
-  
-  
+
+
+
 
   retakeTest() {
     this.router.navigate(['/quiz'], { queryParams: { type: 'all' } });
