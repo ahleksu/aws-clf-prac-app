@@ -14,7 +14,7 @@ If you notice any inaccuracies or have suggestions for improvement, feel free to
 
 ## 🚀 Live Demo
 
-👉 [Try the App on Vercel](https://aws-practice-quiz.vercel.app)
+👉 [Try the App on Vercel](https://aws-clf-prac-app.vercel.app/)
 
 ---
 
