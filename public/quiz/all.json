@@ -2772,10 +2772,10 @@
   },
   {
     "id": 95,
-    "question": "Which of the following statements exemplify the cost efficiency of using the AWS Cloud?",
+    "question": "Which of the following statements exemplify the cost efficiency of using the AWS Cloud? (Choose TWO)",
     "domain": "Cloud Concepts",
     "resource": "https://docs.aws.amazon.com/whitepapers/latest/aws-overview/six-advantages-of-cloud-computing.html",
-    "type": "single",
+    "type": "multiple",
     "answers": [
       {
         "text": "Users can deploy all over the world in minutes.",
@@ -2784,7 +2784,7 @@
       },
       {
         "text": "Users benefit from economies of scale.",
-        "status": "skipped",
+        "status": "correct",
         "explanation": "Economies of scale are what allow for the pay-as-you-go pricing model of AWS"
       },
       {
