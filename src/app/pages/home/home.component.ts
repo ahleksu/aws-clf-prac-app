@@ -4,6 +4,7 @@ import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { trigger, style, animate, transition } from '@angular/animations';
 
+
 @Component({
   selector: 'app-home',
   standalone: true,
