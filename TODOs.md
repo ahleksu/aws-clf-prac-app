@@ -44,11 +44,8 @@
   ```
   - **Acceptance:** Returns `arn:aws:iam::<REDACTED>:user/clf-quiz-admin-policy`. ✅ Verified.
 
-- [ ] **PIAM-T10:** Fix the missing `s3:PutBucketPublicAccessBlock` action in `clf-quiz-admin-policy`.
-  - Go to IAM → Policies → `clf-quiz-admin-policy` → Edit JSON
-  - In the `S3BucketManage` statement, add: `"s3:PutBucketPublicAccessBlock"` and `"s3:GetBucketPublicAccessBlock"`
-  - Save. No need to detach/reattach — policy updates apply immediately.
-  - **Acceptance:** `aws s3api put-public-access-block --bucket test-bucket --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true --profile clf-quiz` does NOT return `AccessDenied` (may return `NoSuchBucket` which is fine — that means the permission works).
+- [x] **PIAM-T10:** Fix the missing `s3:PutBucketPublicAccessBlock` action in `clf-quiz-admin-policy`. ✅ 2026-04-29
+  - Done via CLI: `aws iam create-policy-version` created v2 with the correct action. Verified: `NoSuchBucket` (not `AccessDenied`) returned on test call.
 
 ---
 
@@ -329,78 +326,60 @@
 
 ### Part A — Frontend: S3 + CloudFront
 
-- [ ] **P6-A1:** Create a **private** S3 bucket in `us-east-1`. Block all public access (CloudFront will access via Origin Access Control).
-  - Name suggestion: `aws-clf-quiz-frontend`
-  - **Acceptance:** Direct browser navigation to S3 URL returns 403.
+- [x] **P6-A1:** Create a **private** S3 bucket in `ap-southeast-1` (Singapore). Block all public access. ✅ 2026-04-29
+  - Bucket: `aws-clf-quiz-frontend`. All 4 public access block flags set to true. Direct S3 URL returns 403.
 
-- [ ] **P6-A2:** Create a CloudFront distribution (origin: S3 bucket, OAC not OAI).
-  - Viewer protocol: **Redirect HTTP to HTTPS**
-  - Add custom error page: **404 → `/index.html` → HTTP 200** (critical for Angular SPA routing — without this, any direct URL or page refresh returns 403/404)
-  - Default root object: `index.html`
-  - Cache policy: `CachingOptimized` (for all assets)
-  - Apply the auto-generated S3 bucket policy when prompted (it grants CloudFront OAC read access)
-  - **Acceptance:** Upload a test `<h1>Works</h1>` as `index.html` to S3. Navigate to CloudFront domain (`dXXXXX.cloudfront.net`) — it shows the page over HTTPS with a valid green lock. No AWS console login needed to view it.
+- [ ] **P6-A2:** Create a CloudFront distribution. **🔄 BLOCKED — AWS account CloudFront verification pending.**
+  - CLI blocked: new accounts require support case for CloudFront access. Support case submitted 2026-04-29.
+  - **When unblocked:** Use the new console wizard (Free plan). See PLAN.md §13A-2 for updated step-by-step instructions.
+  - OAC `E37IFEDVTLC7J6` (`aws-clf-quiz-frontend-oac`) already created and ready to use.
+  - **Post-creation required:** (a) Set default root object = `index.html`; (b) Add custom error responses: 403→/index.html→200 and 404→/index.html→200.
+  - **Acceptance:** Upload test `<h1>Works</h1>` as `index.html` to S3. CloudFront domain shows it over HTTPS with green lock.
 
-- [ ] **P6-A3:** Request an ACM certificate for your CloudFront domain (optional, if you have a Route 53 domain).
-  - ACM must be requested in `us-east-1` for CloudFront use.
-  - Skip if using the default `dXXXX.cloudfront.net` URL (it already has HTTPS — no custom cert needed).
-  - If using Route 53 domain: create A ALIAS record `awsquiz.click → CloudFront distribution`.
+- [x] **P6-A3:** ACM certificate — **Skipped.** ✅ 2026-04-29
+  - Free plan on new CloudFront console includes a TLS cert automatically for `*.cloudfront.net`. No custom domain or ACM cert needed.
 
-- [ ] **P6-A4:** Create IAM user `github-actions-deploy` with the minimal S3 + CloudFront policy from PLAN.md §13A-4. Generate Access Key ID and Secret.
-  - Add 4 GitHub repository secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET`, `CF_DISTRIBUTION_ID`.
+- [ ] **P6-A4:** Add 4 GitHub repository secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET`, `CF_DISTRIBUTION_ID`).
+  - Keys: use the `clf-quiz-github-actions` access keys stored in password manager (generated PIAM-T7).
+  - `S3_BUCKET`: `aws-clf-quiz-frontend`
+  - `CF_DISTRIBUTION_ID`: get from CloudFront console after P6-A2 completes (starts with `E`).
+  - **Acceptance:** All 4 secrets visible in GitHub → Settings → Secrets → Actions.
 
-- [ ] **P6-A5:** Create `.github/workflows/deploy-frontend.yml` using the template in PLAN.md §13A-4.
-  - Important: the `s3 sync` command targets `dist/aws-clf-prac-app/browser/` (Angular 19 build output path). Verify this matches your actual `ng build` output.
-  - **Acceptance:** Push a trivial change to `src/` on `master` → GitHub Actions run passes → CloudFront domain reflects the change (allow 1–2 minutes for cache invalidation).
+- [x] **P6-A5:** Create `.github/workflows/deploy-frontend.yml`. ✅ 2026-04-29
+  - Created at `.github/workflows/deploy-frontend.yml`. Targets `dist/aws-clf-prac-app/browser/` (verified Angular 19 output path). Separate cache headers for assets (1yr immutable) vs index.html (no-cache).
+  - **Full acceptance test pending** until P6-A2 (CloudFront) and P6-A4 (GitHub Secrets) are complete.
 
 ---
 
 ### Part B — Backend: EC2 t2.micro (Free Tier, Always-On)
 
-- [ ] **P6-B1:** Launch EC2 **t2.micro** (NOT t3.micro — t2.micro is what's free tier eligible) with Ubuntu 22.04 LTS. Create security group `live-quiz-sg`:
-  - Inbound: SSH (22) from My IP, HTTP (80) from 0.0.0.0/0, HTTPS (443) from 0.0.0.0/0
-  - **Acceptance:** Instance starts successfully in EC2 console with status "running".
+- [x] **P6-B1:** Launch EC2 **t2.micro** Ubuntu 22.04 LTS + security group `live-quiz-sg`. ✅ 2026-04-29
+  - Instance: `i-042b91a08364b6e01` | AMI: `ami-0b63ddeab4f8a92db` | AZ: `ap-southeast-1b`
+  - SG `sg-0f43142600ef6bc09`: SSH (22) from `112.211.118.223/32`, HTTP + HTTPS from `0.0.0.0/0`
+  - Key pair: `live-quiz-backend-key` → `~/Desktop/live-quiz-backend-key.pem` (chmod 400)
 
-- [ ] **P6-B2:** Allocate an Elastic IP and associate it with the t2.micro instance. Note the IP (e.g. `54.123.45.67`).
-  - Elastic IP is **free** while the instance is running — do NOT stop the instance between sessions to avoid billing.
-  - **Acceptance:** `ping 54.123.45.67` responds from your laptop.
+- [x] **P6-B2:** Allocate Elastic IP + associate to instance. ✅ 2026-04-29
+  - Elastic IP: **`47.130.41.30`** | Allocation: `eipalloc-0e5258b8bb2dc5b04`
+  - Instance is always-on — do NOT stop it (Elastic IP charges when instance stopped)
 
-- [ ] **P6-B3:** SSH in. Install Node.js 20, PM2, nginx, certbot. Full commands in PLAN.md §13B-3.
+- [ ] **P6-B3:** SSH in. Install Node.js 20, PM2, nginx, certbot. Use `scripts/ec2-setup.sh` section B3.
+  - SSH: `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30`
   - **Acceptance:** `node -v` outputs `v20.x`; `pm2 -v` works; `sudo nginx -t` passes.
 
-- [ ] **P6-B4:** Clone repo on EC2. Copy quiz JSON files. Build backend.
-  ```bash
-  git clone https://github.com/ahleksu/aws-clf-prac-app.git
-  cd aws-clf-prac-app/backend
-  cp -r ../public/quiz/ ./quiz/
-  npm install && npm run build
-  ```
-  - **Acceptance:** `ls dist/index.js` exists.
+- [ ] **P6-B4:** Clone repo on EC2. Copy quiz JSON. Build backend. Use `scripts/ec2-setup.sh` section B4.
+  - **Acceptance:** `ls ~/aws-clf-prac-app/backend/dist/index.js` exists.
 
-- [ ] **P6-B5:** Determine your nip.io backend domain from your Elastic IP:
-  - Elastic IP `54.123.45.67` → nip.io domain: `api.54.123.45.67.nip.io`
-  - Verify DNS resolves: `nslookup api.54.123.45.67.nip.io` → should return `54.123.45.67`
-  - This is the value you will use everywhere as your backend domain.
+- [x] **P6-B5:** nip.io domain determined. ✅ 2026-04-29
+  - Elastic IP `47.130.41.30` → nip.io domain: **`api.47.130.41.30.nip.io`**
 
-- [ ] **P6-B6:** Configure nginx with the template from PLAN.md §13B-3. Replace `DOMAIN` with your nip.io domain. Enable the site, remove default site, test config, reload nginx.
-  - **Acceptance:** `curl http://54.123.45.67` → nginx responds (even if 502 since Node.js not running yet).
+- [ ] **P6-B6:** Configure nginx. Use `scripts/ec2-setup.sh` section B6.
+  - **Acceptance:** `curl http://47.130.41.30` → nginx responds (502 OK, TLS not set up yet).
 
-- [ ] **P6-B7:** Run certbot to issue Let's Encrypt cert for the nip.io domain:
-  ```bash
-  sudo certbot --nginx -d api.54.123.45.67.nip.io
-  ```
-  certbot will automatically update the nginx config with SSL directives.
-  - **Acceptance:** `curl https://api.54.123.45.67.nip.io/` responds (502 is OK at this point — TLS is working, Node.js just not started). No `curl` SSL errors.
-  - Verify auto-renewal: `sudo certbot renew --dry-run` passes.
+- [ ] **P6-B7:** Run certbot for Let's Encrypt cert on `api.47.130.41.30.nip.io`. Use `scripts/ec2-setup.sh` section B7.
+  - **Acceptance:** `curl https://api.47.130.41.30.nip.io/` → no SSL errors (502 OK, Node.js not started yet). `sudo certbot renew --dry-run` passes.
 
-- [ ] **P6-B8:** Start backend with PM2 and configure systemd startup:
-  ```bash
-  cd ~/aws-clf-prac-app/backend
-  pm2 start ecosystem.config.js --env production
-  pm2 save
-  pm2 startup   # copy and run the printed sudo command
-  ```
-  - **Acceptance:** `curl https://api.54.123.45.67.nip.io/health` returns `{"status":"ok","sessions":0}` with valid TLS.
+- [ ] **P6-B8:** Start backend with PM2 + configure systemd startup. Use `scripts/ec2-setup.sh` section B8.
+  - **Acceptance:** `curl https://api.47.130.41.30.nip.io/health` → `{"status":"ok","sessions":0}` with valid TLS.
 
 ---
 

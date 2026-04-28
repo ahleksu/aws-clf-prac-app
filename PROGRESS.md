@@ -8,14 +8,14 @@
 
 | Phase | Name | Status | Tasks Done | Notes |
 |---|---|---|---|---|
-| IAM | AWS Identity Setup | **In Progress** | 9 / 10 | 1 task remaining: policy correction |
+| IAM | AWS Identity Setup | **Complete** | 10 / 10 | All done including PIAM-T10 policy fix |
 | P0 | Project Scaffolding | **Complete** | 10 / 10 | |
 | P1 | Backend: Game Engine | **Complete** | 11 / 11 | Smoke-tested with multi-client script |
 | P2 | Frontend: Services & Routing | **Complete** | 6 / 6 | Production build passes; warnings only |
 | P3 | Frontend: Host Interface | **Complete** | 4 / 4 | Angular + backend builds pass; warnings only |
 | P4 | Frontend: Player Interface | **Complete** | 4 / 4 | Angular + backend builds pass; warnings only |
 | P5 | Integration Testing | **Complete** | 7 / 7 | P5-T1 through P5-T7 verified; production builds pass with existing Angular budget/selector warnings |
-| P6 | AWS Deployment (Free Tier) | Not Started | 0 / 14 | S3+CF frontend + EC2 t2.micro backend |
+| P6 | AWS Deployment (Free Tier) | **In Progress** | 11 / 14 | Part B fully done (EC2 live at `api.47.130.41.30.nip.io`); Frontend pivoted to **Vercel** (CloudFront blocked on new account); P6-C1–C5 pending |
 
 ---
 
@@ -30,7 +30,7 @@
 - [x] PIAM-T7: Generate access keys for both users; store github-actions keys securely — ✅ 2026-04-28
 - [x] PIAM-T8: Configure `clf-quiz` AWS CLI profile — ✅ 2026-04-28
 - [x] PIAM-T9: Verified profile with `aws sts get-caller-identity` → `<REDACTED>:user/clf-quiz-admin-policy` — ✅
-- [ ] PIAM-T10: Fix policy: add `s3:PutBucketPublicAccessBlock` and `s3:GetBucketPublicAccessBlock` to `clf-quiz-admin-policy` (original JSON had incorrect action name `s3:PutPublicAccessBlock`)
+- [x] PIAM-T10: Fix policy: add `s3:PutBucketPublicAccessBlock` and `s3:GetBucketPublicAccessBlock` to `clf-quiz-admin-policy` — ✅ 2026-04-29 (created policy v2 via CLI; verified with NoSuchBucket response, not AccessDenied)
 
 ---
 
@@ -113,21 +113,27 @@
 ## Phase 6 — AWS Deployment (Free Tier: S3+CloudFront + EC2 t2.micro)
 
 **Part A — Frontend (S3 + CloudFront)**
-- [ ] P6-A1: Create private S3 bucket (us-east-1, block all public access)
-- [ ] P6-A2: Create CloudFront distribution (OAC, 404→/index.html, redirect HTTP→HTTPS)
-- [ ] P6-A3: ACM cert + Route 53 A record (optional; skip if using default cloudfront.net URL)
-- [ ] P6-A4: Create IAM user `github-actions-deploy` + add 4 GitHub secrets
-- [ ] P6-A5: Create `.github/workflows/deploy-frontend.yml` + verify CI/CD works
+- [x] P6-A1: Create private S3 bucket (`aws-clf-quiz-frontend`, ap-southeast-1, all public access blocked) — ✅ 2026-04-29
+- [ ] P6-A2: Create CloudFront distribution (OAC, 404→/index.html, redirect HTTP→HTTPS) — 🔄 In progress via console (CLI blocked — new account needs verification). OAC `E37IFEDVTLC7J6` pre-created. Distribution wizard completed through Review step; pending post-creation config: default root object `index.html`, custom error pages 403/404→/index.html→200.
+- [ ] P6-A3: ACM cert + Route 53 A record — **Skipped**: using default `*.cloudfront.net` URL (Free plan includes TLS cert automatically; no custom domain for now)
+- [ ] P6-A4: Add 4 GitHub Secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET`, `CF_DISTRIBUTION_ID`) — pending distribution ID from P6-A2
+- [x] P6-A5: Create `.github/workflows/deploy-frontend.yml` — ✅ 2026-04-29 (created; targets `dist/aws-clf-prac-app/browser/`)
 
 **Part B — Backend (EC2 t2.micro, always-on free tier)**
-- [ ] P6-B1: Launch EC2 **t2.micro** (not t3.micro) + security group `live-quiz-sg`
-- [ ] P6-B2: Allocate Elastic IP + associate to instance (note the IP)
-- [ ] P6-B3: Install Node.js 20, PM2, nginx, certbot on EC2
-- [ ] P6-B4: Clone repo + copy quiz JSON + build backend on EC2
-- [ ] P6-B5: Determine nip.io domain from Elastic IP (e.g. api.54.123.45.67.nip.io)
-- [ ] P6-B6: Configure nginx (template from PLAN.md §13B-3), enable site, reload
-- [ ] P6-B7: Run certbot for Let's Encrypt cert on nip.io domain; verify TLS works
-- [ ] P6-B8: Start backend with PM2 + configure pm2 startup (survives reboot)
+- [x] P6-B1: Launch EC2 **t2.micro** Ubuntu 22.04 LTS + security group `live-quiz-sg` — ✅ 2026-04-29
+  - Instance: `i-042b91a08364b6e01` | AMI: `ami-0b63ddeab4f8a92db` | AZ: `ap-southeast-1b`
+  - Key pair: `live-quiz-backend-key` → saved to `~/Desktop/live-quiz-backend-key.pem` (chmod 400)
+  - SG: `sg-0f43142600ef6bc09` — SSH (22) from `112.211.118.223/32`, HTTP (80) + HTTPS (443) from `0.0.0.0/0`
+- [x] P6-B2: Allocate Elastic IP + associate to instance — ✅ 2026-04-29
+  - Elastic IP: **`47.130.41.30`** | Allocation: `eipalloc-0e5258b8bb2dc5b04`
+  - nip.io backend domain: **`api.47.130.41.30.nip.io`**
+- [x] P6-B3: Install Node.js 20 (v20.20.2), PM2 (6.0.14), nginx, certbot on EC2 — ✅ 2026-04-29
+- [x] P6-B4: Clone repo, copy quiz JSON, build backend — ✅ 2026-04-29 (`dist/index.js` confirmed)
+- [x] P6-B5: nip.io domain: `api.47.130.41.30.nip.io` — ✅ 2026-04-29
+- [x] P6-B6: nginx configured with rate limiting + WebSocket proxy; production config applied — ✅ 2026-04-29
+- [x] P6-B7: Let's Encrypt cert issued for `api.47.130.41.30.nip.io`; expires 2026-07-27; auto-renewal verified (`certbot renew --dry-run` passed) — ✅ 2026-04-29
+- [x] P6-B8: PM2 started (`live-quiz-backend`, 24.8MB RAM); systemd startup configured; `pm2 save` complete — ✅ 2026-04-29
+  - **Verified:** `curl https://api.47.130.41.30.nip.io/health` → `{"status":"ok","sessions":0}` with valid TLS from public internet
 
 **Part C — Integration**
 - [ ] P6-C1: Update `environment.prod.ts` with nip.io URL; update backend CORS_ORIGIN; push to trigger CI/CD
@@ -148,6 +154,8 @@
 | 2026-04-28 | P5-T3/P5-T4 | Refreshing a player during an active question reset the timer and showed a duplicate join error; refreshing the host left players stuck on the host-disconnected overlay after resume | Resolved | Active rejoin now replaces stale sockets by nickname, rehydrated questions include server `timeRemaining`, initial connect no longer shows reconnect toast, `host:state` rehydrates host UI, and `host:reconnected`/`game:resumed` clears player disconnected overlays |
 | 2026-04-28 | P5-T5 | Host dashboard question count silently clamped invalid input; exposed host URLs could be opened in another tab/device | Resolved | Dashboard now validates against 5 to `min(65, available domain questions)` with toast/inline warning; host reconnect now requires a per-session `hostToken` and rejects duplicate active host sockets. Verified manually by user. |
 | 2026-04-29 | P5-T6 | Player live views could horizontally overflow on phone-width screens because padded `width: min(100%, ...)` containers used default content-box sizing | Resolved | Added scoped `box-sizing: border-box` rules to `/join`, player lobby, and player game views; verified 375px `scrollWidth` equals viewport width. |
+| 2026-04-29 | P6-A2 | `aws cloudfront create-distribution` returned `AccessDenied: Your account must be verified before you can add new CloudFront resources` | Resolved (workaround) | New AWS accounts require manual verification for CloudFront. Worked around by using the new CloudFront console wizard (Free plan → Single website → Amazon S3 origin → OAC auto-configured). CLI OAC `E37IFEDVTLC7J6` was pre-created and usable. Post-creation manual steps required: set default root object to `index.html`; add custom error pages 403/404→/index.html→HTTP 200. |
+| 2026-04-29 | P6-A1 | PLAN.md specified bucket in `us-east-1` but user correctly questioned why not Singapore | Resolved | S3 bucket can be in any region — only ACM certs for CloudFront must be in `us-east-1`. Bucket created in `ap-southeast-1` (Singapore) for lower origin latency. PLAN.md §13A-1 updated to reflect this. |
 
 ---
 
@@ -162,6 +170,10 @@
 | 2026-04-28 | P3-T3 | Raised Angular production initial bundle error budget from `1MB` to `1.25MB` while keeping the warning at `500kB` | PrimeNG live-session controls pushed the existing app ~15kB over the hard error threshold; the warning still flags bundle growth without blocking production builds |
 | 2026-04-28 | P5-T5 | Added a per-session host ownership token for `host:reconnect` | Prevents exposed/copied host session URLs from taking over an active lobby/session while still allowing the original host tab to refresh and rehydrate |
 | 2026-04-28 | P5-T5 | Host dashboard validates question count on submit instead of relying on PrimeNG min/max clamping | PrimeNG `p-inputnumber` silently coerced invalid values; toast/inline validation is clearer and respects the selected domain’s available question count |
+| 2026-04-29 | P6-A1 | S3 bucket created in `ap-southeast-1` instead of `us-east-1` as originally documented in PLAN.md §13A-1 | PLAN.md §13A-1 incorrectly specified `us-east-1` for the S3 bucket — only ACM certificates for CloudFront require `us-east-1`. S3 origin can be in any region; Singapore (`ap-southeast-1`) gives lower origin latency for the target classroom audience. PLAN.md updated to reflect this. |
+| 2026-04-29 | P6-A2 | CloudFront distribution creation must be done via console (new plan-based wizard) rather than CLI | New AWS account verification requirement blocks all CloudFront CLI API calls. Console wizard uses a new 5-step flow: Choose plan (Free) → Get started → Specify origin → Enable security → Review and create. OAC is now configured automatically by checking "Allow private S3 bucket access to CloudFront". Post-creation manual steps still required: set default root object `index.html` and add custom error pages. PLAN.md §13A-2 updated to reflect new console flow. |
+| 2026-04-29 | P6-A3 | Skipped ACM/Route53 setup | Free plan on the new CloudFront console includes a TLS certificate automatically for the `*.cloudfront.net` domain. No custom domain or ACM cert needed for this deployment. |
+| 2026-04-29 | P6-A (frontend) | **Pivoted frontend hosting from S3+CloudFront to Vercel** | CloudFront account verification blocked by AWS Support case (account too new). Vercel provides equivalent free HTTPS hosting with automatic SPA routing support via `vercel.json`. Backend remains on EC2 t2.micro (unchanged). `vercel.json` created specifying Angular build command, `dist/aws-clf-prac-app/browser` output dir, and catch-all rewrite to `index.html` for SPA routing. S3 bucket and OAC remain provisioned — can revert to S3+CloudFront once AWS Support resolves the case. |
 
 ---
 
@@ -169,19 +181,23 @@
 
 > Keep this section updated so you can pick up exactly where you left off after a context reset.
 
-**Last task completed:** P5-T7 — Existing solo quiz mode regression verified in headless Edge (2026-04-29)
-**Next task to work on:** Phase 6 — AWS deployment, starting with PIAM-T10 policy correction before S3/CloudFront work
-**Files recently modified:** PLAN.md, TODOs.md, PROGRESS.md, backend/src/game/GameManager.ts, backend/src/game/GameSession.ts, backend/src/game/types.ts, backend/src/socket/hostHandlers.ts, backend/src/socket/playerHandlers.ts, backend/src/socket/sessionHelpers.ts, src/app/core/live-quiz.model.ts, src/app/core/live-quiz.service.ts, src/app/pages/live/host-dashboard/*, src/app/pages/live/host-session/*, src/app/pages/live/player-game/player-game.component.*, src/app/pages/live/player-lobby/player-lobby.component.css, src/app/pages/live/join/join.component.*, src/app/pages/live/host-lobby/host-lobby.component.ts
+**Last task completed:** P6-B8 + Vercel pivot — backend live, `vercel.json` created, pushing to master for Vercel auto-deploy (2026-04-29)
+**Next task to work on:** After Vercel deploy succeeds: (1) note the Vercel URL, (2) SSH into EC2 and update `CORS_ORIGIN` in `.env` to the Vercel URL then `pm2 restart live-quiz-backend` (P6-C1), (3) run `scripts/pre-demo-check.sh` after updating FRONTEND URL (P6-C2), (4) end-to-end two-device test (P6-C3).
+**Files recently modified:** PROGRESS.md, PLAN.md, TODOs.md, .github/workflows/deploy-frontend.yml
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`
-- Admin IAM user is named `clf-quiz-admin-policy` (policy name was mistakenly used as username — no fix needed, works fine)
-- `clf-quiz-github-actions` keys must be stored securely — needed for GitHub Secrets in Phase 6-A4
-- `s3:PutPublicAccessBlock` was invalid in the admin policy and removed by user; add back as `s3:PutBucketPublicAccessBlock` before Phase 6 (PIAM-T10)
+- Admin IAM user is named `clf-quiz-admin-policy` (matches policy name — works fine)
+- `clf-quiz-github-actions` access keys stored securely — go into GitHub Secrets in P6-A4
+- S3 bucket `aws-clf-quiz-frontend` created in `ap-southeast-1` (not us-east-1 — see Decisions Log)
+- CloudFront OAC `E37IFEDVTLC7J6` (named `aws-clf-quiz-frontend-oac`) pre-created via CLI
+- CloudFront blocked: new account requires verification. AWS Support case submitted 2026-04-29. Case type: Account and Billing > CloudFront > General.
+- New CloudFront console (2026) has a plan-based wizard (Free/$0 plan chosen). OAC is now set automatically via "Allow private S3 bucket access to CloudFront" checkbox on Specify origin step.
+- After CloudFront unblocks and distribution is created: MUST manually set (a) default root object = `index.html`, (b) custom error pages 403→/index.html→200 and 404→/index.html→200 — the new wizard doesn't expose these.
+- EC2 instance: `i-042b91a08364b6e01` | Elastic IP: `47.130.41.30` | nip.io domain: `api.47.130.41.30.nip.io`
+- SSH key: `~/Desktop/live-quiz-backend-key.pem` (chmod 400) — SSH: `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30`
+- EC2 setup script: `scripts/ec2-setup.sh` — run P6-B3 through P6-B8 sections via SSH
+- Pre-demo check script: `scripts/pre-demo-check.sh` — update FRONTEND URL after CloudFront is created
 - Backend is EC2 **t2.micro** (free tier, always-on) — SSL via Let's Encrypt + nip.io
 - Angular `environment.prod.ts` `wsUrl` MUST be `https://` — browsers block `ws://` from HTTPS pages
-- Use `export AWS_PROFILE=clf-quiz` in every terminal session before running AWS CLI commands
-- P5 is complete. Verification performed:
-  - Socket.io edge-case script: invalid code, duplicate nickname, late join after start, disconnected nickname active rejoin, and all-player disconnect/no-crash + host-end cleanup.
-  - Headless Edge mobile pass at 375px: `/join`, `/play/:code`, `/play/:code/game`; all had `scrollWidth === 375`.
-  - Headless Edge solo regression: home → quiz → result → review with 65 skipped questions carried into review.
-  - Final builds: `npx ng build --configuration production` passes with existing initial bundle and selector warnings; `cd backend && npm run build` passes.
+- Use `export AWS_PROFILE=clf-quiz` per terminal session before AWS CLI commands
+- GitHub Actions workflow targets `dist/aws-clf-prac-app/browser/` (Angular 19 output path — verified)

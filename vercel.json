@@ -1,0 +1,9 @@
+{
+  "buildCommand": "npx ng build --configuration production",
+  "outputDirectory": "dist/aws-clf-prac-app/browser",
+  "installCommand": "npm ci",
+  "framework": null,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

@@ -650,33 +650,67 @@ Do 13A first — you'll need the CloudFront domain to configure the Angular envi
 
 #### 13A-1: Create S3 Bucket
 
+> **Region note (2026-04-29):** The S3 bucket can be in any region — only ACM certificates for CloudFront must be in `us-east-1`. The bucket is created in `ap-southeast-1` (Singapore) for lower origin latency. This is already done.
+
 ```bash
-# Replace BUCKET_NAME with e.g. aws-clf-quiz-frontend
-aws s3 mb s3://BUCKET_NAME --region us-east-1
+# Bucket was created in ap-southeast-1 (not us-east-1 — see note above)
+aws s3api create-bucket \
+  --bucket aws-clf-quiz-frontend \
+  --region ap-southeast-1 \
+  --create-bucket-configuration LocationConstraint=ap-southeast-1 \
+  --profile clf-quiz
 
 # Block all public access (CloudFront will access it via OAC)
 aws s3api put-public-access-block \
-  --bucket BUCKET_NAME \
+  --bucket aws-clf-quiz-frontend \
   --public-access-block-configuration \
-  "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
+  "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true" \
+  --profile clf-quiz
 ```
+
+**Status: ✅ Complete** — bucket `aws-clf-quiz-frontend` created in `ap-southeast-1`, all public access blocked.
 
 #### 13A-2: Create CloudFront Distribution
 
-In AWS Console → CloudFront → Create Distribution:
-```
-Origin domain:      BUCKET_NAME.s3.amazonaws.com
-Origin access:      Origin access control (OAC) — create new OAC
-Viewer protocol:    Redirect HTTP to HTTPS
-Allowed methods:    GET, HEAD
-Cache policy:       CachingOptimized
-Default root object: index.html
-Custom error pages: 404 → /index.html, 200  ← Required for Angular SPA routing
-Alternate domain:   awsquiz.click (if you have a domain)
-SSL cert:           Request ACM cert for awsquiz.click (us-east-1 region only)
-```
+> **UI change (2026-04-29):** The CloudFront console now has a plan-based wizard (Free / Pro / Business / Premium). The CLI `create-distribution` call is blocked on new accounts until AWS Support verifies the account. Use the console wizard instead.
 
-After creation, copy the S3 bucket policy that CloudFront generates and apply it to the bucket.
+**New console wizard steps (Free plan):**
+
+**Step 1 — Choose a plan:** Select **Free** ($0/month, 1M req/100GB). Click Next.
+
+**Step 2 — Get started:**
+- Distribution name: `aws-clf-distribution`
+- Distribution type: **Single website or app**
+- Route 53 domain: leave blank (no custom domain)
+- Click Next.
+
+**Step 3 — Specify origin:**
+- Origin type: **Amazon S3**
+- S3 origin: `aws-clf-quiz-frontend.s3.ap-southeast-1.amazonaws.com`
+- Origin path: leave blank
+- ☑ **Allow private S3 bucket access to CloudFront** (Recommended) — this auto-configures OAC and updates the bucket policy
+- Origin settings: Use recommended
+- Cache settings: Use recommended cache settings tailored to serving S3 content
+- Click Next.
+
+**Step 4 — Enable security:**
+- WAF is included at no cost in the Free plan
+- "Use monitor mode": **leave unchecked** (monitor-only doesn't block threats)
+- "Layer 7 DDoS" requires Business plan — leave off
+- Click Next.
+
+**Step 5 — Review and create:** Confirm then click **Create distribution**. Deployment takes 5–10 minutes.
+
+**Post-creation steps (required — wizard doesn't expose these):**
+
+1. **Default root object** → Distribution → General → Edit → Default root object: `index.html` → Save
+2. **Custom error pages** → Distribution → Error pages → Create custom error response (do this twice):
+   - Error code **403** → Response page path: `/index.html` → HTTP response code: **200**
+   - Error code **404** → Response page path: `/index.html` → HTTP response code: **200**
+
+These are **critical for Angular SPA routing** — without them, any direct URL or page refresh returns a raw 403/404 from S3 instead of the app.
+
+**Note the distribution ID** (starts with `E`, e.g. `E1ABCDEF12345`) and the **CloudFront domain** (`dXXXXX.cloudfront.net`) — both needed for GitHub Secrets and `environment.prod.ts`.
 
 #### 13A-3: Configure Route 53 (if using custom domain)
 
