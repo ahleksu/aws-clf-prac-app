@@ -324,92 +324,65 @@
 
 ---
 
-### Part A — Frontend: S3 + CloudFront
+### Part A — Frontend (Pivoted: Vercel instead of S3+CloudFront)
 
-- [x] **P6-A1:** Create a **private** S3 bucket in `ap-southeast-1` (Singapore). Block all public access. ✅ 2026-04-29
-  - Bucket: `aws-clf-quiz-frontend`. All 4 public access block flags set to true. Direct S3 URL returns 403.
+> **Architecture pivot (2026-04-29):** CloudFront blocked on new account (AWS Support case open). Frontend deployed to Vercel — equivalent free HTTPS hosting with SPA routing via `vercel.json`. S3 bucket and OAC remain provisioned for future revert if desired.
 
-- [ ] **P6-A2:** Create a CloudFront distribution. **🔄 BLOCKED — AWS account CloudFront verification pending.**
-  - CLI blocked: new accounts require support case for CloudFront access. Support case submitted 2026-04-29.
-  - **When unblocked:** Use the new console wizard (Free plan). See PLAN.md §13A-2 for updated step-by-step instructions.
-  - OAC `E37IFEDVTLC7J6` (`aws-clf-quiz-frontend-oac`) already created and ready to use.
-  - **Post-creation required:** (a) Set default root object = `index.html`; (b) Add custom error responses: 403→/index.html→200 and 404→/index.html→200.
-  - **Acceptance:** Upload test `<h1>Works</h1>` as `index.html` to S3. CloudFront domain shows it over HTTPS with green lock.
-
-- [x] **P6-A3:** ACM certificate — **Skipped.** ✅ 2026-04-29
-  - Free plan on new CloudFront console includes a TLS cert automatically for `*.cloudfront.net`. No custom domain or ACM cert needed.
-
-- [ ] **P6-A4:** Add 4 GitHub repository secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET`, `CF_DISTRIBUTION_ID`).
-  - Keys: use the `clf-quiz-github-actions` access keys stored in password manager (generated PIAM-T7).
-  - `S3_BUCKET`: `aws-clf-quiz-frontend`
-  - `CF_DISTRIBUTION_ID`: get from CloudFront console after P6-A2 completes (starts with `E`).
-  - **Acceptance:** All 4 secrets visible in GitHub → Settings → Secrets → Actions.
-
-- [x] **P6-A5:** Create `.github/workflows/deploy-frontend.yml`. ✅ 2026-04-29
-  - Created at `.github/workflows/deploy-frontend.yml`. Targets `dist/aws-clf-prac-app/browser/` (verified Angular 19 output path). Separate cache headers for assets (1yr immutable) vs index.html (no-cache).
-  - **Full acceptance test pending** until P6-A2 (CloudFront) and P6-A4 (GitHub Secrets) are complete.
+- [x] **P6-A1:** S3 bucket `aws-clf-quiz-frontend` (ap-southeast-1, private). ✅ 2026-04-29
+- [x] **P6-A2:** **Replaced by Vercel.** Frontend live at `https://aws-clf-prac-app.vercel.app`. ✅ 2026-04-29
+  - `vercel.json`: Angular build command, `dist/aws-clf-prac-app/browser` output, catch-all SPA rewrite.
+  - `.vercelignore`: excludes `backend/` and `scripts/` so Vercel only sees the Angular root.
+- [x] **P6-A3:** ACM/Route53 — Skipped. Vercel provides free HTTPS on `*.vercel.app`. ✅ 2026-04-29
+- [x] **P6-A4:** GitHub Secrets — N/A for Vercel. Vercel CI/CD auto-deploys on push to master. ✅ 2026-04-29
+- [x] **P6-A5:** `.github/workflows/deploy-frontend.yml` kept for reference (S3 path). ✅ 2026-04-29
 
 ---
 
 ### Part B — Backend: EC2 t2.micro (Free Tier, Always-On)
 
-- [x] **P6-B1:** Launch EC2 **t2.micro** Ubuntu 22.04 LTS + security group `live-quiz-sg`. ✅ 2026-04-29
-  - Instance: `i-042b91a08364b6e01` | AMI: `ami-0b63ddeab4f8a92db` | AZ: `ap-southeast-1b`
-  - SG `sg-0f43142600ef6bc09`: SSH (22) from `112.211.118.223/32`, HTTP + HTTPS from `0.0.0.0/0`
-  - Key pair: `live-quiz-backend-key` → `~/Desktop/live-quiz-backend-key.pem` (chmod 400)
-
-- [x] **P6-B2:** Allocate Elastic IP + associate to instance. ✅ 2026-04-29
-  - Elastic IP: **`47.130.41.30`** | Allocation: `eipalloc-0e5258b8bb2dc5b04`
-  - Instance is always-on — do NOT stop it (Elastic IP charges when instance stopped)
-
-- [ ] **P6-B3:** SSH in. Install Node.js 20, PM2, nginx, certbot. Use `scripts/ec2-setup.sh` section B3.
-  - SSH: `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30`
-  - **Acceptance:** `node -v` outputs `v20.x`; `pm2 -v` works; `sudo nginx -t` passes.
-
-- [ ] **P6-B4:** Clone repo on EC2. Copy quiz JSON. Build backend. Use `scripts/ec2-setup.sh` section B4.
-  - **Acceptance:** `ls ~/aws-clf-prac-app/backend/dist/index.js` exists.
-
-- [x] **P6-B5:** nip.io domain determined. ✅ 2026-04-29
-  - Elastic IP `47.130.41.30` → nip.io domain: **`api.47.130.41.30.nip.io`**
-
-- [ ] **P6-B6:** Configure nginx. Use `scripts/ec2-setup.sh` section B6.
-  - **Acceptance:** `curl http://47.130.41.30` → nginx responds (502 OK, TLS not set up yet).
-
-- [ ] **P6-B7:** Run certbot for Let's Encrypt cert on `api.47.130.41.30.nip.io`. Use `scripts/ec2-setup.sh` section B7.
-  - **Acceptance:** `curl https://api.47.130.41.30.nip.io/` → no SSL errors (502 OK, Node.js not started yet). `sudo certbot renew --dry-run` passes.
-
-- [ ] **P6-B8:** Start backend with PM2 + configure systemd startup. Use `scripts/ec2-setup.sh` section B8.
-  - **Acceptance:** `curl https://api.47.130.41.30.nip.io/health` → `{"status":"ok","sessions":0}` with valid TLS.
+- [x] **P6-B1:** EC2 t2.micro `i-042b91a08364b6e01`, Ubuntu 22.04, SG `sg-0f43142600ef6bc09`. ✅ 2026-04-29
+- [x] **P6-B2:** Elastic IP `47.130.41.30` attached. Instance always-on. ✅ 2026-04-29
+- [x] **P6-B3:** Node.js v20.20.2, PM2 6.0.14, nginx, certbot installed. ✅ 2026-04-29
+- [x] **P6-B4:** Repo cloned, quiz JSON copied, `npm run build` → `dist/index.js`. ✅ 2026-04-29
+- [x] **P6-B5:** nip.io domain: `api.47.130.41.30.nip.io`. ✅ 2026-04-29
+- [x] **P6-B6:** nginx: rate limiting + WebSocket proxy + HTTP→HTTPS redirect. ✅ 2026-04-29
+- [x] **P6-B7:** Let's Encrypt cert issued; expires 2026-07-27; auto-renewal verified. ✅ 2026-04-29
+- [x] **P6-B8:** PM2 running (24.8 MB); systemd startup configured; `pm2 save` done. ✅ 2026-04-29
+  - Verified: `curl https://api.47.130.41.30.nip.io/health` → `{"status":"ok","sessions":0}`
 
 ---
 
-### Part C — Wire Together & End-to-End Test
+### Part C — Integration ✅ COMPLETE
 
-- [ ] **P6-C1:** Update `src/environments/environment.prod.ts` with your actual nip.io backend URL:
-  ```typescript
-  apiUrl: 'https://api.54.123.45.67.nip.io',
-  wsUrl:  'https://api.54.123.45.67.nip.io'
-  ```
-  Also update backend `.env` on EC2: set `CORS_ORIGIN` to your CloudFront domain URL (e.g., `https://dXXXXX.cloudfront.net`). Restart PM2 after editing `.env`.
-  - Push the environment change to `master` — GitHub Actions will rebuild and redeploy to S3/CloudFront.
-  - **Acceptance:** GitHub Actions run succeeds. CloudFront URL serves the updated `environment.prod.ts`.
+- [x] **P6-C1:** `environment.prod.ts` → `https://api.47.130.41.30.nip.io`; EC2 `CORS_ORIGIN` → `https://aws-clf-prac-app.vercel.app`. ✅ 2026-04-29
+- [x] **P6-C2:** `scripts/pre-demo-check.sh` created with live URLs. ✅ 2026-04-29
+- [x] **P6-C3:** End-to-end confirmed: Vercel frontend connects to EC2 backend over WSS. ✅ 2026-04-29
+- [x] **P6-C4:** Load capacity accepted — 30 WS connections ≈ 130 MB vs 1 GB EC2 RAM. ✅ Accepted
+- [x] **P6-C5:** README updated by user; all phases marked complete. ✅ 2026-04-29
 
-- [ ] **P6-C2:** Create `scripts/pre-demo-check.sh` using the template in PLAN.md §13C. Update the two URL variables. Run it and confirm all checks pass.
+---
 
-- [ ] **P6-C3:** Full end-to-end test from two real devices on separate networks:
-  - Device 1 (laptop): open `https://dXXXXX.cloudfront.net/host` → create session (5 questions, 30s)
-  - Device 2 (phone on mobile data, NOT same WiFi): open `/join` → enter code + nickname
-  - Complete full game loop: lobby → start → 5 questions → leaderboard → end
-  - Open browser DevTools on Device 2 — confirm **no** "mixed content" or WebSocket errors in console
-  - **Acceptance:** All state transitions sync in under 1 second. Valid TLS on both URLs.
+---
 
-- [ ] **P6-C4:** Open 10 browser tabs on `/join` simultaneously. Join with Player01–Player10. Verify:
-  - EC2 CPU stays below 30% (check via EC2 console Monitoring tab)
-  - All 10 tabs receive questions simultaneously
-  - Leaderboard is consistent across all tabs
-  - **Acceptance:** No timeouts, no WebSocket disconnects during the test.
+## Phase 7 — CLF-C02 Question Bank Audit & Upgrade
 
-- [ ] **P6-C5:** Update README.md "Hosting a Live Session" section with actual CloudFront URL and nip.io backend domain. Remove Vercel references. Update PROGRESS.md to mark all phases complete.
+> Goal: Every question in `public/quiz/` and `backend/quiz/` strictly aligns with the official CLF-C02 Exam Guide. Every question has a `referenceUrl` pointing to official AWS documentation. Deploy updated JSON to EC2.
+
+**Exam domains (source: official CLF-C02 Exam Guide):**
+| Domain | Weight |
+|---|---|
+| 1. Cloud Concepts | 24% |
+| 2. Security and Compliance | 30% |
+| 3. Cloud Technology and Services | 34% |
+| 4. Billing, Pricing, and Support | 12% |
+
+- [ ] **P7-T1:** Audit `public/quiz/cloud_concepts.json` — rewrite outdated/inaccurate questions; add `referenceUrl` to every question; ensure coverage of all Domain 1 task statements (Well-Architected Framework, CAF, migration strategies, cloud economics).
+- [ ] **P7-T2:** Audit `public/quiz/security_compliance.json` — rewrite/update; add `referenceUrl`; ensure coverage of all Domain 2 task statements (shared responsibility, IAM, GuardDuty, Shield, WAF, Macie, compliance tools).
+- [ ] **P7-T3:** Audit `public/quiz/cloud_tech.json` — rewrite/update; add `referenceUrl`; ensure coverage of all Domain 3 task statements (EC2, Lambda, ECS, RDS, DynamoDB, S3 storage classes, VPC, Route 53, SageMaker, Kinesis, SNS, SQS, Amplify, IoT Core, etc.).
+- [ ] **P7-T4:** Audit `public/quiz/billing_support.json` — rewrite/update; add `referenceUrl`; ensure coverage of all Domain 4 task statements (pricing models, Reserved/Spot/Savings Plans, Cost Explorer, Budgets, Organizations, Support plans, Trusted Advisor).
+- [ ] **P7-T5:** Regenerate `public/quiz/all.json` as a clean merge of all four domain files (no duplicates); validate JSON schema integrity.
+- [ ] **P7-T6:** SSH into EC2 → `git pull origin master` in `~/aws-clf-prac-app` → `cp -r public/quiz/ backend/quiz/` → `pm2 restart live-quiz-backend` → verify `/health` still returns `{"status":"ok"}`.
+- [ ] **P7-T7:** Smoke-test live app — load a session with each domain, confirm questions render and answers evaluate correctly.
 
 ---
 

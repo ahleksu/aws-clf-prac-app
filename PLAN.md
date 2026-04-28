@@ -4,6 +4,21 @@
 
 ---
 
+## 🚀 Deployment Status (as of 2026-04-29)
+
+| Layer | Service | URL | Status |
+|---|---|---|---|
+| Frontend | Vercel | https://aws-clf-prac-app.vercel.app | ✅ Live |
+| Backend API + WSS | EC2 t2.micro (ap-southeast-1b) | https://api.47.130.41.30.nip.io | ✅ Live |
+| Backend health | — | https://api.47.130.41.30.nip.io/health | ✅ `{"status":"ok"}` |
+| CI/CD | Vercel (auto on push to master) | — | ✅ Active |
+| TLS (frontend) | Vercel (`*.vercel.app`) | — | ✅ Auto |
+| TLS (backend) | Let's Encrypt via nip.io | Expires 2026-07-27, auto-renews | ✅ Active |
+
+**Note on original S3+CloudFront plan:** S3 bucket `aws-clf-quiz-frontend` (ap-southeast-1) and OAC `E37IFEDVTLC7J6` remain provisioned. CloudFront activation pending AWS Support case (account verification). Can migrate frontend from Vercel to S3+CloudFront at any time.
+
+---
+
 ## 1. Executive Summary
 
 Transform the current self-paced solo quiz SPA into a **Kahoot-style live quiz platform** for AWS re/Start classroom sessions. A host (instructor) creates and controls quiz sessions while 20–30 scholars participate in real-time via their browsers. The existing solo practice mode is preserved and untouched.
