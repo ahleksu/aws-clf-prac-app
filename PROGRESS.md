@@ -11,7 +11,7 @@
 | IAM | AWS Identity Setup | **In Progress** | 9 / 10 | 1 task remaining: policy correction |
 | P0 | Project Scaffolding | **Complete** | 10 / 10 | |
 | P1 | Backend: Game Engine | **Complete** | 11 / 11 | Smoke-tested with multi-client script |
-| P2 | Frontend: Services & Routing | Not Started | 0 / 6 | Depends on P0 |
+| P2 | Frontend: Services & Routing | **Complete** | 6 / 6 | Production build passes; warnings only |
 | P3 | Frontend: Host Interface | Not Started | 0 / 4 | Depends on P1, P2 |
 | P4 | Frontend: Player Interface | Not Started | 0 / 4 | Depends on P1, P2 |
 | P5 | Integration Testing | Not Started | 0 / 7 | Depends on P3, P4 |
@@ -71,12 +71,12 @@
 
 ## Phase 2 — Frontend: Services & Routing
 
-- [ ] P2-T1: Create `src/app/core/live-quiz.model.ts`
-- [ ] P2-T2: Update `SocketService` to be fully functional
-- [ ] P2-T3: Create `src/app/core/live-quiz.service.ts`
-- [ ] P2-T4: Add live routes to `app.routes.ts` (lazy-loaded)
-- [ ] P2-T5: Update `HomeComponent` to add "Live Session" card
-- [ ] P2-T6: Smoke test — new routes resolve, existing routes unaffected
+- [x] P2-T1: Create `src/app/core/live-quiz.model.ts`
+- [x] P2-T2: Update `SocketService` to be fully functional
+- [x] P2-T3: Create `src/app/core/live-quiz.service.ts`
+- [x] P2-T4: Add live routes to `app.routes.ts` (lazy-loaded)
+- [x] P2-T5: Update `HomeComponent` to add "Live Session" card
+- [x] P2-T6: Smoke test — new routes resolve, existing routes unaffected
 
 ---
 
@@ -165,8 +165,8 @@
 
 > Keep this section updated so you can pick up exactly where you left off after a context reset.
 
-**Last task completed:** P1-T11 — Backend smoke test passes (2026-04-28)
-**Next task to work on:** P2-T1 — Create src/app/core/live-quiz.model.ts
+**Last task completed:** P2-T6 — Production build verifies live route imports and existing routes compile (2026-04-28)
+**Next task to work on:** P3-T1 — Create HostDashboardComponent
 **Files recently modified:** backend/src/game/*, backend/src/socket/*, backend/src/routes/*, backend/src/index.ts, backend/ecosystem.config.js
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`

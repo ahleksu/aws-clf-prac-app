@@ -7,6 +7,7 @@ import { Socket, io } from 'socket.io-client';
 @Injectable({ providedIn: 'root' })
 export class SocketService {
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
   private socket: Socket | null = null;
@@ -63,9 +64,7 @@ export class SocketService {
         this.socket?.off(event, handler);
       };
     });
-    return destroyRef
-      ? observable.pipe(takeUntilDestroyed(destroyRef))
-      : observable.pipe(takeUntilDestroyed());
+    return observable.pipe(takeUntilDestroyed(destroyRef ?? this.destroyRef));
   }
 
   off(event: string): void {

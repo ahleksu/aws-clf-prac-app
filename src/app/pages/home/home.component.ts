@@ -26,4 +26,12 @@ export class HomeComponent {
   startQuiz(type: string) {
     this.router.navigate(['/quiz'], { queryParams: { type } });
   }
+
+  hostSession() {
+    this.router.navigate(['/host']);
+  }
+
+  joinSession() {
+    this.router.navigate(['/join']);
+  }
 }
