@@ -93,6 +93,7 @@
 
   <ng-template #waiting>
     <section class="waiting-panel">
+      <p *ngIf="sessionError" class="inline-error">{{ sessionError }}</p>
       <i class="pi pi-spin pi-spinner"></i>
       <p>Waiting for the live question.</p>
     </section>

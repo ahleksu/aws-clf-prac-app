@@ -63,7 +63,8 @@ export function registerPlayerHandlers(
       score: result.score,
       rank: myRanking?.rank ?? result.rank,
       streak: result.streak,
-      answeredCurrentQuestion: session.hasPlayerAnsweredCurrentQuestion(socket.id)
+      answeredCurrentQuestion: session.hasPlayerAnsweredCurrentQuestion(socket.id),
+      timeRemaining: session.timeRemainingMs()
     });
 
     io.to(session.hostSocketId).emit('lobby:update', {
@@ -76,7 +77,10 @@ export function registerPlayerHandlers(
     if (session.state === 'active' || session.state === 'paused') {
       const question = session.getCurrentQuestion();
       if (question) {
-        socket.emit('game:question', question);
+        socket.emit('game:question', {
+          ...question,
+          timeRemaining: session.timeRemainingMs()
+        });
       }
       if (session.state === 'paused') {
         socket.emit('game:paused', { timeRemaining: session.timeRemainingMs() });

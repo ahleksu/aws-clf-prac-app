@@ -36,6 +36,7 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
   private timerDeadline = 0;
   private timerDurationMs = 0;
   private sawDisconnect = false;
+  private sawInitialConnection = false;
 
   constructor() {
     effect(() => {
@@ -44,7 +45,8 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
       this.selectedAnswers = [];
       this.submitted = this.quiz.answeredCurrentQuestion();
       this.showLeaderboard = false;
-      this.startTimer(question.timeLimit * 1000);
+      const remaining = this.quiz.timeRemainingMs();
+      this.startTimer(remaining > 0 ? remaining : question.timeLimit * 1000);
     });
 
     effect(() => {
@@ -216,11 +218,15 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
     this.socket.connected$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((connected) => {
-        if (!connected) {
+        if (!connected && this.sawInitialConnection) {
           this.sawDisconnect = true;
           return;
         }
-        if (!this.sawDisconnect) return;
+        if (!connected) return;
+        if (!this.sawDisconnect) {
+          this.sawInitialConnection = true;
+          return;
+        }
 
         const saved = this.savedSession();
         if (saved?.sessionCode === this.sessionCode && saved.nickname) {
@@ -231,6 +237,7 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
             detail: 'Reconnected — resuming session'
           });
         }
+        this.sawInitialConnection = true;
         this.sawDisconnect = false;
       });
   }

@@ -30,9 +30,10 @@ export class JoinComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      if (!this.joining || !this.quiz.joinConfirmed()) return;
+      const joined = this.quiz.joinConfirmed();
       const code = this.quiz.sessionCode();
       const nickname = this.quiz.myProfile().nickname;
+      if (!this.joining || !joined || !code || !nickname) return;
       sessionStorage.setItem('livePlayerSession', JSON.stringify({ sessionCode: code, nickname }));
       this.joining = false;
       this.router.navigate(['/play', code]);

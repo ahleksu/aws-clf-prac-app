@@ -52,7 +52,7 @@ export class HostSessionComponent implements OnInit {
     }
     this.sessionCode = code;
     sessionStorage.setItem('liveHostSessionCode', code);
-    this.quiz.reconnectHost(code);
+    this.quiz.reconnectHost(code, sessionStorage.getItem('liveHostToken') ?? '');
   }
 
   progressValue(): number {

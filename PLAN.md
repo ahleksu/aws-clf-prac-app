@@ -281,6 +281,7 @@ export interface GameSession {
   id: string;
   code: string;               // 6-char uppercase e.g. "CLF001"
   hostSocketId: string;
+  hostToken: string;          // per-session host ownership token, kept in host tab sessionStorage
   domain: QuizDomain;
   questions: LiveQuestion[];
   currentQuestionIndex: number;
@@ -341,6 +342,7 @@ export interface QuestionPayload {
   type: 'single' | 'multiple';
   answers: LiveAnswer[];      // NO correct answer info
   timeLimit: number;
+  timeRemaining?: number;     // ms remaining when rehydrating after reconnect/refresh
   domain: string;
 }
 ```
@@ -393,6 +395,7 @@ All events use Socket.io rooms where the room name = session code (e.g. `"CLF001
 | `host:pause` | `{ sessionCode }` | Freeze timer; players see pause screen |
 | `host:resume` | `{ sessionCode }` | Resume from pause |
 | `host:end` | `{ sessionCode }` | End quiz; show final leaderboard |
+| `host:reconnect` | `{ sessionCode, hostToken }` | Rehydrate the original host tab after refresh; rejects exposed/copied host links without the token |
 
 ### Player → Server Events
 
@@ -405,10 +408,11 @@ All events use Socket.io rooms where the room name = session code (e.g. `"CLF001
 
 | Event | Payload | Description |
 |---|---|---|
-| `session:created` | `{ sessionCode }` | Confirms session creation |
+| `session:created` | `{ sessionCode, hostToken }` | Confirms session creation and provides the per-tab host ownership token |
 | `session:error` | `{ message }` | Any host-triggered error |
 | `lobby:update` | `{ players: PlayerState[] }` | Player joined/left lobby |
 | `question:stats` | `{ answered: number, total: number }` | Live answer count |
+| `host:state` | `{ state, question, questionStats, timeRemaining, rankings, answerReveal }` | Rehydrate host UI after refresh/reconnect |
 | `leaderboard:snapshot` | `{ rankings: Ranking[] }` | After each question |
 | `game:ended` | `{ finalLeaderboard: Ranking[] }` | Quiz finished |
 
@@ -416,16 +420,18 @@ All events use Socket.io rooms where the room name = session code (e.g. `"CLF001
 
 | Event | Payload | Description |
 |---|---|---|
-| `session:joined` | `{ sessionCode, playerCount, nickname }` | Join confirmed |
+| `session:joined` | `{ sessionCode, playerCount, nickname, score, rank, streak, state }` | Join/rejoin confirmed |
+| `player:state` | `{ score, rank, streak, answeredCurrentQuestion, timeRemaining }` | Rehydrate player state after refresh/reconnect |
 | `session:error` | `{ message }` | Join error (bad code, dupe nick) |
 | `lobby:update` | `{ playerCount }` | Someone else joined |
-| `game:question` | `QuestionPayload` | New question; starts timer |
+| `game:question` | `QuestionPayload` | New question; starts timer; may include server `timeRemaining` on reconnect |
 | `game:paused` | `{}` | Host paused |
 | `game:resumed` | `{ timeRemaining }` | Host resumed |
 | `answer:result` | `{ correct, pointsEarned, correctAnswers, explanation, newScore, rank }` | After player submits |
 | `leaderboard:show` | `{ rankings: Ranking[], myRank: number }` | Between questions |
 | `game:ended` | `{ finalLeaderboard: Ranking[], myFinalRank }` | Quiz finished |
 | `host:disconnected` | `{}` | Host left (show waiting message) |
+| `host:reconnected` | `{}` | Host returned; clear disconnected overlay while session remains paused |
 
 ---
 
@@ -496,7 +502,9 @@ Stateful service using Angular signals or RxJS BehaviorSubjects:
 
 ### `HostDashboardComponent`
 
-- Form: select domain, question count (5–65), time per question (15/20/30/45/60s)
+- Form: select domain, question count, time per question (15/20/30/45/60s)
+- Question count validates on submit instead of silently clamping; valid range is 5 to `min(65, available questions for selected domain)`
+- Invalid question counts show a PrimeNG Toast and inline hint
 - Button: **Create Session**
 - On success: navigate to `/host/lobby/:code`
 - Displays the generated session code prominently
@@ -1001,9 +1009,10 @@ export const environment = {
 
 | Scenario | Handling |
 |---|---|
-| Player disconnects mid-game | Keep their state; mark `connected: false`; rejoin with same code + nickname restores score |
+| Player disconnects mid-game | Keep their state; rejoin with same code + nickname restores score, current question, answered status, and server time remaining. Refresh races replace the old socket by nickname even if its disconnect has not been observed yet. |
 | Host disconnects | Broadcast `host:disconnected` to all players; session pauses automatically |
-| Host reconnects | Re-emit `session:created` on reconnect with same code; session resumes |
+| Host reconnects | Re-emit `session:created`, `host:state`, and `host:reconnected` on reconnect with same code and valid `hostToken`; host can resume and player disconnected overlays clear on `host:reconnected`/`game:resumed` |
+| Exposed host URL opened elsewhere | Reject `host:reconnect` unless the tab has the current per-session `hostToken`; copied `/host/session/:code` URLs cannot take over the active host session |
 | Session cleanup | GameManager purges sessions older than 4 hours via `setInterval` |
 | Duplicate nickname | Reject join with `session:error` message |
 | Invalid session code | Reject join with `session:error` message |
@@ -1014,7 +1023,7 @@ export const environment = {
 ## 16. Security Considerations
 
 - **No auth tokens** — session codes are ephemeral and unguessable (crypto random)
-- **Host validation** — host events are only processed from the socket that created the session
+- **Host validation** — host control events are processed only from the active host socket; host reconnects require a per-session `hostToken`
 - **Input sanitization** — nicknames stripped of HTML, max 20 chars
 - **Rate limiting** — 10 join attempts per IP per minute (express-rate-limit)
 - **CORS** — backend `CORS_ORIGIN` env var is set to the CloudFront distribution URL in production

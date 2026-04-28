@@ -4,6 +4,10 @@
   background: #f3f4f6;
 }
 
+.player-game * {
+  box-sizing: border-box;
+}
+
 .game-shell {
   width: min(100%, 56rem);
   margin: 0 auto;

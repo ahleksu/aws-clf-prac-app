@@ -28,12 +28,18 @@
         <p-inputnumber
           name="questionCount"
           [(ngModel)]="questionCount"
-          [min]="5"
-          [max]="65"
           [showButtons]="true"
+          [useGrouping]="false"
           inputStyleClass="w-full"
           styleClass="w-full"
+          [ngClass]="{ 'invalid-count': !isQuestionCountValid() }"
         />
+        <small
+          class="question-count-hint"
+          [class.warning]="!isQuestionCountValid()"
+        >
+          {{ questionCountHint() }}
+        </small>
       </label>
 
       <label>

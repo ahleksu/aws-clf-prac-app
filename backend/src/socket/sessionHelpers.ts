@@ -4,7 +4,10 @@ import { GameSession } from '../game/GameSession';
 export function broadcastQuestion(io: Server, session: GameSession): void {
   const payload = session.getCurrentQuestion();
   if (!payload) return;
-  io.to(session.code).emit('game:question', payload);
+  io.to(session.code).emit('game:question', {
+    ...payload,
+    timeRemaining: session.timeRemainingMs()
+  });
 }
 
 export function broadcastLeaderboard(io: Server, session: GameSession): void {

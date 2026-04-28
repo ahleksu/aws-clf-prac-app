@@ -14,7 +14,7 @@
 | P2 | Frontend: Services & Routing | **Complete** | 6 / 6 | Production build passes; warnings only |
 | P3 | Frontend: Host Interface | **Complete** | 4 / 4 | Angular + backend builds pass; warnings only |
 | P4 | Frontend: Player Interface | **Complete** | 4 / 4 | Angular + backend builds pass; warnings only |
-| P5 | Integration Testing | Not Started | 0 / 7 | Depends on P3, P4 |
+| P5 | Integration Testing | **Complete** | 7 / 7 | P5-T1 through P5-T7 verified; production builds pass with existing Angular budget/selector warnings |
 | P6 | AWS Deployment (Free Tier) | Not Started | 0 / 14 | S3+CF frontend + EC2 t2.micro backend |
 
 ---
@@ -100,13 +100,13 @@
 
 ## Phase 5 — Integration Testing
 
-- [ ] P5-T1: Multi-tab end-to-end full game loop
-- [ ] P5-T2: Pause/resume flow test
-- [ ] P5-T3: Host disconnect/reconnect test
-- [ ] P5-T4: Player disconnect/reconnect test
-- [ ] P5-T5: Edge cases (invalid code, duplicate nick, late join)
-- [ ] P5-T6: Mobile responsiveness (player views)
-- [ ] P5-T7: Existing solo quiz mode regression check
+- [x] P5-T1: Multi-tab end-to-end full game loop — ✅ Verified manually after fixing join/start loading-state navigation
+- [x] P5-T2: Pause/resume flow test — ✅ Verified manually by user
+- [x] P5-T3: Host disconnect/reconnect test — ✅ Verified manually by user after reconnect fix
+- [x] P5-T4: Player disconnect/reconnect test — ✅ Verified manually by user after reconnect fix
+- [x] P5-T5: Edge cases — ✅ Verified invalid join code, duplicate nickname rejection, late new player rejection after start, disconnected nickname active rejoin, and all-players-disconnected/no-crash + host-end cleanup. Prior partial checks for host question-count validation and duplicate/exposed host URL rejection remain verified.
+- [x] P5-T6: Mobile responsiveness (player views) — ✅ Verified `/join`, `/play/:code`, and `/play/:code/game` at 375px in headless Edge; fixed content-box overflow in player live views.
+- [x] P5-T7: Existing solo quiz mode regression check — ✅ Verified home → quiz → result → review in headless Edge with a 65-question run.
 
 ---
 
@@ -142,11 +142,12 @@
 
 > Record any blockers here. Include: what the blocker is, when it was encountered, and how it was resolved (or if it's still open).
 
-*No blockers yet.*
-
 | Date | Task | Blocker | Status | Resolution |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 2026-04-28 | P5-T1 | Player Join and Host Start buttons stayed in loading state even though socket events succeeded | Resolved | Fixed Angular `effect()` dependency tracking in `JoinComponent` and `HostLobbyComponent` by reading signals before local loading guards |
+| 2026-04-28 | P5-T3/P5-T4 | Refreshing a player during an active question reset the timer and showed a duplicate join error; refreshing the host left players stuck on the host-disconnected overlay after resume | Resolved | Active rejoin now replaces stale sockets by nickname, rehydrated questions include server `timeRemaining`, initial connect no longer shows reconnect toast, `host:state` rehydrates host UI, and `host:reconnected`/`game:resumed` clears player disconnected overlays |
+| 2026-04-28 | P5-T5 | Host dashboard question count silently clamped invalid input; exposed host URLs could be opened in another tab/device | Resolved | Dashboard now validates against 5 to `min(65, available domain questions)` with toast/inline warning; host reconnect now requires a per-session `hostToken` and rejects duplicate active host sockets. Verified manually by user. |
+| 2026-04-29 | P5-T6 | Player live views could horizontally overflow on phone-width screens because padded `width: min(100%, ...)` containers used default content-box sizing | Resolved | Added scoped `box-sizing: border-box` rules to `/join`, player lobby, and player game views; verified 375px `scrollWidth` equals viewport width. |
 
 ---
 
@@ -159,6 +160,8 @@
 | 2026-04-28 | PIAM-T2 | Removed `s3:PutPublicAccessBlock` from admin policy (IAM validation rejected it); correct action is `s3:PutBucketPublicAccessBlock` — to be added in PIAM-T10 | AWS IAM does not recognize `s3:PutPublicAccessBlock`; the public access block API maps to `s3:PutBucketPublicAccessBlock` |
 | 2026-04-28 | PIAM-T1 | Admin IAM username is `clf-quiz-admin-policy` (matches policy name) due to input error during creation | Functionally identical; renaming would require recreating the user and reconfiguring the CLI profile — not worth the effort |
 | 2026-04-28 | P3-T3 | Raised Angular production initial bundle error budget from `1MB` to `1.25MB` while keeping the warning at `500kB` | PrimeNG live-session controls pushed the existing app ~15kB over the hard error threshold; the warning still flags bundle growth without blocking production builds |
+| 2026-04-28 | P5-T5 | Added a per-session host ownership token for `host:reconnect` | Prevents exposed/copied host session URLs from taking over an active lobby/session while still allowing the original host tab to refresh and rehydrate |
+| 2026-04-28 | P5-T5 | Host dashboard validates question count on submit instead of relying on PrimeNG min/max clamping | PrimeNG `p-inputnumber` silently coerced invalid values; toast/inline validation is clearer and respects the selected domain’s available question count |
 
 ---
 
@@ -166,9 +169,9 @@
 
 > Keep this section updated so you can pick up exactly where you left off after a context reset.
 
-**Last task completed:** P4-T4 — Added PlayerGameComponent sessionStorage reconnect handling (2026-04-28)
-**Next task to work on:** P5-T1 — Multi-tab end-to-end full game loop
-**Files recently modified:** backend/src/game/*, backend/src/socket/*, backend/src/routes/*, backend/src/index.ts, backend/ecosystem.config.js
+**Last task completed:** P5-T7 — Existing solo quiz mode regression verified in headless Edge (2026-04-29)
+**Next task to work on:** Phase 6 — AWS deployment, starting with PIAM-T10 policy correction before S3/CloudFront work
+**Files recently modified:** PLAN.md, TODOs.md, PROGRESS.md, backend/src/game/GameManager.ts, backend/src/game/GameSession.ts, backend/src/game/types.ts, backend/src/socket/hostHandlers.ts, backend/src/socket/playerHandlers.ts, backend/src/socket/sessionHelpers.ts, src/app/core/live-quiz.model.ts, src/app/core/live-quiz.service.ts, src/app/pages/live/host-dashboard/*, src/app/pages/live/host-session/*, src/app/pages/live/player-game/player-game.component.*, src/app/pages/live/player-lobby/player-lobby.component.css, src/app/pages/live/join/join.component.*, src/app/pages/live/host-lobby/host-lobby.component.ts
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`
 - Admin IAM user is named `clf-quiz-admin-policy` (policy name was mistakenly used as username — no fix needed, works fine)
@@ -177,3 +180,8 @@
 - Backend is EC2 **t2.micro** (free tier, always-on) — SSL via Let's Encrypt + nip.io
 - Angular `environment.prod.ts` `wsUrl` MUST be `https://` — browsers block `ws://` from HTTPS pages
 - Use `export AWS_PROFILE=clf-quiz` in every terminal session before running AWS CLI commands
+- P5 is complete. Verification performed:
+  - Socket.io edge-case script: invalid code, duplicate nickname, late join after start, disconnected nickname active rejoin, and all-player disconnect/no-crash + host-end cleanup.
+  - Headless Edge mobile pass at 375px: `/join`, `/play/:code`, `/play/:code/game`; all had `scrollWidth === 375`.
+  - Headless Edge solo regression: home → quiz → result → review with 65 skipped questions carried into review.
+  - Final builds: `npx ng build --configuration production` passes with existing initial bundle and selector warnings; `cd backend && npm run build` passes.

@@ -15,6 +15,7 @@ import {
 
 interface SessionCreatedPayload {
   sessionCode: string;
+  hostToken?: string;
 }
 
 interface SessionJoinedPayload {
@@ -49,6 +50,16 @@ interface PlayerStatePayload {
   rank: number;
   streak: number;
   answeredCurrentQuestion: boolean;
+  timeRemaining?: number;
+}
+
+interface HostStatePayload {
+  state: SessionState;
+  question: QuestionPayload | null;
+  questionStats: QuestionStats;
+  timeRemaining: number;
+  rankings: LeaderboardEntry[];
+  answerReveal: QuestionReveal | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -68,6 +79,7 @@ export class LiveQuizService {
     streak: 0
   });
   readonly sessionCode = signal<string>('');
+  readonly hostToken = signal<string>('');
   readonly playerCount = signal<number>(0);
   readonly questionStats = signal<QuestionStats>({ answered: 0, total: 0 });
   readonly timeRemainingMs = signal<number>(0);
@@ -132,10 +144,10 @@ export class LiveQuizService {
     });
   }
 
-  reconnectHost(sessionCode: string): void {
+  reconnectHost(sessionCode: string, hostToken = ''): void {
     const code = this.normalizeCode(sessionCode);
     this.sessionCode.set(code);
-    this.socket.emit('host:reconnect', { sessionCode: code });
+    this.socket.emit('host:reconnect', { sessionCode: code, hostToken });
   }
 
   clearError(): void {
@@ -145,6 +157,11 @@ export class LiveQuizService {
   private registerSocketHandlers(): void {
     this.socket.on<SessionCreatedPayload>('session:created', this.destroyRef).subscribe((payload) => {
       this.sessionCode.set(payload.sessionCode);
+      if (payload.hostToken) {
+        this.hostToken.set(payload.hostToken);
+        sessionStorage.setItem('liveHostSessionCode', payload.sessionCode);
+        sessionStorage.setItem('liveHostToken', payload.hostToken);
+      }
       this.gameState.set('lobby');
       this.lastError.set(null);
     });
@@ -180,12 +197,15 @@ export class LiveQuizService {
     });
 
     this.socket.on<QuestionPayload>('game:question', this.destroyRef).subscribe((question) => {
+      const timeRemaining = typeof question.timeRemaining === 'number'
+        ? question.timeRemaining
+        : question.timeLimit * 1000;
+      this.timeRemainingMs.set(timeRemaining);
       this.currentQuestion.set(question);
       this.gameState.set('active');
       this.answerResult.set(null);
       this.answerReveal.set(null);
       this.answeredCurrentQuestion.set(false);
-      this.timeRemainingMs.set(question.timeLimit * 1000);
       this.questionStats.set({ answered: 0, total: this.playerCount() });
       this.paused.set(false);
       this.hostDisconnected.set(false);
@@ -227,6 +247,7 @@ export class LiveQuizService {
         this.timeRemainingMs.set(payload.timeRemaining);
       }
       this.paused.set(false);
+      this.hostDisconnected.set(false);
       this.gameState.set('active');
     });
 
@@ -247,12 +268,28 @@ export class LiveQuizService {
 
     this.socket.on<PlayerStatePayload>('player:state', this.destroyRef).subscribe((payload) => {
       this.answeredCurrentQuestion.set(payload.answeredCurrentQuestion);
+      if (typeof payload.timeRemaining === 'number') {
+        this.timeRemainingMs.set(payload.timeRemaining);
+      }
       this.myProfile.update((profile) => ({
         ...profile,
         score: payload.score,
         rank: payload.rank,
         streak: payload.streak
       }));
+    });
+
+    this.socket.on<HostStatePayload>('host:state', this.destroyRef).subscribe((payload) => {
+      this.timeRemainingMs.set(payload.timeRemaining);
+      this.questionStats.set(payload.questionStats);
+      this.rankings.set(payload.rankings ?? []);
+      this.answerReveal.set(payload.answerReveal ?? null);
+      if (payload.question) {
+        this.currentQuestion.set(payload.question);
+      }
+      this.gameState.set(payload.state);
+      this.paused.set(payload.state === 'paused');
+      this.hostDisconnected.set(false);
     });
 
     this.socket.on<LeaderboardPayload>('game:ended', this.destroyRef).subscribe((payload) => {
@@ -269,6 +306,10 @@ export class LiveQuizService {
       this.hostDisconnected.set(true);
       this.paused.set(true);
     });
+
+    this.socket.on('host:reconnected', this.destroyRef).subscribe(() => {
+      this.hostDisconnected.set(false);
+    });
   }
 
   private resetHostState(): void {
@@ -278,6 +319,7 @@ export class LiveQuizService {
     this.rankings.set([]);
     this.finalLeaderboard.set([]);
     this.sessionCode.set('');
+    this.hostToken.set('');
     this.playerCount.set(0);
     this.questionStats.set({ answered: 0, total: 0 });
     this.timeRemainingMs.set(0);

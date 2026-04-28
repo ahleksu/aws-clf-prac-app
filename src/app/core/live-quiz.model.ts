@@ -19,6 +19,7 @@ export interface QuestionPayload {
   type: 'single' | 'multiple';
   answers: LiveAnswer[];
   timeLimit: number;
+  timeRemaining?: number;
   domain: string;
 }
 

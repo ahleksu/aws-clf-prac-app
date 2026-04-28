@@ -55,6 +55,10 @@ export class GameManager {
     throw new Error('Failed to generate unique session code after 10 attempts');
   }
 
+  generateHostToken(): string {
+    return crypto.randomBytes(24).toString('hex');
+  }
+
   async createSession(
     hostSocketId: string,
     domain: QuizDomain,
@@ -70,6 +74,7 @@ export class GameManager {
       id: crypto.randomUUID(),
       code,
       hostSocketId,
+      hostToken: this.generateHostToken(),
       domain,
       questions,
       currentQuestionIndex: 0,

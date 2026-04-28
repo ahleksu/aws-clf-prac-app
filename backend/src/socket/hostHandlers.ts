@@ -15,6 +15,7 @@ interface HostCreatePayload {
 
 interface SessionCodePayload {
   sessionCode: string;
+  hostToken?: string;
 }
 
 const VALID_DOMAINS: QuizDomain[] = [
@@ -33,15 +34,26 @@ export function registerHostHandlers(
   socket.on('host:create', async (payload: HostCreatePayload) => {
     try {
       const domain = (payload?.domain ?? 'all') as QuizDomain;
-      const questionCount = Math.max(1, Math.min(65, Number(payload?.questionCount) || 20));
-      const timePerQuestion = Math.max(5, Math.min(120, Number(payload?.timePerQuestion) || 30));
+      const questionCount = Number(payload?.questionCount);
+      const timePerQuestion = Number(payload?.timePerQuestion);
       if (!VALID_DOMAINS.includes(domain)) {
         socket.emit('session:error', { message: 'Invalid domain.' });
         return;
       }
+      if (!Number.isInteger(questionCount) || questionCount < 5 || questionCount > 65) {
+        socket.emit('session:error', { message: 'Question count must be between 5 and 65.' });
+        return;
+      }
+      if (!Number.isInteger(timePerQuestion) || timePerQuestion < 15 || timePerQuestion > 60) {
+        socket.emit('session:error', { message: 'Time per question must be between 15 and 60 seconds.' });
+        return;
+      }
       const session = await manager.createSession(socket.id, domain, questionCount, timePerQuestion);
       socket.join(session.code);
-      socket.emit('session:created', { sessionCode: session.code });
+      socket.emit('session:created', {
+        sessionCode: session.code,
+        hostToken: session.data.hostToken
+      });
     } catch (err) {
       console.error('[host:create] error', err);
       socket.emit('session:error', { message: 'Failed to create session.' });
@@ -110,14 +122,40 @@ export function registerHostHandlers(
       socket.emit('session:error', { message: 'Session no longer exists.' });
       return;
     }
-    session.setHost(socket.id);
+    if (!session.validateHostToken(payload?.hostToken)) {
+      socket.emit('session:error', { message: 'This host link is not authorized for the active session.' });
+      return;
+    }
+    const existingHostConnected = session.hostSocketId !== socket.id
+      && io.sockets.sockets.has(session.hostSocketId);
+    if (existingHostConnected) {
+      socket.emit('session:error', { message: 'This session already has an active host.' });
+      return;
+    }
+    const nextHostToken = manager.generateHostToken();
+    session.setHost(socket.id, nextHostToken);
     socket.join(session.code);
-    socket.emit('session:created', { sessionCode: session.code });
+    io.to(session.code).except(socket.id).emit('host:reconnected', {});
+    socket.emit('session:created', {
+      sessionCode: session.code,
+      hostToken: nextHostToken
+    });
     socket.emit('lobby:update', { players: session.listPlayers() });
+    socket.emit('host:state', {
+      state: session.state,
+      question: session.getCurrentQuestion(),
+      questionStats: session.answerStats(),
+      timeRemaining: session.timeRemainingMs(),
+      rankings: session.getRankings(),
+      answerReveal: session.getCurrentQuestionReveal()
+    });
     if (session.state === 'active' || session.state === 'paused') {
       const question = session.getCurrentQuestion();
       if (question) {
-        socket.emit('game:question', question);
+        socket.emit('game:question', {
+          ...question,
+          timeRemaining: session.timeRemainingMs()
+        });
         socket.emit('question:stats', session.answerStats());
       }
       if (session.state === 'paused') {

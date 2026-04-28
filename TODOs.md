@@ -215,7 +215,7 @@
 
 - [ ] **P3-T1:** Create `src/app/pages/live/host-dashboard/host-dashboard.component.ts`.
   - PrimeNG Select for domain (all/cloud_concepts/cloud_tech/security_compliance/billing_support)
-  - PrimeNG Slider or InputNumber for question count (5–65, default 20)
+  - PrimeNG Slider or InputNumber for question count (default 20); validate 5 to `min(65, available questions for selected domain)` with toast/inline warning instead of silent clamping
   - PrimeNG Select for time per question (15/20/30/45/60 seconds, default 30)
   - **Create Session** button → calls `LiveQuizService.createSession()` → on `session:created`, navigate to `/host/lobby/:code`
   - Show loading state while creating
@@ -284,6 +284,8 @@
 - [ ] **P4-T4:** Handle reconnection in `PlayerGameComponent`.
   - On socket reconnect, emit `player:join` again with same code + nickname
   - Server re-adds player with existing score (match by nickname in session)
+  - Browser refresh during an active question restores current question, answered state, score/rank/streak, and server `timeRemaining`
+  - Host refresh emits `host:reconnected`/`host:state`; player "Host disconnected" overlay clears once the host returns or resumes
   - Show brief "Reconnected!" toast
 
 ---
@@ -292,25 +294,28 @@
 
 > Goal: Full end-to-end flow works with host + multiple player tabs.
 
-- [ ] **P5-T1:** Local multi-tab test — open host in Tab 1 (`/host`), open 3 player tabs (`/join`). Run through complete game loop:
+- [x] **P5-T1:** Local multi-tab test — open host in Tab 1 (`/host`), open 3 player tabs (`/join`). Run through complete game loop:
   - Create session → players join → start → answer questions → leaderboard between → end → final leaderboard
-  - **Acceptance:** All 3 player tabs show correct state transitions simultaneously
+  - **Acceptance:** All 3 player tabs show correct state transitions simultaneously. ✅ Verified after join/start loading-state fix.
 
-- [ ] **P5-T2:** Test pause/resume flow: host pauses mid-countdown, all player timers freeze; host resumes, timer continues.
+- [x] **P5-T2:** Test pause/resume flow: host pauses mid-countdown, all player timers freeze; host resumes, timer continues. ✅ Verified manually by user.
 
-- [ ] **P5-T3:** Test host disconnect: close host tab → players see "Host disconnected" → reopen host tab → session resumes.
+- [x] **P5-T3:** Test host disconnect: close/refresh host tab → players see "Host disconnected" → reopen host tab → host UI rehydrates current question → session resumes and player disconnected overlay clears. ✅ Verified manually by user.
 
-- [ ] **P5-T4:** Test player disconnect/reconnect: close player tab mid-quiz → reopen → player rejoins with same score.
+- [x] **P5-T4:** Test player disconnect/reconnect: close/refresh player tab mid-quiz → reopen → player rejoins with same score, current question, answered state, and server-synced remaining timer. ✅ Verified manually by user.
 
-- [ ] **P5-T5:** Test edge cases:
+- [x] **P5-T5:** Test edge cases:
   - Invalid session code on join page
   - Duplicate nickname rejection
   - Player joins after quiz has started (should be rejected with appropriate message)
+  - Duplicate/exposed host session URL without the current host token is rejected ✅ Verified manually by user
+  - Host question-count validation warns for values below 5 or above selected-domain max without silently clamping ✅ Verified manually by user
   - All players disconnect → session auto-cleanup after TTL
+  - ✅ Remaining edge cases verified 2026-04-29 with Socket.io client flow: invalid code, duplicate nickname, late new player rejection, disconnected nickname active rejoin, and all-players-disconnected/no-crash plus host-end cleanup. TTL cleanup remains covered by the existing `GameManager` 4h cleanup interval.
 
-- [ ] **P5-T6:** Mobile responsiveness check for player views (`/join`, `/play/:code`, `/play/:code/game`). Must be usable on a phone (scholars will likely use phones).
+- [x] **P5-T6:** Mobile responsiveness check for player views (`/join`, `/play/:code`, `/play/:code/game`). Must be usable on a phone (scholars will likely use phones). ✅ Verified 2026-04-29 in headless Edge at 375px; fixed scoped box sizing so player views do not horizontally overflow.
 
-- [ ] **P5-T7:** Confirm existing solo quiz mode is 100% unaffected. Run through: home → quiz → result → review.
+- [x] **P5-T7:** Confirm existing solo quiz mode is 100% unaffected. Run through: home → quiz → result → review. ✅ Verified 2026-04-29 in headless Edge with a 65-question skipped run carrying state into review.
 
 ---
 

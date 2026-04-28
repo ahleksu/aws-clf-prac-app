@@ -24,7 +24,8 @@ export class HostLobbyComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      if (!this.starting || !this.quiz.currentQuestion()) return;
+      const question = this.quiz.currentQuestion();
+      if (!this.starting || !question) return;
       this.starting = false;
       this.router.navigate(['/host/session', this.sessionCode]);
     });
@@ -48,7 +49,7 @@ export class HostLobbyComponent implements OnInit {
     const origin = globalThis.location?.origin ?? '';
     this.joinUrl = `${origin}/join?code=${code}`;
     sessionStorage.setItem('liveHostSessionCode', code);
-    this.quiz.reconnectHost(code);
+    this.quiz.reconnectHost(code, sessionStorage.getItem('liveHostToken') ?? '');
   }
 
   connectedPlayers(): PlayerState[] {

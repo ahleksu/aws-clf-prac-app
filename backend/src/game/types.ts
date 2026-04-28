@@ -45,6 +45,7 @@ export interface GameSessionData {
   id: string;
   code: string;
   hostSocketId: string;
+  hostToken: string;
   domain: QuizDomain;
   questions: LiveQuestion[];
   currentQuestionIndex: number;

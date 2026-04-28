@@ -38,8 +38,15 @@ export class GameSession {
     return socketId === this.data.hostSocketId;
   }
 
-  setHost(socketId: string): void {
+  setHost(socketId: string, hostToken?: string): void {
     this.data.hostSocketId = socketId;
+    if (hostToken) {
+      this.data.hostToken = hostToken;
+    }
+  }
+
+  validateHostToken(hostToken: string | undefined): boolean {
+    return !!hostToken && hostToken === this.data.hostToken;
   }
 
   getPlayer(socketId: string): PlayerState | undefined {
@@ -78,7 +85,7 @@ export class GameSession {
     }
     if (this.data.state !== 'lobby') {
       const existing = this.getPlayerByNickname(trimmed);
-      if (existing && !existing.connected) {
+      if (existing) {
         this.data.players.delete(existing.socketId);
         existing.socketId = socketId;
         existing.connected = true;
