@@ -1,0 +1,168 @@
+.player-lobby {
+  position: relative;
+  display: grid;
+  min-height: calc(100vh - 1rem);
+  place-items: center;
+  overflow: hidden;
+  padding: 1rem;
+  background: #0f172a;
+}
+
+.motion-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.55;
+}
+
+.motion-bg span {
+  position: absolute;
+  border: 2px solid rgba(255, 255, 255, 0.26);
+  border-radius: 8px;
+  animation: drift 8s ease-in-out infinite;
+}
+
+.motion-bg span:nth-child(1) {
+  width: 18rem;
+  height: 18rem;
+  left: 8%;
+  top: 12%;
+  border-color: rgba(19, 104, 206, 0.42);
+}
+
+.motion-bg span:nth-child(2) {
+  width: 14rem;
+  height: 14rem;
+  right: 10%;
+  top: 18%;
+  border-color: rgba(216, 158, 0, 0.42);
+  animation-delay: 1.3s;
+}
+
+.motion-bg span:nth-child(3) {
+  width: 22rem;
+  height: 22rem;
+  left: 35%;
+  bottom: -8rem;
+  border-color: rgba(38, 137, 12, 0.42);
+  animation-delay: 2.1s;
+}
+
+.waiting-shell {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 34rem);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0.35rem 0 1rem;
+  color: #111827;
+  font-size: clamp(2rem, 7vw, 3.4rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.pulse-dot {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0 auto 1.25rem;
+  border-radius: 999px;
+  background: #26890c;
+  animation: pulse 1.15s ease-in-out infinite;
+}
+
+.player-card {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.85rem;
+  background: #f9fafb;
+}
+
+.player-card > span {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border-radius: 999px;
+  background: #111827;
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.player-card p,
+.player-card small {
+  display: block;
+  margin: 0;
+  text-align: left;
+}
+
+.player-card p {
+  color: #111827;
+  font-weight: 900;
+}
+
+.player-card small {
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.notice,
+.error-box {
+  margin-top: 1rem;
+  border-radius: 8px;
+  padding: 0.85rem;
+}
+
+.notice {
+  background: #fffbeb;
+  color: #92400e;
+  font-weight: 800;
+}
+
+.error-box {
+  display: grid;
+  gap: 0.75rem;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-weight: 800;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(0.85);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(1rem, -1.25rem, 0) rotate(8deg);
+  }
+}

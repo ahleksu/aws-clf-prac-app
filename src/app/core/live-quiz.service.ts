@@ -21,6 +21,10 @@ interface SessionJoinedPayload {
   sessionCode: string;
   playerCount: number;
   nickname: string;
+  score?: number;
+  rank?: number;
+  streak?: number;
+  state?: SessionState;
 }
 
 interface SessionErrorPayload {
@@ -38,6 +42,13 @@ interface LeaderboardPayload {
   answerReveal?: QuestionReveal;
   myRank?: number;
   myFinalRank?: number;
+}
+
+interface PlayerStatePayload {
+  score: number;
+  rank: number;
+  streak: number;
+  answeredCurrentQuestion: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -59,8 +70,11 @@ export class LiveQuizService {
   readonly sessionCode = signal<string>('');
   readonly playerCount = signal<number>(0);
   readonly questionStats = signal<QuestionStats>({ answered: 0, total: 0 });
+  readonly timeRemainingMs = signal<number>(0);
   readonly answerReveal = signal<QuestionReveal | null>(null);
   readonly answerResult = signal<AnswerResult | null>(null);
+  readonly joinConfirmed = signal<boolean>(false);
+  readonly answeredCurrentQuestion = signal<boolean>(false);
   readonly lastError = signal<string | null>(null);
   readonly paused = signal<boolean>(false);
   readonly hostDisconnected = signal<boolean>(false);
@@ -72,6 +86,7 @@ export class LiveQuizService {
 
   createSession(config: CreateSessionConfig): void {
     this.resetHostState();
+    this.joinConfirmed.set(false);
     this.socket.emit('host:create', config);
   }
 
@@ -79,6 +94,7 @@ export class LiveQuizService {
     const code = this.normalizeCode(sessionCode);
     const cleanNickname = nickname.trim().slice(0, 20);
     this.lastError.set(null);
+    this.joinConfirmed.set(false);
     this.sessionCode.set(code);
     this.myProfile.set({
       nickname: cleanNickname,
@@ -136,16 +152,21 @@ export class LiveQuizService {
     this.socket.on<SessionJoinedPayload>('session:joined', this.destroyRef).subscribe((payload) => {
       this.sessionCode.set(payload.sessionCode);
       this.playerCount.set(payload.playerCount);
-      this.gameState.set('lobby');
+      this.gameState.set(payload.state ?? 'lobby');
+      this.joinConfirmed.set(true);
       this.lastError.set(null);
       this.myProfile.update((profile) => ({
         ...profile,
-        nickname: payload.nickname
+        nickname: payload.nickname,
+        score: payload.score ?? profile.score,
+        rank: payload.rank ?? profile.rank,
+        streak: payload.streak ?? profile.streak
       }));
     });
 
     this.socket.on<SessionErrorPayload>('session:error', this.destroyRef).subscribe((payload) => {
       this.lastError.set(payload.message);
+      this.joinConfirmed.set(false);
     });
 
     this.socket.on<LobbyUpdatePayload>('lobby:update', this.destroyRef).subscribe((payload) => {
@@ -163,6 +184,8 @@ export class LiveQuizService {
       this.gameState.set('active');
       this.answerResult.set(null);
       this.answerReveal.set(null);
+      this.answeredCurrentQuestion.set(false);
+      this.timeRemainingMs.set(question.timeLimit * 1000);
       this.questionStats.set({ answered: 0, total: this.playerCount() });
       this.paused.set(false);
       this.hostDisconnected.set(false);
@@ -191,18 +214,25 @@ export class LiveQuizService {
       }
     });
 
-    this.socket.on<{ timeRemaining?: number }>('game:paused', this.destroyRef).subscribe(() => {
+    this.socket.on<{ timeRemaining?: number }>('game:paused', this.destroyRef).subscribe((payload) => {
+      if (typeof payload.timeRemaining === 'number') {
+        this.timeRemainingMs.set(payload.timeRemaining);
+      }
       this.paused.set(true);
       this.gameState.set('paused');
     });
 
-    this.socket.on<{ timeRemaining?: number }>('game:resumed', this.destroyRef).subscribe(() => {
+    this.socket.on<{ timeRemaining?: number }>('game:resumed', this.destroyRef).subscribe((payload) => {
+      if (typeof payload.timeRemaining === 'number') {
+        this.timeRemainingMs.set(payload.timeRemaining);
+      }
       this.paused.set(false);
       this.gameState.set('active');
     });
 
     this.socket.on<AnswerResult>('answer:result', this.destroyRef).subscribe((result) => {
       this.answerResult.set(result);
+      this.answeredCurrentQuestion.set(true);
       this.myProfile.update((profile) => ({
         ...profile,
         score: result.newScore,
@@ -213,6 +243,16 @@ export class LiveQuizService {
 
     this.socket.on<QuestionReveal>('question:reveal', this.destroyRef).subscribe((payload) => {
       this.answerReveal.set(payload);
+    });
+
+    this.socket.on<PlayerStatePayload>('player:state', this.destroyRef).subscribe((payload) => {
+      this.answeredCurrentQuestion.set(payload.answeredCurrentQuestion);
+      this.myProfile.update((profile) => ({
+        ...profile,
+        score: payload.score,
+        rank: payload.rank,
+        streak: payload.streak
+      }));
     });
 
     this.socket.on<LeaderboardPayload>('game:ended', this.destroyRef).subscribe((payload) => {
@@ -240,8 +280,11 @@ export class LiveQuizService {
     this.sessionCode.set('');
     this.playerCount.set(0);
     this.questionStats.set({ answered: 0, total: 0 });
+    this.timeRemainingMs.set(0);
     this.answerReveal.set(null);
     this.answerResult.set(null);
+    this.joinConfirmed.set(false);
+    this.answeredCurrentQuestion.set(false);
     this.lastError.set(null);
     this.paused.set(false);
     this.hostDisconnected.set(false);

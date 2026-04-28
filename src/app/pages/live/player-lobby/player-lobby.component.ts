@@ -1,12 +1,66 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit, effect, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
+import { LiveQuizService } from '../../../core/live-quiz.service';
 
 @Component({
   selector: 'app-player-lobby',
   standalone: true,
-  template: `
-    <main class="max-w-4xl mx-auto px-4 py-10">
-      <h1 class="text-2xl font-semibold">Waiting for Host</h1>
-    </main>
-  `
+  imports: [CommonModule, ButtonModule],
+  templateUrl: './player-lobby.component.html',
+  styleUrl: './player-lobby.component.css'
 })
-export class PlayerLobbyComponent {}
+export class PlayerLobbyComponent implements OnInit {
+  readonly quiz = inject(LiveQuizService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  sessionCode = '';
+  lobbyError = '';
+
+  constructor() {
+    effect(() => {
+      if (!this.quiz.currentQuestion() || !this.sessionCode) return;
+      this.router.navigate(['/play', this.sessionCode, 'game']);
+    });
+
+    effect(() => {
+      const error = this.quiz.lastError();
+      if (!error) return;
+      this.lobbyError = error;
+      this.quiz.clearError();
+    });
+  }
+
+  ngOnInit(): void {
+    const code = this.route.snapshot.paramMap.get('code')?.toUpperCase() ?? '';
+    if (!code) {
+      this.router.navigate(['/join']);
+      return;
+    }
+    this.sessionCode = code;
+    const saved = this.savedSession();
+    if (!this.quiz.myProfile().nickname && saved?.sessionCode === code) {
+      this.quiz.joinSession(saved.sessionCode, saved.nickname);
+      return;
+    }
+    if (!this.quiz.myProfile().nickname) {
+      this.router.navigate(['/join'], { queryParams: { code } });
+    }
+  }
+
+  backToJoin(): void {
+    this.router.navigate(['/join'], { queryParams: { code: this.sessionCode } });
+  }
+
+  private savedSession(): { sessionCode: string; nickname: string } | null {
+    const raw = sessionStorage.getItem('livePlayerSession');
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as { sessionCode: string; nickname: string };
+    } catch {
+      return null;
+    }
+  }
+}

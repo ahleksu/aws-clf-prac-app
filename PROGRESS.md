@@ -13,7 +13,7 @@
 | P1 | Backend: Game Engine | **Complete** | 11 / 11 | Smoke-tested with multi-client script |
 | P2 | Frontend: Services & Routing | **Complete** | 6 / 6 | Production build passes; warnings only |
 | P3 | Frontend: Host Interface | **Complete** | 4 / 4 | Angular + backend builds pass; warnings only |
-| P4 | Frontend: Player Interface | Not Started | 0 / 4 | Depends on P1, P2 |
+| P4 | Frontend: Player Interface | **Complete** | 4 / 4 | Angular + backend builds pass; warnings only |
 | P5 | Integration Testing | Not Started | 0 / 7 | Depends on P3, P4 |
 | P6 | AWS Deployment (Free Tier) | Not Started | 0 / 14 | S3+CF frontend + EC2 t2.micro backend |
 
@@ -91,10 +91,10 @@
 
 ## Phase 4 — Frontend: Player Interface
 
-- [ ] P4-T1: Create `JoinComponent`
-- [ ] P4-T2: Create `PlayerLobbyComponent`
-- [ ] P4-T3: Create `PlayerGameComponent`
-- [ ] P4-T4: Handle reconnection in `PlayerGameComponent`
+- [x] P4-T1: Create `JoinComponent`
+- [x] P4-T2: Create `PlayerLobbyComponent`
+- [x] P4-T3: Create `PlayerGameComponent`
+- [x] P4-T4: Handle reconnection in `PlayerGameComponent`
 
 ---
 
@@ -166,8 +166,8 @@
 
 > Keep this section updated so you can pick up exactly where you left off after a context reset.
 
-**Last task completed:** P3-T4 — Created shared LeaderboardComponent with podium and confetti (2026-04-28)
-**Next task to work on:** P4-T1 — Create JoinComponent
+**Last task completed:** P4-T4 — Added PlayerGameComponent sessionStorage reconnect handling (2026-04-28)
+**Next task to work on:** P5-T1 — Multi-tab end-to-end full game loop
 **Files recently modified:** backend/src/game/*, backend/src/socket/*, backend/src/routes/*, backend/src/index.ts, backend/ecosystem.config.js
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`

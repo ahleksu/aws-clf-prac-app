@@ -270,6 +270,13 @@ export class GameSession {
     return { answered, total: connected };
   }
 
+  hasPlayerAnsweredCurrentQuestion(socketId: string): boolean {
+    const player = this.data.players.get(socketId);
+    const question = this.currentQuestion();
+    if (!player || !question) return false;
+    return player.answers.some((answer) => answer.questionId === question.id);
+  }
+
   finishCurrentQuestion(): void {
     if (this.data.state === 'active' || this.data.state === 'paused') {
       this.data.state = 'between';

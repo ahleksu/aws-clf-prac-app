@@ -1,0 +1,46 @@
+<p-toast />
+
+<main class="join-page">
+  <section class="join-panel">
+    <div class="join-copy">
+      <p class="eyebrow">Live quiz</p>
+      <h1>Join a Session</h1>
+    </div>
+
+    <form class="join-form" (ngSubmit)="joinSession()">
+      <label>
+        <span>Session code</span>
+        <input
+          pInputText
+          name="sessionCode"
+          [(ngModel)]="sessionCode"
+          maxlength="6"
+          autocomplete="off"
+          inputmode="text"
+          (ngModelChange)="normalizeCode()"
+        />
+      </label>
+
+      <label>
+        <span>Nickname</span>
+        <input
+          pInputText
+          name="nickname"
+          [(ngModel)]="nickname"
+          maxlength="20"
+          autocomplete="nickname"
+          (ngModelChange)="normalizeNickname()"
+        />
+      </label>
+
+      <p-button
+        type="submit"
+        label="Join"
+        icon="pi pi-sign-in"
+        [disabled]="!canJoin()"
+        [loading]="joining"
+        styleClass="w-full"
+      />
+    </form>
+  </section>
+</main>

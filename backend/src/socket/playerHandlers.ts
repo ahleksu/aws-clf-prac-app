@@ -46,10 +46,24 @@ export function registerPlayerHandlers(
     }
 
     socket.join(session.code);
+    const rankings = session.getRankings();
+    const myRanking = rankings.find((entry) => entry.nickname === result.nickname);
+
     socket.emit('session:joined', {
       sessionCode: session.code,
       playerCount: session.connectedPlayerCount(),
-      nickname: result.nickname
+      nickname: result.nickname,
+      score: result.score,
+      rank: myRanking?.rank ?? result.rank,
+      streak: result.streak,
+      state: session.state
+    });
+
+    socket.emit('player:state', {
+      score: result.score,
+      rank: myRanking?.rank ?? result.rank,
+      streak: result.streak,
+      answeredCurrentQuestion: session.hasPlayerAnsweredCurrentQuestion(socket.id)
     });
 
     io.to(session.hostSocketId).emit('lobby:update', {
@@ -58,6 +72,28 @@ export function registerPlayerHandlers(
     io.to(session.code).except(session.hostSocketId).emit('lobby:update', {
       playerCount: session.connectedPlayerCount()
     });
+
+    if (session.state === 'active' || session.state === 'paused') {
+      const question = session.getCurrentQuestion();
+      if (question) {
+        socket.emit('game:question', question);
+      }
+      if (session.state === 'paused') {
+        socket.emit('game:paused', { timeRemaining: session.timeRemainingMs() });
+      }
+    }
+
+    if (session.state === 'between') {
+      const answerReveal = session.getCurrentQuestionReveal();
+      if (answerReveal) {
+        socket.emit('question:reveal', answerReveal);
+      }
+      socket.emit('leaderboard:show', {
+        rankings,
+        answerReveal,
+        myRank: myRanking?.rank
+      });
+    }
   });
 
   socket.on('player:answer', (payload: PlayerAnswerPayload) => {

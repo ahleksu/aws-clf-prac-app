@@ -1,0 +1,103 @@
+<p-toast />
+
+<main class="player-game">
+  <section *ngIf="quiz.currentQuestion() as question; else waiting" class="game-shell">
+    <header class="game-header">
+      <div>
+        <p>Question {{ question.questionNumber }} of {{ question.total }}</p>
+        <h1>{{ quiz.myProfile().nickname }}</h1>
+      </div>
+
+      <div class="timer-wrap" [style.--timer-color]="timerColor()">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <circle class="timer-track" cx="50" cy="50" r="44"></circle>
+          <circle
+            class="timer-progress"
+            cx="50"
+            cy="50"
+            r="44"
+            [attr.stroke-dasharray]="circumference"
+            [attr.stroke-dashoffset]="strokeOffset()"
+          ></circle>
+        </svg>
+        <span>{{ timeLeftSeconds }}</span>
+      </div>
+    </header>
+
+    <article class="question-card">
+      <p class="question-type">
+        {{ question.type === 'multiple' ? 'Select all that apply' : 'Choose one answer' }}
+      </p>
+      <h2>{{ question.questionText }}</h2>
+    </article>
+
+    <div class="answer-grid">
+      <button
+        *ngFor="let answer of question.answers"
+        type="button"
+        class="answer-button"
+        [class.selected]="isSelected(answer.label)"
+        [disabled]="submitted || quiz.paused() || quiz.gameState() !== 'active'"
+        [ngStyle]="answerStyle(answer.label)"
+        (click)="chooseAnswer(answer.label)"
+      >
+        <strong>{{ answer.label }}</strong>
+        <span>{{ answer.text }}</span>
+      </button>
+    </div>
+
+    <div *ngIf="question.type === 'multiple' && !submitted" class="submit-row">
+      <p-button
+        label="Submit Answer"
+        icon="pi pi-check"
+        [disabled]="selectedAnswers.length === 0 || quiz.paused()"
+        (onClick)="submitAnswer()"
+      />
+    </div>
+
+    <section *ngIf="quiz.answerResult() as result" class="result-panel" [class.correct]="result.correct">
+      <i [class]="result.correct ? 'pi pi-check-circle' : 'pi pi-times-circle'"></i>
+      <div>
+        <strong>{{ result.correct ? 'Correct' : 'Incorrect' }}</strong>
+        <p>{{ result.pointsEarned }} points earned</p>
+        <small *ngIf="result.explanation">{{ result.explanation }}</small>
+      </div>
+    </section>
+  </section>
+
+  <ng-template #waiting>
+    <section class="waiting">
+      <i class="pi pi-spin pi-spinner"></i>
+      <p>Rejoining session...</p>
+    </section>
+  </ng-template>
+
+  <section *ngIf="showLeaderboard" class="overlay" (click)="dismissLeaderboard()">
+    <div class="overlay-panel leaderboard-panel">
+      <p class="eyebrow">Leaderboard</p>
+      <ol>
+        <li *ngFor="let entry of quiz.rankings().slice(0, 5)">
+          <span>#{{ entry.rank }}</span>
+          <strong>{{ entry.nickname }}</strong>
+          <em>{{ entry.score }}</em>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section *ngIf="quiz.paused() && !quiz.hostDisconnected()" class="overlay">
+    <div class="overlay-panel">
+      <i class="pi pi-pause-circle"></i>
+      <h2>Paused</h2>
+      <p>Host has paused the quiz.</p>
+    </div>
+  </section>
+
+  <section *ngIf="quiz.hostDisconnected()" class="overlay">
+    <div class="overlay-panel">
+      <i class="pi pi-wifi"></i>
+      <h2>Host disconnected</h2>
+      <p>Waiting for the session to resume.</p>
+    </div>
+  </section>
+</main>

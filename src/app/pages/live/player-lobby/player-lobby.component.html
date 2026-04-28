@@ -1,0 +1,35 @@
+<main class="player-lobby">
+  <div class="motion-bg" aria-hidden="true">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <section class="waiting-shell">
+    <p class="eyebrow">Session {{ sessionCode }}</p>
+    <h1>Waiting for host to start...</h1>
+    <div class="pulse-dot" aria-hidden="true"></div>
+
+    <div class="player-card">
+      <span>{{ quiz.myProfile().nickname.slice(0, 1).toUpperCase() }}</span>
+      <div>
+        <p>{{ quiz.myProfile().nickname || 'Player' }}</p>
+        <small>{{ quiz.playerCount() }} player{{ quiz.playerCount() === 1 ? '' : 's' }} in lobby</small>
+      </div>
+    </div>
+
+    <p *ngIf="quiz.hostDisconnected()" class="notice">
+      Host disconnected. Waiting for the session to resume.
+    </p>
+
+    <div *ngIf="lobbyError" class="error-box">
+      <p>{{ lobbyError }}</p>
+      <p-button
+        label="Back to Join"
+        icon="pi pi-arrow-left"
+        severity="secondary"
+        (onClick)="backToJoin()"
+      />
+    </div>
+  </section>
+</main>

@@ -1,0 +1,68 @@
+.join-page {
+  display: grid;
+  min-height: calc(100vh - 1rem);
+  place-items: center;
+  padding: 1rem;
+  background:
+    linear-gradient(135deg, rgba(19, 104, 206, 0.12), transparent 36%),
+    linear-gradient(315deg, rgba(38, 137, 12, 0.12), transparent 34%),
+    #f9fafb;
+}
+
+.join-panel {
+  width: min(100%, 30rem);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background: #ffffff;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.1);
+}
+
+.join-copy {
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.join-copy h1 {
+  margin: 0.2rem 0 0;
+  color: #111827;
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+.join-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.join-form label {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.join-form span {
+  color: #374151;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.join-form input {
+  width: 100%;
+  min-height: 3rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.join-form label:nth-of-type(2) input {
+  text-transform: none;
+}
