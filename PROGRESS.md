@@ -10,7 +10,7 @@
 |---|---|---|---|---|
 | IAM | AWS Identity Setup | **In Progress** | 9 / 10 | 1 task remaining: policy correction |
 | P0 | Project Scaffolding | **Complete** | 10 / 10 | |
-| P1 | Backend: Game Engine | Not Started | 0 / 11 | Depends on P0 |
+| P1 | Backend: Game Engine | **Complete** | 11 / 11 | Smoke-tested with multi-client script |
 | P2 | Frontend: Services & Routing | Not Started | 0 / 6 | Depends on P0 |
 | P3 | Frontend: Host Interface | Not Started | 0 / 4 | Depends on P1, P2 |
 | P4 | Frontend: Player Interface | Not Started | 0 / 4 | Depends on P1, P2 |
@@ -51,17 +51,21 @@
 
 ## Phase 1 — Backend: Game Engine
 
-- [ ] P1-T1: Create `backend/src/game/types.ts`
-- [ ] P1-T2: Create `backend/src/game/GameManager.ts`
-- [ ] P1-T3: Create `backend/src/game/GameSession.ts`
-- [ ] P1-T4: Create `backend/src/game/QuestionLoader.ts`
-- [ ] P1-T5: Create `backend/src/socket/hostHandlers.ts`
-- [ ] P1-T6: Create `backend/src/socket/playerHandlers.ts`
-- [ ] P1-T7: Wire socket handlers in `backend/src/index.ts`
-- [ ] P1-T8: Create `backend/src/routes/api.routes.ts`
-- [ ] P1-T9: Create `backend/.env.example`
-- [ ] P1-T10: Create `backend/ecosystem.config.js` (PM2)
-- [ ] P1-T11: Manual backend validation test (wscat or test client)
+- [x] P1-T1: Create `backend/src/game/types.ts`
+- [x] P1-T2: Create `backend/src/game/GameManager.ts` (crypto-random codes, 4h cleanup)
+- [x] P1-T3: Create `backend/src/game/GameSession.ts` (state machine, scoring, multi-correct logic)
+- [x] P1-T4: Create `backend/src/game/QuestionLoader.ts` (Fisher-Yates shuffle, strips `status` field)
+- [x] P1-T5: Create `backend/src/socket/hostHandlers.ts` (host events + disconnect → pause)
+- [x] P1-T6: Create `backend/src/socket/playerHandlers.ts` (join, answer, disconnect)
+- [x] P1-T7: Wire socket handlers in `backend/src/index.ts`
+- [x] P1-T8: Create `backend/src/routes/api.routes.ts` (`/health`, `/session/:code`)
+- [x] P1-T9: Create `backend/.env.example` (already done in P0)
+- [x] P1-T10: Create `backend/ecosystem.config.js` (PM2)
+- [x] P1-T11: Manual backend validation — node-based smoke test exercised full loop:
+  - 1 host + 2 players, 3 questions, scoring verified (Bob: 1000 base + 500 time + 100 streak = 1600)
+  - Auto-advance when all answered, timer expiry, manual `host:next`, `game:ended` final leaderboard
+  - Pause/resume timeRemaining preserved across pause
+  - Edge cases: invalid code → `session:error`, late join rejected
 
 ---
 
@@ -161,9 +165,9 @@
 
 > Keep this section updated so you can pick up exactly where you left off after a context reset.
 
-**Last task completed:** P0-T10 — SocketService created, ng prod build passes (2026-04-28)
-**Next task to work on:** P1-T1 — Create backend/src/game/types.ts
-**Files recently modified:** backend/, src/environments/, angular.json, src/app/core/socket.service.ts, package.json (socket.io-client added)
+**Last task completed:** P1-T11 — Backend smoke test passes (2026-04-28)
+**Next task to work on:** P2-T1 — Create src/app/core/live-quiz.model.ts
+**Files recently modified:** backend/src/game/*, backend/src/socket/*, backend/src/routes/*, backend/src/index.ts, backend/ecosystem.config.js
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`
 - Admin IAM user is named `clf-quiz-admin-policy` (policy name was mistakenly used as username — no fix needed, works fine)
