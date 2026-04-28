@@ -9,8 +9,12 @@ export function broadcastQuestion(io: Server, session: GameSession): void {
 
 export function broadcastLeaderboard(io: Server, session: GameSession): void {
   const rankings = session.getRankings();
-  io.to(session.code).emit('leaderboard:show', { rankings });
-  io.to(session.code).emit('leaderboard:snapshot', { rankings });
+  const answerReveal = session.getCurrentQuestionReveal();
+  if (answerReveal) {
+    io.to(session.code).emit('question:reveal', answerReveal);
+  }
+  io.to(session.code).emit('leaderboard:show', { rankings, answerReveal });
+  io.to(session.code).emit('leaderboard:snapshot', { rankings, answerReveal });
 }
 
 export function scheduleQuestionTimer(io: Server, session: GameSession): void {

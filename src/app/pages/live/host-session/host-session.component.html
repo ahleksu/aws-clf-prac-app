@@ -1,0 +1,100 @@
+<p-confirmdialog />
+
+<main class="host-session mx-auto max-w-7xl px-4 py-6">
+  <header class="session-bar">
+    <div *ngIf="quiz.currentQuestion() as question">
+      <p>Question {{ question.questionNumber }} of {{ question.total }}</p>
+      <h1>{{ sessionCode }}</h1>
+    </div>
+    <div class="bar-actions">
+      <p-button
+        [label]="quiz.paused() ? 'Resume' : 'Pause'"
+        [icon]="quiz.paused() ? 'pi pi-play' : 'pi pi-pause'"
+        severity="secondary"
+        (onClick)="togglePause()"
+      />
+      <p-button
+        label="End Quiz"
+        icon="pi pi-stop-circle"
+        severity="danger"
+        (onClick)="confirmEnd()"
+      />
+    </div>
+  </header>
+
+  <section *ngIf="quiz.currentQuestion() as question; else waiting" class="session-grid">
+    <article class="question-panel">
+      <p *ngIf="sessionError" class="inline-error">{{ sessionError }}</p>
+
+      <div class="question-meta">
+        <span>{{ question.domain }}</span>
+        <span>{{ question.type === 'multiple' ? 'Multiple answers' : 'Single answer' }}</span>
+      </div>
+
+      <h2>{{ question.questionText }}</h2>
+
+      <div class="answer-grid">
+        <div
+          *ngFor="let answer of question.answers"
+          class="answer-card"
+          [ngClass]="answerClass(answer.label)"
+        >
+          <strong>{{ answer.label }}</strong>
+          <span>{{ answer.text }}</span>
+          <i *ngIf="isCorrectAnswer(answer.label)" class="pi pi-check-circle"></i>
+        </div>
+      </div>
+
+      <div *ngIf="quiz.answerReveal() as reveal" class="reveal-panel">
+        <strong>Correct answer{{ reveal.answerLabels.length > 1 ? 's' : '' }}:
+          {{ reveal.answerLabels.join(', ') }}
+        </strong>
+        <p *ngIf="reveal.explanation">{{ reveal.explanation }}</p>
+      </div>
+    </article>
+
+    <aside class="side-panel">
+      <section class="stats-panel">
+        <div class="stats-title">
+          <h3>Answers submitted</h3>
+          <span>{{ quiz.questionStats().answered }} / {{ quiz.questionStats().total }}</span>
+        </div>
+        <p-progressbar [value]="progressValue()" styleClass="answer-progress">
+          <ng-template pTemplate="content"></ng-template>
+        </p-progressbar>
+      </section>
+
+      <section class="leader-panel">
+        <h3>Top players</h3>
+        <ol *ngIf="quiz.rankings().length; else noScores">
+          <li *ngFor="let entry of quiz.rankings().slice(0, 5)">
+            <span>#{{ entry.rank }}</span>
+            <strong>{{ entry.nickname }}</strong>
+            <em>{{ entry.score }}</em>
+          </li>
+        </ol>
+        <ng-template #noScores>
+          <p class="empty">Scores will appear after the first question.</p>
+        </ng-template>
+      </section>
+
+      <div class="next-panel">
+        <p *ngIf="quiz.gameState() === 'between'">Leaderboard is showing to players.</p>
+        <p-button
+          [label]="quiz.gameState() === 'between' ? 'Next Question' : 'Skip Question'"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          styleClass="w-full"
+          (onClick)="nextQuestion()"
+        />
+      </div>
+    </aside>
+  </section>
+
+  <ng-template #waiting>
+    <section class="waiting-panel">
+      <i class="pi pi-spin pi-spinner"></i>
+      <p>Waiting for the live question.</p>
+    </section>
+  </ng-template>
+</main>

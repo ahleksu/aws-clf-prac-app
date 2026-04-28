@@ -75,6 +75,11 @@ export interface QuestionPayload {
   domain: string;
 }
 
+export interface QuestionRevealPayload {
+  answerLabels: string[];
+  explanation: string;
+}
+
 export interface AnswerResult {
   correct: boolean;
   pointsEarned: number;

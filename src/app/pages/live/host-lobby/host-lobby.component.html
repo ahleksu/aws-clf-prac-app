@@ -1,0 +1,62 @@
+<main class="host-lobby mx-auto max-w-6xl px-4 py-8">
+  <section class="lobby-header">
+    <div>
+      <p class="eyebrow">Live session code</p>
+      <h1>{{ sessionCode }}</h1>
+      <p class="join-url">{{ joinUrl }}</p>
+    </div>
+    <div class="player-count">
+      <span>{{ connectedPlayers().length }}</span>
+      <p>players ready</p>
+    </div>
+  </section>
+
+  <section class="lobby-grid">
+    <div class="players-panel">
+      <div class="panel-title">
+        <h2>Lobby</h2>
+        <span>{{ connectedPlayers().length }} joined</span>
+      </div>
+
+      <div *ngIf="connectedPlayers().length; else emptyLobby" class="player-list">
+        <div *ngFor="let player of connectedPlayers()" class="player-row">
+          <span class="avatar">{{ player.nickname.slice(0, 1).toUpperCase() }}</span>
+          <div>
+            <p>{{ player.nickname }}</p>
+            <small>Connected</small>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #emptyLobby>
+        <div class="empty-state">
+          <i class="pi pi-users"></i>
+          <p>Waiting for players to join.</p>
+        </div>
+      </ng-template>
+    </div>
+
+    <aside class="controls-panel">
+      <h2>Session Control</h2>
+      <p>Players use the code above or open the join link to enter this lobby.</p>
+      <p *ngIf="lobbyError" class="inline-error">{{ lobbyError }}</p>
+      <div class="control-actions">
+        <p-button
+          label="Start Quiz"
+          icon="pi pi-play"
+          [disabled]="connectedPlayers().length === 0"
+          [loading]="starting"
+          styleClass="w-full"
+          (onClick)="startQuiz()"
+        />
+        <p-button
+          label="Cancel"
+          icon="pi pi-times"
+          severity="secondary"
+          styleClass="w-full"
+          (onClick)="cancelSession()"
+        />
+      </div>
+    </aside>
+  </section>
+</main>

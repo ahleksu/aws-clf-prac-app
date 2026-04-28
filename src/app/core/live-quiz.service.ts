@@ -8,6 +8,7 @@ import {
   PlayerProfile,
   PlayerState,
   QuestionPayload,
+  QuestionReveal,
   QuestionStats,
   SessionState
 } from './live-quiz.model';
@@ -34,6 +35,7 @@ interface LobbyUpdatePayload {
 interface LeaderboardPayload {
   rankings?: LeaderboardEntry[];
   finalLeaderboard?: LeaderboardEntry[];
+  answerReveal?: QuestionReveal;
   myRank?: number;
   myFinalRank?: number;
 }
@@ -57,6 +59,7 @@ export class LiveQuizService {
   readonly sessionCode = signal<string>('');
   readonly playerCount = signal<number>(0);
   readonly questionStats = signal<QuestionStats>({ answered: 0, total: 0 });
+  readonly answerReveal = signal<QuestionReveal | null>(null);
   readonly answerResult = signal<AnswerResult | null>(null);
   readonly lastError = signal<string | null>(null);
   readonly paused = signal<boolean>(false);
@@ -159,6 +162,7 @@ export class LiveQuizService {
       this.currentQuestion.set(question);
       this.gameState.set('active');
       this.answerResult.set(null);
+      this.answerReveal.set(null);
       this.questionStats.set({ answered: 0, total: this.playerCount() });
       this.paused.set(false);
       this.hostDisconnected.set(false);
@@ -169,11 +173,17 @@ export class LiveQuizService {
     });
 
     this.socket.on<LeaderboardPayload>('leaderboard:snapshot', this.destroyRef).subscribe((payload) => {
+      if (payload.answerReveal) {
+        this.answerReveal.set(payload.answerReveal);
+      }
       this.applyLeaderboard(payload.rankings ?? []);
       this.gameState.set('between');
     });
 
     this.socket.on<LeaderboardPayload>('leaderboard:show', this.destroyRef).subscribe((payload) => {
+      if (payload.answerReveal) {
+        this.answerReveal.set(payload.answerReveal);
+      }
       this.applyLeaderboard(payload.rankings ?? []);
       this.gameState.set('between');
       if (payload.myRank) {
@@ -201,6 +211,10 @@ export class LiveQuizService {
       }));
     });
 
+    this.socket.on<QuestionReveal>('question:reveal', this.destroyRef).subscribe((payload) => {
+      this.answerReveal.set(payload);
+    });
+
     this.socket.on<LeaderboardPayload>('game:ended', this.destroyRef).subscribe((payload) => {
       const leaderboard = payload.finalLeaderboard ?? [];
       this.finalLeaderboard.set(leaderboard);
@@ -226,6 +240,7 @@ export class LiveQuizService {
     this.sessionCode.set('');
     this.playerCount.set(0);
     this.questionStats.set({ answered: 0, total: 0 });
+    this.answerReveal.set(null);
     this.answerResult.set(null);
     this.lastError.set(null);
     this.paused.set(false);

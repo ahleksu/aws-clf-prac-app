@@ -4,6 +4,7 @@ import {
   LiveQuestion,
   PlayerState,
   QuestionPayload,
+  QuestionRevealPayload,
   Ranking,
   SessionState
 } from './types';
@@ -141,6 +142,15 @@ export class GameSession {
       answers: q.answers.map((a) => ({ text: a.text, label: a.label })),
       timeLimit: this.data.timePerQuestion,
       domain: q.domain
+    };
+  }
+
+  getCurrentQuestionReveal(): QuestionRevealPayload | null {
+    const q = this.currentQuestion();
+    if (!q) return null;
+    return {
+      answerLabels: [...q.correctAnswers],
+      explanation: q.explanation
     };
   }
 

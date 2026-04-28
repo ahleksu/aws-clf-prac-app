@@ -2,6 +2,7 @@ import type { Server, Socket } from 'socket.io';
 import { GameManager } from '../game/GameManager';
 import { QuizDomain } from '../game/types';
 import {
+  broadcastLeaderboard,
   broadcastQuestion,
   scheduleQuestionTimer
 } from './sessionHelpers';
@@ -113,6 +114,19 @@ export function registerHostHandlers(
     socket.join(session.code);
     socket.emit('session:created', { sessionCode: session.code });
     socket.emit('lobby:update', { players: session.listPlayers() });
+    if (session.state === 'active' || session.state === 'paused') {
+      const question = session.getCurrentQuestion();
+      if (question) {
+        socket.emit('game:question', question);
+        socket.emit('question:stats', session.answerStats());
+      }
+      if (session.state === 'paused') {
+        socket.emit('game:paused', { timeRemaining: session.timeRemainingMs() });
+      }
+    }
+    if (session.state === 'between') {
+      broadcastLeaderboard(io, session);
+    }
   });
 
   socket.on('disconnect', () => {

@@ -1,0 +1,46 @@
+<main class="leaderboard-page mx-auto max-w-5xl px-4 py-8">
+  <div class="confetti" aria-hidden="true">
+    <span *ngFor="let piece of confettiPieces"></span>
+  </div>
+
+  <header class="leaderboard-header">
+    <p class="eyebrow">Live quiz complete</p>
+    <h1>Final Leaderboard</h1>
+  </header>
+
+  <section *ngIf="entries().length; else emptyLeaderboard" class="leaderboard-body">
+    <div class="podium" *ngIf="topThree().length">
+      <article
+        *ngFor="let entry of topThree()"
+        class="podium-place"
+        [class.first]="entry.rank === 1"
+        [class.mine]="isMine(entry)"
+      >
+        <i class="pi pi-trophy"></i>
+        <span>#{{ entry.rank }}</span>
+        <h2>{{ entry.nickname }}</h2>
+        <p>{{ entry.score }} pts</p>
+      </article>
+    </div>
+
+    <ol class="rank-list">
+      <li *ngFor="let entry of entries()" [class.mine]="isMine(entry)">
+        <span class="rank">#{{ entry.rank }}</span>
+        <strong>{{ entry.nickname }}</strong>
+        <span>{{ entry.correctCount }} correct</span>
+        <em>{{ entry.score }} pts</em>
+      </li>
+    </ol>
+  </section>
+
+  <ng-template #emptyLeaderboard>
+    <section class="empty-state">
+      <i class="pi pi-chart-bar"></i>
+      <p>No leaderboard is available for this session.</p>
+    </section>
+  </ng-template>
+
+  <div class="actions">
+    <p-button label="Back to Home" icon="pi pi-home" (onClick)="backHome()" />
+  </div>
+</main>

@@ -1,0 +1,60 @@
+<p-toast />
+
+<main class="host-dashboard mx-auto max-w-5xl px-4 py-8">
+  <section class="dashboard-shell">
+    <div class="dashboard-copy">
+      <p class="eyebrow">Instructor console</p>
+      <h1>Host a Live Session</h1>
+      <p>
+        Choose the quiz mix, set the pace, and open a real-time room for your class.
+      </p>
+    </div>
+
+    <form class="session-form" (ngSubmit)="createSession()">
+      <label>
+        <span>Question domain</span>
+        <p-select
+          name="domain"
+          [options]="domainOptions"
+          [(ngModel)]="domain"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="w-full"
+        />
+      </label>
+
+      <label>
+        <span>Question count</span>
+        <p-inputnumber
+          name="questionCount"
+          [(ngModel)]="questionCount"
+          [min]="5"
+          [max]="65"
+          [showButtons]="true"
+          inputStyleClass="w-full"
+          styleClass="w-full"
+        />
+      </label>
+
+      <label>
+        <span>Time per question</span>
+        <p-select
+          name="timePerQuestion"
+          [options]="timeOptions"
+          [(ngModel)]="timePerQuestion"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="w-full"
+        />
+      </label>
+
+      <p-button
+        type="submit"
+        label="Create Session"
+        icon="pi pi-plus-circle"
+        [loading]="creating"
+        styleClass="w-full"
+      />
+    </form>
+  </section>
+</main>

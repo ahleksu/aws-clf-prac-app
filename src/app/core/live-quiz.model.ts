@@ -76,6 +76,11 @@ export interface QuestionStats {
   total: number;
 }
 
+export interface QuestionReveal {
+  answerLabels: string[];
+  explanation: string;
+}
+
 export interface CreateSessionConfig {
   domain: QuizDomain;
   questionCount: number;
