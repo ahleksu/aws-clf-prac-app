@@ -30,10 +30,12 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
   readonly circumference = 276.46;
   sessionCode = '';
   selectedAnswers: string[] = [];
+  submittedAnswers: string[] = [];
   timeLeftSeconds = 0;
   timerFraction = 1;
   playerViewState: PlayerViewState = 'answering';
   private prePauseState: PlayerViewState = 'answering';
+  private activeQuestionKey = '';
 
   private timerId: ReturnType<typeof setInterval> | null = null;
   private timerDeadline = 0;
@@ -45,10 +47,12 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
     effect(() => {
       const question = this.quiz.currentQuestion();
       if (!question) return;
+      const questionKey = `${question.questionNumber}:${question.questionText}`;
+      if (questionKey === this.activeQuestionKey) return;
+      this.activeQuestionKey = questionKey;
       this.selectedAnswers = [];
-      this.setViewState(
-        this.quiz.answeredCurrentQuestion() ? 'answered' : 'answering'
-      );
+      this.submittedAnswers = [];
+      this.setViewState('answering');
       const remaining = this.quiz.timeRemainingMs();
       this.startTimer(remaining > 0 ? remaining : question.timeLimit * 1000);
     });
@@ -158,6 +162,7 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
 
   submitAnswer(): void {
     if (!this.selectedAnswers.length || this.playerViewState !== 'answering') return;
+    this.submittedAnswers = [...this.selectedAnswers];
     this.setViewState('answered');
     this.quiz.submitAnswer([...this.selectedAnswers]);
   }
@@ -176,8 +181,29 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
 
   revealClass(answer: RevealAnswer): string {
     if (answer.isCorrect) return 'reveal-correct';
-    if (this.selectedAnswers.includes(answer.label)) return 'reveal-wrong-pick';
+    if (this.hasSubmittedAnswer(answer.label)) return 'reveal-wrong-pick';
     return 'reveal-unchosen';
+  }
+
+  revealStatusLabel(answer: RevealAnswer): string {
+    const picked = this.hasSubmittedAnswer(answer.label);
+    if (answer.isCorrect && picked) return 'Correct · your answer';
+    if (answer.isCorrect) return 'Correct answer';
+    if (picked) return 'Your answer';
+    return 'Other option';
+  }
+
+  hasSubmittedAnswer(label: string): boolean {
+    return this.submittedAnswerLabels().includes(label);
+  }
+
+  submittedAnswerText(): string {
+    const answers = this.submittedAnswerLabels();
+    return answers.length ? answers.join(', ') : '—';
+  }
+
+  private submittedAnswerLabels(): string[] {
+    return this.submittedAnswers.length ? this.submittedAnswers : this.selectedAnswers;
   }
 
   strokeOffset(): number {

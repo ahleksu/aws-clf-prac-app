@@ -55,10 +55,13 @@
         </strong>
 
         <ul *ngIf="hasReveal()" class="reveal-answer-list">
-          <li *ngFor="let answer of revealAnswers()" [class.correct]="answer.isCorrect">
-            <span class="reveal-answer-label">{{ answer.label }}</span>
+          <li *ngFor="let answer of revealAnswers()" [ngClass]="revealClass(answer)">
             <div>
-              <strong>{{ answer.text }}</strong>
+              <div class="reveal-answer-heading">
+                <span class="reveal-answer-label">{{ answer.label }}</span>
+                <strong>{{ answer.text }}</strong>
+                <em>{{ revealStatusLabel(answer) }}</em>
+              </div>
               <p *ngIf="answer.explanation">{{ answer.explanation }}</p>
               <p *ngIf="!answer.explanation" class="muted">No explanation provided.</p>
             </div>

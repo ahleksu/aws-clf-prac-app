@@ -1315,6 +1315,23 @@ type PlayerViewState = 'answering' | 'answered' | 'leaderboard' | 'waiting' | 'p
 | `waiting` | Hidden | Hidden | "⏳ Waiting for host..." + player's current score/rank |
 | `paused` | Hidden | Hidden (or frozen) | "⏸ Quiz Paused by Host" |
 
+**UI requirement:** `answered`, `leaderboard`, and `waiting` must preserve the
+same answer-review surface after a player submits. The player should continue to
+see whether their answer was correct, points earned, the selected answer, the
+correct answer, color-coded revealed options, and per-answer explanations while
+the leaderboard overlay is shown and after it is dismissed. Do not replace the
+answered screen with a blank waiting state.
+
+The player's submitted answer labels must be stored separately from the active
+selection state so the result panel can accurately show "Your answer" after the
+answer result arrives and after the state moves to `leaderboard` or `waiting`.
+The waiting-for-host UI should be a compact status card at the top right of the
+player view, not a large block below the answer review.
+
+In the player answer grid, reveal icons for correct and selected-wrong answers
+must stay in a dedicated trailing column on the right side of the answer button.
+They must not wrap under the answer text or letter badge on long answer labels.
+
 **Transitions:**
 ```
 new question arrives (game:question)     → 'answering'
@@ -1327,7 +1344,7 @@ game:resumed                             → restore previous non-paused state
 game:ended                               → navigate to /leaderboard/:code
 ```
 
-**Implementation:** Replace the ad-hoc `submitted`, `showLeaderboard`, and disconnected boolean flags with a single `playerViewState: PlayerViewState` property. This makes the template a simple `@switch` on state, eliminating impossible combinations.
+**Implementation:** Replace the ad-hoc `submitted`, `showLeaderboard`, and disconnected boolean flags with a single `playerViewState: PlayerViewState` property. This makes the template a simple `@switch` on state, eliminating impossible combinations. Use compact rounded answer-letter badges with white letters on a dark background rather than circular chips in reveal/review panels so the answer labels read like structured quiz controls instead of decorative icons.
 
 ---
 

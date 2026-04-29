@@ -62,60 +62,11 @@
         </div>
       }
       @case ('answered') {
-        <article class="question-card">
-          <p class="question-type">Answer submitted</p>
-          <h2>{{ question.questionText }}</h2>
-        </article>
-
-        <ng-container *ngIf="hasReveal(); else awaitingReveal">
-          <div class="answer-grid">
-            <button
-              *ngFor="let answer of revealAnswers()"
-              type="button"
-              class="answer-button"
-              [ngClass]="revealClass(answer)"
-              disabled
-            >
-              <strong>{{ answer.label }}</strong>
-              <span>{{ answer.text }}</span>
-              <i *ngIf="answer.isCorrect" class="pi pi-check-circle reveal-icon"></i>
-            </button>
-          </div>
-
-          <ul class="reveal-explanations">
-            <li *ngFor="let answer of revealAnswers()">
-              <span class="reveal-label" [ngClass]="revealClass(answer)">{{ answer.label }}</span>
-              <p *ngIf="answer.explanation">{{ answer.explanation }}</p>
-              <p *ngIf="!answer.explanation" class="muted">No explanation provided.</p>
-            </li>
-          </ul>
-        </ng-container>
-
-        <ng-template #awaitingReveal>
-          <div class="answer-grid">
-            <button
-              *ngFor="let answer of question.answers"
-              type="button"
-              class="answer-button"
-              [class.selected]="isSelected(answer.label)"
-              [ngStyle]="answerStyle(answer.label)"
-              disabled
-            >
-              <strong>{{ answer.label }}</strong>
-              <span>{{ answer.text }}</span>
-            </button>
-          </div>
-        </ng-template>
-
-        <section *ngIf="quiz.answerResult() as result" class="result-panel" [class.correct]="result.correct">
-          <i [class]="result.correct ? 'pi pi-check-circle' : 'pi pi-times-circle'"></i>
-          <div>
-            <strong>{{ result.correct ? 'Correct' : 'Incorrect' }}</strong>
-            <p>{{ result.pointsEarned }} points earned</p>
-          </div>
-        </section>
+        <ng-container *ngTemplateOutlet="answeredContent; context: { question: question }"></ng-container>
       }
       @case ('leaderboard') {
+        <ng-container *ngTemplateOutlet="answeredContent; context: { question: question }"></ng-container>
+
         <section class="overlay" (click)="dismissLeaderboard()">
           <div class="overlay-panel leaderboard-panel">
             <p class="eyebrow">Leaderboard</p>
@@ -131,25 +82,8 @@
         </section>
       }
       @case ('waiting') {
-        <section class="waiting-host">
-          <i class="pi pi-clock pulse-icon"></i>
-          <h2>Waiting for host to advance...</h2>
-          <p class="waiting-hint">Hang tight — the next question is coming.</p>
-          <div class="waiting-stats">
-            <div>
-              <small>Your score</small>
-              <strong>{{ quiz.myProfile().score }}</strong>
-            </div>
-            <div>
-              <small>Your rank</small>
-              <strong>#{{ quiz.myProfile().rank || '—' }}</strong>
-            </div>
-            <div>
-              <small>Streak</small>
-              <strong>{{ quiz.myProfile().streak }}</strong>
-            </div>
-          </div>
-        </section>
+        <ng-container *ngTemplateOutlet="answeredContent; context: { question: question }"></ng-container>
+        <ng-container *ngTemplateOutlet="waitingForHost"></ng-container>
       }
       @case ('paused') {
         <section class="overlay">
@@ -162,6 +96,108 @@
       }
     }
   </section>
+
+  <ng-template #answeredContent let-question="question">
+    <article class="question-card answered-question">
+      <p class="question-type">{{ quiz.answerResult() ? 'Answer submitted' : 'Answer review' }}</p>
+      <h2>{{ question.questionText }}</h2>
+    </article>
+
+    <ng-container *ngIf="hasReveal(); else awaitingReveal">
+      <div class="answer-grid">
+        <button
+          *ngFor="let answer of revealAnswers()"
+          type="button"
+          class="answer-button"
+          [ngClass]="revealClass(answer)"
+          disabled
+        >
+          <strong>{{ answer.label }}</strong>
+          <span>{{ answer.text }}</span>
+          <i
+            *ngIf="answer.isCorrect || hasSubmittedAnswer(answer.label)"
+            class="pi reveal-icon"
+            [ngClass]="answer.isCorrect ? 'pi-check-circle' : 'pi-times-circle'"
+          ></i>
+        </button>
+      </div>
+
+      <section *ngIf="quiz.answerResult() as result" class="result-panel" [class.correct]="result.correct">
+        <i [class]="result.correct ? 'pi pi-check-circle' : 'pi pi-times-circle'"></i>
+        <div>
+          <strong>{{ result.correct ? 'Correct' : 'Incorrect' }}</strong>
+          <p>{{ result.pointsEarned }} points earned</p>
+          <small>
+            Your answer: {{ submittedAnswerText() }} · Correct answer:
+            {{ result.correctAnswers.join(', ') }}
+          </small>
+        </div>
+      </section>
+
+      <ul class="reveal-explanations">
+        <li *ngFor="let answer of revealAnswers()" [ngClass]="revealClass(answer)">
+          <div class="reveal-answer-heading">
+            <span class="reveal-label">{{ answer.label }}</span>
+            <strong>{{ answer.text }}</strong>
+            <em>{{ revealStatusLabel(answer) }}</em>
+          </div>
+          <p *ngIf="answer.explanation">{{ answer.explanation }}</p>
+          <p *ngIf="!answer.explanation" class="muted">No explanation provided.</p>
+        </li>
+      </ul>
+    </ng-container>
+
+    <ng-template #awaitingReveal>
+      <div class="answer-grid">
+        <button
+          *ngFor="let answer of question.answers"
+          type="button"
+          class="answer-button"
+          [class.selected]="isSelected(answer.label)"
+          [ngStyle]="answerStyle(answer.label)"
+          disabled
+        >
+          <strong>{{ answer.label }}</strong>
+          <span>{{ answer.text }}</span>
+        </button>
+      </div>
+
+      <section *ngIf="quiz.answerResult() as result" class="result-panel" [class.correct]="result.correct">
+        <i [class]="result.correct ? 'pi pi-check-circle' : 'pi pi-times-circle'"></i>
+        <div>
+          <strong>{{ result.correct ? 'Correct' : 'Incorrect' }}</strong>
+          <p>{{ result.pointsEarned }} points earned</p>
+          <small *ngIf="result.explanation">{{ result.explanation }}</small>
+        </div>
+      </section>
+    </ng-template>
+  </ng-template>
+
+  <ng-template #waitingForHost>
+    <section class="waiting-host">
+      <div class="waiting-host-copy">
+        <i class="pi pi-clock pulse-icon"></i>
+        <div>
+          <h2>Waiting for host to advance...</h2>
+          <p class="waiting-hint">Review the answer while the host moves to the next question.</p>
+        </div>
+      </div>
+      <div class="waiting-stats">
+        <div>
+          <small>Your score</small>
+          <strong>{{ quiz.myProfile().score }}</strong>
+        </div>
+        <div>
+          <small>Your rank</small>
+          <strong>#{{ quiz.myProfile().rank || '—' }}</strong>
+        </div>
+        <div>
+          <small>Streak</small>
+          <strong>{{ quiz.myProfile().streak }}</strong>
+        </div>
+      </div>
+    </section>
+  </ng-template>
 
   <ng-template #waiting>
     <section class="waiting">

@@ -17,7 +17,7 @@
 | P5 | Integration Testing | **Complete** | 7 / 7 | P5-T1 through P5-T7 verified; production builds pass with existing Angular budget/selector warnings |
 | P6 | AWS Deployment (Hybrid: Vercel + EC2) | **Complete** ✅ | 14 / 14 | Frontend: https://aws-clf-prac-app.vercel.app · Backend: https://api.47.130.41.30.nip.io |
 | P7 | CLF-C02 Question Bank Audit | **Not Started** | 0 / 7 | Comprehensive audit + EC2 redeploy; see TODOs.md |
-| P8 | Live Session Feature Enhancements | **In Progress** | 6 / 7 | T1–T6 implemented + production builds pass; T7 pending local smoke-test + branch push |
+| P8 | Live Session Feature Enhancements | **In Progress** | 6 / 7 | T1–T6 implemented; P8-T6 UI/UX follow-up fixed; production builds pass; T7 pending user-run local smoke test |
 
 ---
 
@@ -167,8 +167,8 @@
 - [x] P8-T3: QR code + shareable link in `HostLobbyComponent` (`qrcode` npm, `frontendBaseUrl` env var, copy-to-clipboard)
 - [x] P8-T4: CSV export on `LeaderboardComponent` (host-only; client-side; columns: Rank/Nickname/Score/Correct/Total/Accuracy/Streak)
 - [x] P8-T5: Scoring mode toggle `'speed' | 'points'` (Backend `GameSession.calculatePoints()` + Frontend `HostDashboardComponent` SelectButton + host header badge)
-- [x] P8-T6: "Waiting for Host Action" UX state in `PlayerGameComponent` (`playerViewState` union type replaces ad-hoc booleans)
-- [ ] P8-T7: Build validation ✅ (both `ng build --configuration production` and `cd backend && npm run build` pass) + local multi-tab smoke test (PENDING) + push branch (PENDING)
+- [x] P8-T6: "Waiting for Host Action" UX state in `PlayerGameComponent` (`playerViewState` union type replaces ad-hoc booleans; follow-up restored persistent answer-review UI across answered/leaderboard/waiting, preserves submitted answer labels, uses compact top-right waiting card, replaced circular answer chips with dark rounded badges + white letters, and right-aligns reveal icons in a trailing answer-button column)
+- [ ] P8-T7: Build validation ✅ (both `ng build --configuration production` and `cd backend && npm run build` pass) + local multi-tab smoke test (PENDING user validation)
 
 ---
 
@@ -218,8 +218,8 @@
 | Health check | https://api.47.130.41.30.nip.io/health |
 | EC2 SSH | `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30` |
 
-**Last task completed:** Phase 8 T1–T6 fully implemented; production builds (Angular + backend) pass cleanly (2026-04-29)
-**Next task to work on:** Phase 8 — T7 only: local multi-tab smoke test + `git push -u origin feature/phase-8-enhancements`. Do NOT merge to master.
+**Last task completed:** Phase 8 T1–T6 fully implemented; P8-T6 UI/UX follow-up restored player answer feedback during leaderboard/waiting, fixed submitted-answer display, moved waiting status to a compact top-right card, cleaned answer-letter badges to dark backgrounds with white letters, and fixed reveal icon alignment in player answer buttons; production builds (Angular + backend) pass with warnings only; branch `feature/phase-8-enhancements` is already pushed (2026-04-29)
+**Next task to work on:** Phase 8 — T7 only: user-run local multi-tab smoke test. If it passes, tick P8-T7, mark Phase 8 complete, update this session to Phase 7 question-bank audit, commit `docs(P8-T7): smoke test passed; phase 8 complete`, and push the branch. Do NOT merge to master.
 **Files recently modified:** Branch `feature/phase-8-enhancements` — 28 files modified across `backend/src/{game,socket}`, `src/app/core/`, `src/app/pages/live/{host-dashboard,host-lobby,host-session,leaderboard,player-game}`, `src/environments/`, `package.json` (qrcode added)
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`

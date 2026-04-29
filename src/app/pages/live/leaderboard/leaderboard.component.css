@@ -143,7 +143,10 @@
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
   justify-content: center;
+  align-items: center;
   margin-top: 1.5rem;
 }
 
@@ -229,5 +232,10 @@
   .rank-list em {
     grid-column: 2;
     text-align: left;
+  }
+
+  .actions {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

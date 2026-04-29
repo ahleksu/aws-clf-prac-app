@@ -85,6 +85,14 @@ export class HostSessionComponent implements OnInit {
     return this.revealAnswers().length > 0;
   }
 
+  revealClass(answer: RevealAnswer): string {
+    return answer.isCorrect ? 'reveal-correct' : 'reveal-unchosen';
+  }
+
+  revealStatusLabel(answer: RevealAnswer): string {
+    return answer.isCorrect ? 'Correct answer' : 'Other option';
+  }
+
   scoringModeLabel(): string {
     return this.quiz.scoringMode() === 'points' ? 'Points Only' : 'Speed Scoring';
   }

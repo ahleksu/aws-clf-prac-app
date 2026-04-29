@@ -442,13 +442,17 @@
   - Update all `effect()` blocks and event listeners to set `playerViewState` correctly per the transition table in PLAN.md §19.6.
   - Template becomes a `@switch` on `playerViewState`:
     - `'answering'`: timer + answer buttons
-    - `'answered'`: disabled buttons with answer reveal; frozen timer
-    - `'leaderboard'`: between-question leaderboard card (existing)
-    - `'waiting'`: no timer; "⏳ Waiting for host to advance..." message with pulsing animation; show player's current score and rank
+    - `'answered'`: disabled buttons with answer reveal; frozen timer; result panel stays visible with correct/incorrect state and points
+    - `'leaderboard'`: between-question leaderboard card overlays the answered review instead of replacing it
+    - `'waiting'`: no timer; compact top-right "Waiting for host to advance..." status card with score/rank/streak while the answered review remains visible
     - `'paused'`: "⏸ Quiz Paused by Host" overlay (existing)
   - After the leaderboard card is dismissed, set `playerViewState = 'waiting'` (the fix).
   - On `game:question`, reset to `'answering'` (already happens via the `currentQuestion` effect).
-  - **Acceptance:** After submitting and the leaderboard slide auto-dismisses, player sees "Waiting for host..." with their current score — no frozen timer, no confusing blank state.
+  - Preserve answer feedback after submission and while waiting: correct/incorrect result, points earned, selected answer, correct answer, color-coded revealed options, and per-answer explanations must remain visible.
+  - Store submitted answer labels separately from active selection state so `Your answer` stays accurate after `answer:result`, `leaderboard:show`, and `waiting` transitions.
+  - Use compact rounded answer-letter badges in player and host reveal/review surfaces with white letters on a dark background; avoid circular chips that read like decorative icons.
+  - Keep correct/wrong reveal icons in a dedicated trailing column on player answer buttons; icons must stay right-aligned and vertically centered, not wrap below answer text.
+  - **Acceptance:** After submitting and the leaderboard slide is dismissed, player sees the answer review plus a compact top-right "Waiting for host..." card with their current score — no frozen timer, no blank state.
 
 - [ ] **P8-T7 (Validation):** Build and smoke-test all Phase 8 changes.
   - `ng build --configuration production` — must pass with no new errors.
@@ -457,8 +461,9 @@
   - Verify QR code resolves to correct join URL when scanned.
   - Verify per-answer reveal shows on both player and host screens.
   - Verify host session header shows correct question total.
-  - Commit: `feat(P8-T7): phase 8 validation complete`
-  - Push branch: `git push -u origin feature/phase-8-enhancements`
+  - Manual validation handoff: user will run the local smoke test before this task is marked complete.
+  - Commit after smoke passes: `docs(P8-T7): smoke test passed; phase 8 complete`
+  - Branch is already pushed; push again only for the final completion/fix commit.
   - **Do NOT merge to master.**
 
 ---
