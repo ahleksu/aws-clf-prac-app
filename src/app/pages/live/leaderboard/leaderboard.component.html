@@ -42,5 +42,12 @@
 
   <div class="actions">
     <p-button label="Back to Home" icon="pi pi-home" (onClick)="backHome()" />
+    <p-button
+      *ngIf="hostView() && entries().length"
+      label="Download Results CSV"
+      icon="pi pi-download"
+      severity="secondary"
+      (onClick)="downloadCsv()"
+    />
   </div>
 </main>
