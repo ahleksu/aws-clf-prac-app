@@ -4688,5 +4688,353 @@
         "explanation": "AWS CloudFormation is a service that allows you to define and provision AWS infrastructure as code. It enables you to use a template to describe and provision AWS resources in a repeatable and automated manner. With CloudFormation, you can manage your infrastructure as code, making it easier to version, replicate, and share infrastructure configurations."
       }
     ]
+  },
+  {
+    "id": 391,
+    "question": "Which AWS service provides an AI-powered assistant that connects to company data sources such as wikis, intranets, and document repositories to help employees find answers?",
+    "domain": "Cloud Technology and Services",
+    "resource": "https://aws.amazon.com/q/business/",
+    "type": "single",
+    "answers": [
+      {
+        "text": "Amazon Q Business",
+        "status": "correct",
+        "explanation": "Amazon Q Business is an AI-powered assistant that connects to an organization's data sources (SharePoint, Confluence, S3, etc.) and lets employees ask natural-language questions to get answers grounded in company content."
+      },
+      {
+        "text": "Amazon Kendra",
+        "status": "skipped",
+        "explanation": "Amazon Kendra is an intelligent enterprise search service, but it returns document results rather than acting as a conversational AI assistant that synthesizes answers across sources."
+      },
+      {
+        "text": "Amazon Lex",
+        "status": "skipped",
+        "explanation": "Amazon Lex is used to build conversational chatbots and voice interfaces. It is not an enterprise AI assistant that connects to and queries company data sources."
+      },
+      {
+        "text": "Amazon Bedrock",
+        "status": "skipped",
+        "explanation": "Amazon Bedrock provides access to foundation models via API. It is a platform for building AI applications, not a pre-built enterprise AI assistant."
+      }
+    ]
+  },
+  {
+    "id": 392,
+    "question": "A developer wants AI-powered code suggestions, security scans, and explanations directly inside their IDE without switching tools. Which AWS service provides this capability?",
+    "domain": "Cloud Technology and Services",
+    "resource": "https://aws.amazon.com/q/developer/",
+    "type": "single",
+    "answers": [
+      {
+        "text": "Amazon Q Developer",
+        "status": "correct",
+        "explanation": "Amazon Q Developer is an AI coding assistant available as an IDE plugin that provides real-time code suggestions, generates unit tests, explains code, performs security scans, and assists with CLI commands."
+      },
+      {
+        "text": "Amazon CodeGuru",
+        "status": "skipped",
+        "explanation": "Amazon CodeGuru Reviewer analyzes pull requests for code quality issues and security vulnerabilities, but it is not an interactive in-IDE AI assistant providing real-time suggestions."
+      },
+      {
+        "text": "AWS CodeBuild",
+        "status": "skipped",
+        "explanation": "AWS CodeBuild is a fully managed continuous integration service that compiles source code and runs tests. It does not provide AI-powered coding assistance."
+      },
+      {
+        "text": "Amazon SageMaker",
+        "status": "skipped",
+        "explanation": "Amazon SageMaker is a platform for building, training, and deploying machine learning models. It is not an AI coding assistant for general software development."
+      }
+    ]
+  },
+  {
+    "id": 393,
+    "question": "Which AWS service is the AI assistant embedded in the AWS Management Console that helps users navigate services, troubleshoot issues, and answer AWS-related questions in plain language?",
+    "domain": "Cloud Technology and Services",
+    "resource": "https://aws.amazon.com/q/",
+    "type": "single",
+    "answers": [
+      {
+        "text": "Amazon Q",
+        "status": "correct",
+        "explanation": "Amazon Q is AWS's generative AI assistant. When accessed from the AWS Management Console, it can answer questions about AWS services, explain console options, help troubleshoot errors, and provide guidance on AWS best practices."
+      },
+      {
+        "text": "AWS Trusted Advisor",
+        "status": "skipped",
+        "explanation": "AWS Trusted Advisor provides automated best-practice checks across cost, security, fault tolerance, performance, and service limits. It is not a conversational AI assistant."
+      },
+      {
+        "text": "AWS Health Dashboard",
+        "status": "skipped",
+        "explanation": "AWS Health Dashboard shows the health of AWS services and sends alerts about events affecting your account. It is a monitoring tool, not an AI assistant."
+      },
+      {
+        "text": "Amazon Comprehend",
+        "status": "skipped",
+        "explanation": "Amazon Comprehend is a natural language processing service used to extract insights from text. It is not an AI assistant embedded in the AWS console."
+      }
+    ]
+  },
+  {
+    "id": 394,
+    "question": "A company needs to coordinate multiple AWS Lambda functions and services into a visual, step-by-step workflow that handles retries, errors, and branching logic. Which AWS service should the company use?",
+    "domain": "Cloud Technology and Services",
+    "resource": "https://aws.amazon.com/step-functions/",
+    "type": "single",
+    "answers": [
+      {
+        "text": "AWS Step Functions",
+        "status": "correct",
+        "explanation": "AWS Step Functions is a serverless workflow orchestration service that lets you coordinate AWS services into state machines using a visual designer. It handles retries, error handling, parallel execution, and branching, making it ideal for multi-step distributed applications."
+      },
+      {
+        "text": "Amazon SQS",
+        "status": "skipped",
+        "explanation": "Amazon SQS is a message queuing service that decouples components. It does not orchestrate multi-step workflows or handle branching logic and retries across services."
+      },
+      {
+        "text": "Amazon EventBridge",
+        "status": "skipped",
+        "explanation": "Amazon EventBridge is an event bus that routes events between AWS services and applications. It triggers reactions to events but does not manage multi-step workflow state or orchestration."
+      },
+      {
+        "text": "AWS Lambda",
+        "status": "skipped",
+        "explanation": "AWS Lambda executes individual functions. While Lambda functions can call other services, Lambda itself does not provide workflow orchestration, state management, or visual workflow design."
+      }
+    ]
+  },
+  {
+    "id": 395,
+    "question": "Which AWS service uses a visual state machine model to build and run distributed applications by connecting AWS services as individual steps?",
+    "domain": "Cloud Technology and Services",
+    "resource": "https://aws.amazon.com/step-functions/",
+    "type": "single",
+    "answers": [
+      {
+        "text": "AWS Step Functions",
+        "status": "correct",
+        "explanation": "AWS Step Functions provides a visual workflow designer based on state machines. Developers define states (tasks, choices, parallel, wait) and connect AWS services as steps. The service manages execution, retries, and error handling automatically."
+      },
+      {
+        "text": "AWS CodePipeline",
+        "status": "skipped",
+        "explanation": "AWS CodePipeline automates CI/CD release pipelines. It is designed for software delivery workflows, not general distributed application orchestration."
+      },
+      {
+        "text": "AWS Batch",
+        "status": "skipped",
+        "explanation": "AWS Batch runs large-scale batch computing jobs on AWS. It schedules and executes batch workloads but does not provide a general-purpose visual workflow state machine."
+      },
+      {
+        "text": "Amazon SNS",
+        "status": "skipped",
+        "explanation": "Amazon SNS is a publish/subscribe messaging service. It fans out messages to subscribers but does not orchestrate multi-step workflows or maintain state between steps."
+      }
+    ]
+  },
+  {
+    "id": 396,
+    "question": "A company is building a smart-factory solution that needs to securely connect thousands of industrial sensors to the AWS cloud so they can send telemetry data and receive commands. Which AWS service is designed for this purpose?",
+    "domain": "Cloud Technology and Services",
+    "resource": "https://aws.amazon.com/iot-core/",
+    "type": "single",
+    "answers": [
+      {
+        "text": "AWS IoT Core",
+        "status": "correct",
+        "explanation": "AWS IoT Core is a managed cloud service that allows IoT devices to connect securely to the cloud using standard protocols such as MQTT, HTTPS, and WebSockets. It can handle billions of messages and route them to AWS services for processing and storage."
+      },
+      {
+        "text": "Amazon Kinesis Data Streams",
+        "status": "skipped",
+        "explanation": "Amazon Kinesis Data Streams ingests and processes streaming data at scale, but it does not manage device identity, authentication, or bidirectional communication with IoT devices."
+      },
+      {
+        "text": "Amazon MQ",
+        "status": "skipped",
+        "explanation": "Amazon MQ is a managed message broker for Apache ActiveMQ and RabbitMQ. It is used for migrating enterprise messaging systems, not for connecting IoT devices to the cloud."
+      },
+      {
+        "text": "AWS Greengrass",
+        "status": "skipped",
+        "explanation": "AWS IoT Greengrass extends AWS to edge devices so they can act locally on the data they generate. It complements AWS IoT Core but is focused on edge computing rather than cloud connectivity and device management."
+      }
+    ]
+  },
+  {
+    "id": 397,
+    "question": "A company wants to give remote employees secure access to internal web applications through a cloud-managed browser, without requiring software installation or VPN configuration on employee devices. Which AWS service provides this capability?",
+    "domain": "Cloud Technology and Services",
+    "resource": "https://aws.amazon.com/workspaces/secure-browser/",
+    "type": "single",
+    "answers": [
+      {
+        "text": "Amazon WorkSpaces Secure Browser",
+        "status": "correct",
+        "explanation": "Amazon WorkSpaces Secure Browser is a fully managed, cloud-native browser service that allows users to securely access internal web applications from any device without installing software or configuring a VPN. Data stays in the cloud and is not downloaded to the local device."
+      },
+      {
+        "text": "Amazon WorkSpaces",
+        "status": "skipped",
+        "explanation": "Amazon WorkSpaces provides full cloud-based virtual desktops. It requires a client application installation and provides a complete desktop environment, which is more than needed for secure browser access to web apps."
+      },
+      {
+        "text": "AWS Client VPN",
+        "status": "skipped",
+        "explanation": "AWS Client VPN creates an encrypted tunnel from a user's device to AWS resources. It requires VPN client software on the device and does not provide a managed browser experience."
+      },
+      {
+        "text": "Amazon AppStream 2.0",
+        "status": "skipped",
+        "explanation": "Amazon AppStream 2.0 streams desktop applications (not just browsers) from AWS to any device. It is suited for streaming full applications, not providing a lightweight managed browser for web app access."
+      }
+    ]
+  },
+  {
+    "id": 398,
+    "question": "A company needs to continuously replicate on-premises physical and virtual servers to AWS so that, in the event of a disaster, production can be restored within minutes with minimal data loss. Which AWS service meets this requirement?",
+    "domain": "Cloud Technology and Services",
+    "resource": "https://aws.amazon.com/disaster-recovery/",
+    "type": "single",
+    "answers": [
+      {
+        "text": "AWS Elastic Disaster Recovery",
+        "status": "correct",
+        "explanation": "AWS Elastic Disaster Recovery (formerly CloudEndure Disaster Recovery) continuously replicates servers into a low-cost staging area on AWS. In case of a disaster, it can launch fully provisioned machines within minutes, meeting aggressive RPO and RTO targets."
+      },
+      {
+        "text": "AWS Backup",
+        "status": "skipped",
+        "explanation": "AWS Backup centralizes and automates data backup across AWS services. It provides point-in-time backups, but recovery from backups takes longer than continuous replication \u2014 it is not designed for minute-level RTO disaster recovery."
+      },
+      {
+        "text": "AWS DataSync",
+        "status": "skipped",
+        "explanation": "AWS DataSync automates transferring data between on-premises storage and AWS. It is a data migration and transfer service, not a disaster recovery solution that maintains continuous server replication."
+      },
+      {
+        "text": "AWS Storage Gateway",
+        "status": "skipped",
+        "explanation": "AWS Storage Gateway connects on-premises environments to cloud storage. It provides hybrid storage integration but is not a server replication and failover disaster recovery solution."
+      }
+    ]
+  },
+  {
+    "id": 399,
+    "question": "A startup wants to quickly build and deploy a full-stack web application with built-in authentication, a GraphQL API, and cloud storage, without managing backend infrastructure. Which AWS service is specifically designed for this use case?",
+    "domain": "Cloud Technology and Services",
+    "resource": "https://aws.amazon.com/amplify/",
+    "type": "single",
+    "answers": [
+      {
+        "text": "AWS Amplify",
+        "status": "correct",
+        "explanation": "AWS Amplify is a complete platform for building and deploying full-stack web and mobile applications. It provides pre-built libraries and CLI tools for authentication (Amazon Cognito), data (AppSync/DynamoDB), storage (S3), and hosting, allowing developers to focus on code rather than infrastructure."
+      },
+      {
+        "text": "AWS Elastic Beanstalk",
+        "status": "skipped",
+        "explanation": "AWS Elastic Beanstalk deploys and scales web applications by managing infrastructure. It does not provide pre-built mobile/web app features like authentication, GraphQL APIs, or file storage integrations out of the box."
+      },
+      {
+        "text": "AWS App Runner",
+        "status": "skipped",
+        "explanation": "AWS App Runner deploys containerized web applications and APIs with minimal configuration. It handles infrastructure but does not provide application-level building blocks like authentication, GraphQL data layers, or hosting for full-stack apps."
+      },
+      {
+        "text": "AWS CodeDeploy",
+        "status": "skipped",
+        "explanation": "AWS CodeDeploy automates application deployments to EC2 instances, Lambda, or on-premises servers. It is a deployment tool, not a full-stack application development and hosting platform."
+      }
+    ]
+  },
+  {
+    "id": 400,
+    "question": "A development team wants to build a real-time collaborative app that uses a GraphQL API to synchronize data across multiple devices and clients. Which AWS managed service should they use?",
+    "domain": "Cloud Technology and Services",
+    "resource": "https://aws.amazon.com/appsync/",
+    "type": "single",
+    "answers": [
+      {
+        "text": "AWS AppSync",
+        "status": "correct",
+        "explanation": "AWS AppSync is a fully managed GraphQL service that simplifies application development by creating a flexible API to securely access, manipulate, and combine data from multiple sources. It supports real-time data synchronization via subscriptions, making it ideal for collaborative applications."
+      },
+      {
+        "text": "Amazon API Gateway",
+        "status": "skipped",
+        "explanation": "Amazon API Gateway creates, publishes, and secures REST, HTTP, and WebSocket APIs. It does not natively support GraphQL or built-in real-time data synchronization across clients."
+      },
+      {
+        "text": "Amazon Kinesis",
+        "status": "skipped",
+        "explanation": "Amazon Kinesis processes streaming data at scale. It is used for analytics and data pipelines, not for building GraphQL APIs or syncing application data across devices."
+      },
+      {
+        "text": "Amazon SQS",
+        "status": "skipped",
+        "explanation": "Amazon SQS is a message queuing service for decoupling components. It delivers messages asynchronously but does not provide a GraphQL API or real-time bidirectional data synchronization."
+      }
+    ]
+  },
+  {
+    "id": 401,
+    "question": "A data analyst needs to clean, filter, and normalize a dataset using a visual, no-code interface with pre-built transformation recipes before loading it into a data warehouse. Which AWS service best meets this need?",
+    "domain": "Cloud Technology and Services",
+    "resource": "https://aws.amazon.com/glue/features/databrew/",
+    "type": "single",
+    "answers": [
+      {
+        "text": "AWS Glue DataBrew",
+        "status": "correct",
+        "explanation": "AWS Glue DataBrew is a visual data preparation service with over 250 pre-built transformations. Data analysts can clean and normalize data without writing code, then publish transformation recipes that can be reused in production pipelines."
+      },
+      {
+        "text": "Amazon EMR",
+        "status": "skipped",
+        "explanation": "Amazon EMR runs big data frameworks like Apache Spark and Hadoop. It is powerful for large-scale data processing but requires writing code and managing clusters \u2014 it is not a visual, no-code preparation tool."
+      },
+      {
+        "text": "AWS Glue",
+        "status": "skipped",
+        "explanation": "AWS Glue is a serverless ETL service. While it can clean and transform data, it requires writing ETL scripts (in Python or Scala) and is code-first \u2014 it does not offer a visual no-code interface like DataBrew."
+      },
+      {
+        "text": "Amazon Redshift",
+        "status": "skipped",
+        "explanation": "Amazon Redshift is a fully managed cloud data warehouse optimized for analytics queries. It is a destination for clean data, not a tool for visually preparing and transforming raw data before loading."
+      }
+    ]
+  },
+  {
+    "id": 402,
+    "question": "Which AWS service is specifically designed to help organizations achieve sub-minute Recovery Point Objectives (RPO) and Recovery Time Objectives (RTO) for servers during a disaster?",
+    "domain": "Cloud Technology and Services",
+    "resource": "https://aws.amazon.com/disaster-recovery/",
+    "type": "single",
+    "answers": [
+      {
+        "text": "AWS Elastic Disaster Recovery",
+        "status": "correct",
+        "explanation": "AWS Elastic Disaster Recovery continuously replicates source servers to AWS with replication intervals of seconds, enabling sub-minute RPOs. In a disaster, point-in-time recovery launches servers on AWS within minutes, enabling RTOs measured in minutes rather than hours."
+      },
+      {
+        "text": "Amazon RDS Multi-AZ",
+        "status": "skipped",
+        "explanation": "Amazon RDS Multi-AZ provides high availability for relational databases by automatically failing over to a standby replica. It is specific to RDS databases and does not provide disaster recovery for general servers or applications."
+      },
+      {
+        "text": "AWS Site-to-Site VPN",
+        "status": "skipped",
+        "explanation": "AWS Site-to-Site VPN creates an encrypted connection between on-premises networks and AWS. It provides network connectivity but is not a disaster recovery solution for server replication and failover."
+      },
+      {
+        "text": "AWS Snow Family",
+        "status": "skipped",
+        "explanation": "AWS Snow Family devices (Snowball, Snowcone, Snowmobile) are used for offline data migration and edge computing. They are not disaster recovery tools and do not support continuous server replication."
+      }
+    ]
   }
 ]
