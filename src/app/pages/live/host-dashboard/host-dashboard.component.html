@@ -30,6 +30,8 @@
           [(ngModel)]="questionCount"
           [showButtons]="true"
           [useGrouping]="false"
+          [min]="5"
+          [max]="maxQuestionCount()"
           inputStyleClass="w-full"
           styleClass="w-full"
           [ngClass]="{ 'invalid-count': !isQuestionCountValid() }"
@@ -52,6 +54,26 @@
           optionValue="value"
           styleClass="w-full"
         />
+      </label>
+
+      <label>
+        <span>Scoring mode</span>
+        <p-selectbutton
+          name="scoringMode"
+          [options]="scoringOptions"
+          [(ngModel)]="scoringMode"
+          optionLabel="label"
+          optionValue="value"
+          [allowEmpty]="false"
+          styleClass="scoring-mode-buttons"
+        />
+        <small class="scoring-hint">
+          @if (scoringMode === 'speed') {
+            Faster correct answers earn bigger bonuses; streaks add up to 500 points.
+          } @else {
+            Every correct answer earns a flat 1000 points — no time or streak bonus.
+          }
+        </small>
       </label>
 
       <p-button
