@@ -386,6 +386,83 @@
 
 ---
 
+## Phase 8 — Live Session Feature Enhancements
+
+> **Branch:** `feature/phase-8-enhancements` (create from `master` before any code changes)
+> **Goal:** Six targeted UX and feature improvements to the live quiz session experience. Do NOT merge to master until all tasks pass. See PLAN.md §19 for full implementation details.
+
+---
+
+- [ ] **P8-T1:** Full per-answer reveal after submission (Backend + Frontend).
+  - **Backend:** Expand `QuestionRevealPayload` in `types.ts` to `{ answers: RevealAnswer[], explanation: string }` where `RevealAnswer = { label: string; text: string; isCorrect: boolean; explanation: string }`.
+  - **Backend:** Update `QuestionLoader.ts` to preserve `explanation` on `LiveAnswer` objects (add optional `explanation?: string` field).
+  - **Backend:** Add `buildRevealPayload()` to `GameSession.ts`; update `playerHandlers.ts` (already emits `question:reveal` line 93) to use the new payload; also broadcast `question:reveal` from `hostHandlers.ts` on timer-expiry and `host:next`.
+  - **Frontend:** Add `RevealAnswer` type and updated `QuestionRevealPayload` to `live-quiz.model.ts`.
+  - **Frontend:** Add `revealPayload = signal<QuestionRevealPayload | null>(null)` to `LiveQuizService`; listen to `question:reveal` socket event; clear on new question.
+  - **Frontend `PlayerGameComponent`:** When `revealPayload()` is non-null, show all four answer buttons color-coded (green = correct, red = player's wrong pick, gray = unchosen wrong) each with its own `explanation` text below.
+  - **Frontend `HostSessionComponent`:** Show the same per-answer reveal panel in the host view after timer ends or all players answer.
+  - **Acceptance:** Submitting a wrong answer shows all four options with their correct/incorrect status and individual explanations. Host screen shows the same reveal.
+
+- [ ] **P8-T2:** Fix `totalQuestions` count display in `HostSessionComponent`.
+  - Trace `questionCount` from dashboard form → `host:create` payload → `GameManager.createSession()` → `GameSessionData.totalQuestions` → `QuestionPayload.total` → host session header template.
+  - Identify and fix the point where the count diverges from the user-selected value (likely the dashboard input default or validation upper-bound being passed as `questionCount`).
+  - Verify `HostDashboardComponent` question-count input defaults to `20` and passes the actual form value (not the max/upper-bound) to `createSession()`.
+  - **Acceptance:** Host session header shows "Question N of 20" (or whatever was selected), not the full domain question count.
+
+- [ ] **P8-T3:** QR code + shareable link in `HostLobbyComponent`.
+  - Add `frontendBaseUrl` to `src/environments/environment.ts` (`'http://localhost:4200'`) and `environment.prod.ts` (`'https://aws-clf-prac-app.vercel.app'`).
+  - Install `qrcode` and `@types/qrcode` in the Angular project root (`npm install qrcode @types/qrcode`).
+  - In `HostLobbyComponent`, generate a QR code data URL for `${environment.frontendBaseUrl}/join?code=${sessionCode}` using `QRCode.toDataURL()`.
+  - Display QR code as `<img>` at minimum 220×220 px above the session code.
+  - Below the QR: show the full join URL as a copyable text element with a copy-to-clipboard button (use `navigator.clipboard.writeText()`; show brief "Copied!" toast on success).
+  - Both elements must be large and legible when screen-shared on a projector.
+  - **Acceptance:** Host lobby shows QR code + URL; scanning the QR on a phone navigates to `/join?code=<code>` with the code pre-filled.
+
+- [ ] **P8-T4:** CSV export of session results in `LeaderboardComponent` (host view only).
+  - Add `isHost = input<boolean>(false)` and `sessionCode = input<string>('')` inputs to `LeaderboardComponent`.
+  - When `isHost()` is `true`, render a "Download Results CSV" PrimeNG `p-button` with a download icon.
+  - `downloadCsv()`: build CSV string with header row `Rank,Nickname,Score,Correct,Total Questions,Accuracy %,Streak`; fill rows from `finalLeaderboard`; create a `Blob('text/csv')`; trigger `<a download>` click.
+  - Filename: `quiz-results-<sessionCode>-<YYYY-MM-DD>.csv`.
+  - Wire `isHost` and `sessionCode` inputs from `HostSessionComponent` navigation to `/leaderboard/:code` — use `LiveQuizService` signal or route state to determine host context.
+  - Extend `LeaderboardEntry` in `live-quiz.model.ts` to include `correctCount: number` and `streak: number` if not already present; propagate from `Ranking` through `game:ended` payload.
+  - **Acceptance:** On the final leaderboard as host, clicking "Download Results CSV" downloads a valid CSV with one row per player.
+
+- [ ] **P8-T5:** Scoring mode toggle — `'speed'` vs `'points'` (Backend + Frontend).
+  - **Backend `types.ts`:** Add `export type ScoringMode = 'speed' | 'points'`; add `scoringMode: ScoringMode` to `GameSessionData`.
+  - **Backend `GameSession.ts`:** `calculatePoints()` branches on `this.data.scoringMode`: `'speed'` uses existing formula; `'points'` returns flat `1000` if correct, `0` if not.
+  - **Backend `hostHandlers.ts`:** Read `scoringMode` from `host:create` payload; default to `'speed'`. Echo `scoringMode` back in `session:created` response.
+  - **Frontend `live-quiz.model.ts`:** Add `ScoringMode` type export.
+  - **Frontend `live-quiz.service.ts`:** Add `scoringMode = signal<ScoringMode>('speed')`; set from `session:created` event.
+  - **Frontend `HostDashboardComponent`:** Add PrimeNG `SelectButton` with `[{ label: '⚡ Speed Scoring', value: 'speed' }, { label: '📋 Points Only', value: 'points' }]`; default `'speed'`; pass to `createSession()`.
+  - **Frontend `HostSessionComponent`:** Show scoring mode badge in the header bar.
+  - **Acceptance:** Selecting "Points Only" in the dashboard results in flat 1000 pts per correct answer; no time or streak bonus; host session header shows the active mode.
+
+- [ ] **P8-T6:** "Waiting for Host Action" UX state in `PlayerGameComponent`.
+  - Replace the ad-hoc `submitted: boolean` and `showLeaderboard: boolean` flags with a single `playerViewState: 'answering' | 'answered' | 'leaderboard' | 'waiting' | 'paused'` property.
+  - Update all `effect()` blocks and event listeners to set `playerViewState` correctly per the transition table in PLAN.md §19.6.
+  - Template becomes a `@switch` on `playerViewState`:
+    - `'answering'`: timer + answer buttons
+    - `'answered'`: disabled buttons with answer reveal; frozen timer
+    - `'leaderboard'`: between-question leaderboard card (existing)
+    - `'waiting'`: no timer; "⏳ Waiting for host to advance..." message with pulsing animation; show player's current score and rank
+    - `'paused'`: "⏸ Quiz Paused by Host" overlay (existing)
+  - After the leaderboard card is dismissed, set `playerViewState = 'waiting'` (the fix).
+  - On `game:question`, reset to `'answering'` (already happens via the `currentQuestion` effect).
+  - **Acceptance:** After submitting and the leaderboard slide auto-dismisses, player sees "Waiting for host..." with their current score — no frozen timer, no confusing blank state.
+
+- [ ] **P8-T7 (Validation):** Build and smoke-test all Phase 8 changes.
+  - `ng build --configuration production` — must pass with no new errors.
+  - `cd backend && npm run build` — must pass with no new errors.
+  - Local multi-tab test: host creates session with "Points Only" mode → player joins → answers question → verify flat scoring → leaderboard shows → player sees "Waiting for host..." → host advances → player game resumes → end quiz → host downloads CSV.
+  - Verify QR code resolves to correct join URL when scanned.
+  - Verify per-answer reveal shows on both player and host screens.
+  - Verify host session header shows correct question total.
+  - Commit: `feat(P8-T7): phase 8 validation complete`
+  - Push branch: `git push -u origin feature/phase-8-enhancements`
+  - **Do NOT merge to master.**
+
+---
+
 ## Optional Enhancements (Post-V1)
 
 These are nice-to-haves. Do NOT implement until Phase 6 is complete and tested.

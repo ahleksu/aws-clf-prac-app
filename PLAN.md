@@ -1186,6 +1186,151 @@ echo "Done. If both pass, you're ready to demo."
 
 ---
 
+## 19. Phase 8 — Live Session Feature Enhancements
+
+Six targeted improvements to the live quiz experience, all implemented on a dedicated branch (`feature/phase-8-enhancements`) off `master`. None of these changes break existing solo quiz mode.
+
+---
+
+### 19.1 Full Per-Answer Reveal After Submission
+
+**Problem:** After a player submits, they see only whether their pick was right and a single explanation. The host has no per-answer breakdown to facilitate classroom discussion. The backend already emits `question:reveal` (see `playerHandlers.ts`) but the payload is thin (`answerLabels[]` + one `explanation`) and the frontend never listens to it.
+
+**Data already available:** Every answer object in the quiz JSON already carries its own `explanation` field and `status` (`'correct'` | `'skipped'`). `QuestionLoader.ts` currently strips both when building `LiveAnswer` — they must be preserved for the reveal pathway without being sent to players *before* they answer.
+
+**Changes required:**
+
+| Layer | Change |
+|---|---|
+| `backend/src/game/types.ts` | Expand `QuestionRevealPayload` to include `answers: RevealAnswer[]` where `RevealAnswer = { label, text, isCorrect, explanation }` |
+| `backend/src/game/QuestionLoader.ts` | Store per-answer explanation in `LiveQuestion.answers` (add optional `explanation?: string` to `LiveAnswer`) |
+| `backend/src/game/GameSession.ts` | `buildRevealPayload()` — assembles `RevealAnswer[]` from the current question's answer data |
+| `backend/src/socket/playerHandlers.ts` | Already emits `question:reveal` on line 93; update the payload to use `buildRevealPayload()` |
+| `backend/src/socket/hostHandlers.ts` | Also broadcast `question:reveal` to the room on host-side timer-expiry / `host:next` so the host screen gets the reveal too |
+| `src/app/core/live-quiz.model.ts` | Add `RevealAnswer` and updated `QuestionRevealPayload` frontend types |
+| `src/app/core/live-quiz.service.ts` | Add `revealPayload = signal<QuestionRevealPayload \| null>(null)` ; listen to `question:reveal` socket event; clear on new question |
+| `src/app/pages/live/player-game/` | After answer submission, when `revealPayload()` is non-null, display all four answers with: green = correct, red = player's wrong pick, gray = unchosen wrong; show each answer's own `explanation` text below its button |
+| `src/app/pages/live/host-session/` | Show same per-answer reveal panel in the host view after timer ends or all players answer |
+
+**Security note:** `LiveAnswer.explanation` must NOT be included in `QuestionPayload` (the pre-answer broadcast). It is only sent in the post-answer `question:reveal` event.
+
+---
+
+### 19.2 Fix totalQuestions Count Display in Host Session
+
+**Problem:** The host session header shows the wrong total question count (e.g. "Question 3 of 390") instead of the selected count (e.g. "Question 3 of 20").
+
+**Investigation path:**
+1. `QuestionLoader.ts` correctly slices to `questionCount` before returning.
+2. `GameManager.ts` sets `totalQuestions: questions.length` — should be correct post-slice.
+3. Check `HostDashboardComponent` — the question-count input field's default value or the validator's upper bound may be set to the full domain question count and that value may be passed to the backend unintentionally.
+4. Check `HostSessionComponent` template — confirm it displays `currentQuestion()?.total` from `QuestionPayload`, not a stale raw count.
+
+**Fix:** Trace the `questionCount` value from the dashboard form through `host:create` → `GameManager.createSession()` → `GameSession.data.totalQuestions` → `QuestionPayload.total`. Identify the point of divergence and fix it. Also verify the dashboard input default is 20 (not the full domain count).
+
+---
+
+### 19.3 QR Code + Shareable Link in Host Lobby
+
+**Problem:** The host lobby shows only the text session code. During a classroom demo where the host shares their screen, scholars need a scannable QR code and a clickable link — typing a 6-char code into `/join` is error-prone.
+
+**Implementation:**
+
+```typescript
+// Install: npm install qrcode @types/qrcode
+import QRCode from 'qrcode';
+
+const joinUrl = `${environment.frontendBaseUrl}/join?code=${sessionCode}`;
+QRCode.toDataURL(joinUrl, { width: 220, margin: 2 })
+  .then(url => this.qrCodeDataUrl = url);
+```
+
+- `environment.ts`: add `frontendBaseUrl: 'http://localhost:4200'`
+- `environment.prod.ts`: add `frontendBaseUrl: 'https://aws-clf-prac-app.vercel.app'`
+- `HostLobbyComponent`: QR code displayed as `<img>` (220×220 px min) above the session code
+- Below QR: full clickable URL with a copy-to-clipboard button (PrimeNG Clipboard or native `navigator.clipboard`)
+- Both elements must be large and legible on a projected screen
+
+---
+
+### 19.4 CSV Export of Session Results (Host Only)
+
+**Problem:** After a classroom session ends, the host has no way to save the results for grading or review.
+
+**Implementation (client-side only, no backend changes):**
+
+```
+Columns: Rank, Nickname, Score, Correct Answers, Total Questions, Accuracy %, Streak
+Filename: quiz-results-<sessionCode>-<YYYY-MM-DD>.csv
+```
+
+- Add `isHost: boolean` and `sessionCode: string` inputs to `LeaderboardComponent`
+- When `isHost === true`, render a "Download Results CSV" button (PrimeNG `p-button` with download icon)
+- `downloadCsv()` method: build CSV string from `finalLeaderboard`, create a `Blob`, trigger `<a download>` click
+- The `LeaderboardComponent` already receives `finalLeaderboard: LeaderboardEntry[]`; extend `LeaderboardEntry` to include `correctCount` and `streak` if not already present (check `Ranking` interface — they're there; pass them through)
+- Host navigates to `/leaderboard/:code` from `HostSessionComponent` on `game:ended`; wire the `isHost` input via route data or service signal
+
+---
+
+### 19.5 Scoring Mode Toggle (Speed vs Points-Only)
+
+**Problem:** Speed-based scoring rewards fast typists over knowledgeable learners. Instructors want a flat "1 point per correct answer" option for pure knowledge assessment.
+
+**Two scoring modes:**
+
+| Mode | Formula | Max per question |
+|---|---|---|
+| `'speed'` (default) | `BASE(1000) + TIME_BONUS(0–500) + STREAK_BONUS(0–500)` | 2000 |
+| `'points'` | Flat 1000 per correct answer, no time or streak bonus | 1000 |
+
+**Backend changes:**
+- `backend/src/game/types.ts`: Add `ScoringMode = 'speed' | 'points'`; add `scoringMode: ScoringMode` to `GameSessionData`
+- `backend/src/game/GameSession.ts`: `calculatePoints()` branches on `this.data.scoringMode`
+- `backend/src/socket/hostHandlers.ts`: Read `scoringMode` from `host:create` payload; default to `'speed'`
+- `session:created` response: echo back `scoringMode` so the host UI can display it
+
+**Frontend changes:**
+- `src/app/core/live-quiz.model.ts`: Add `ScoringMode` type
+- `src/app/core/live-quiz.service.ts`: Add `scoringMode = signal<ScoringMode>('speed')`; set from `session:created`
+- `HostDashboardComponent`: PrimeNG `SelectButton` with options `[{ label: 'Speed Scoring', value: 'speed' }, { label: 'Points Only', value: 'points' }]`; include in `createSession()` call
+- `HostSessionComponent`: Show active mode badge in header bar (e.g. "⚡ Speed" or "📋 Points Only")
+
+---
+
+### 19.6 "Waiting for Host Action" UX State (Player Game)
+
+**Problem:** After a player submits their answer, the between-question leaderboard card auto-dismisses, and the player is left staring at a frozen timer with no indication of what happens next. This is confusing — it looks like the app has hung.
+
+**State machine for `PlayerGameComponent`:**
+
+```typescript
+type PlayerViewState = 'answering' | 'answered' | 'leaderboard' | 'waiting' | 'paused';
+```
+
+| State | Timer | Answer Buttons | Overlay |
+|---|---|---|---|
+| `answering` | Counting down | Active | — |
+| `answered` | Frozen (shows time when submitted) | Disabled; answer reveal shown | Answer result feedback |
+| `leaderboard` | Hidden | Hidden | Between-question leaderboard card |
+| `waiting` | Hidden | Hidden | "⏳ Waiting for host..." + player's current score/rank |
+| `paused` | Hidden | Hidden (or frozen) | "⏸ Quiz Paused by Host" |
+
+**Transitions:**
+```
+new question arrives (game:question)     → 'answering'
+player submits answer (answer:result)    → 'answered'
+leaderboard:show received                → 'leaderboard'
+leaderboard card dismissed               → 'waiting'      ← THE FIX
+game:question received while waiting     → 'answering'
+game:paused while waiting/answering      → 'paused'
+game:resumed                             → restore previous non-paused state
+game:ended                               → navigate to /leaderboard/:code
+```
+
+**Implementation:** Replace the ad-hoc `submitted`, `showLeaderboard`, and disconnected boolean flags with a single `playerViewState: PlayerViewState` property. This makes the template a simple `@switch` on state, eliminating impossible combinations.
+
+---
+
 ## 20. Out of Scope (This Version)
 
 - User accounts / authentication

@@ -16,6 +16,8 @@
 | P4 | Frontend: Player Interface | **Complete** | 4 / 4 | Angular + backend builds pass; warnings only |
 | P5 | Integration Testing | **Complete** | 7 / 7 | P5-T1 through P5-T7 verified; production builds pass with existing Angular budget/selector warnings |
 | P6 | AWS Deployment (Hybrid: Vercel + EC2) | **Complete** ✅ | 14 / 14 | Frontend: https://aws-clf-prac-app.vercel.app · Backend: https://api.47.130.41.30.nip.io |
+| P7 | CLF-C02 Question Bank Audit | **Not Started** | 0 / 7 | Comprehensive audit + EC2 redeploy; see TODOs.md |
+| P8 | Live Session Feature Enhancements | **In Progress** | 6 / 7 | T1–T6 implemented + production builds pass; T7 pending local smoke-test + branch push |
 
 ---
 
@@ -144,6 +146,32 @@
 
 ---
 
+## Phase 7 — CLF-C02 Question Bank Audit
+
+- [ ] P7-T1: Audit `public/quiz/cloud_concepts.json` — rewrite outdated questions, add `referenceUrl`, cover all Domain 1 task statements
+- [ ] P7-T2: Audit `public/quiz/security_compliance.json` — rewrite/update, add `referenceUrl`, cover all Domain 2 task statements
+- [ ] P7-T3: Audit `public/quiz/cloud_tech.json` — rewrite/update, add `referenceUrl`, cover all Domain 3 task statements
+- [ ] P7-T4: Audit `public/quiz/billing_support.json` — rewrite/update, add `referenceUrl`, cover all Domain 4 task statements
+- [ ] P7-T5: Regenerate `public/quiz/all.json` as clean merge of all four domains; validate JSON schema integrity
+- [ ] P7-T6: SSH EC2 → `git pull` → `cp -r public/quiz/ backend/quiz/` → `pm2 restart live-quiz-backend` → verify `/health`
+- [ ] P7-T7: Smoke-test live app — load session per domain, confirm questions render and answers evaluate correctly
+
+---
+
+## Phase 8 — Live Session Feature Enhancements
+
+> Branch: `feature/phase-8-enhancements` (off master)
+
+- [x] P8-T1: Full per-answer reveal after submission (Backend + Frontend — `QuestionRevealPayload` expansion, `PlayerGameComponent` + `HostSessionComponent` UI)
+- [x] P8-T2: Fix `totalQuestions` count display in `HostSessionComponent` (added `[min]`/`[max]` bounds on `p-inputnumber`; backend now echoes `totalQuestions` in `session:created`; service tracks `totalQuestions` signal)
+- [x] P8-T3: QR code + shareable link in `HostLobbyComponent` (`qrcode` npm, `frontendBaseUrl` env var, copy-to-clipboard)
+- [x] P8-T4: CSV export on `LeaderboardComponent` (host-only; client-side; columns: Rank/Nickname/Score/Correct/Total/Accuracy/Streak)
+- [x] P8-T5: Scoring mode toggle `'speed' | 'points'` (Backend `GameSession.calculatePoints()` + Frontend `HostDashboardComponent` SelectButton + host header badge)
+- [x] P8-T6: "Waiting for Host Action" UX state in `PlayerGameComponent` (`playerViewState` union type replaces ad-hoc booleans)
+- [ ] P8-T7: Build validation ✅ (both `ng build --configuration production` and `cd backend && npm run build` pass) + local multi-tab smoke test (PENDING) + push branch (PENDING)
+
+---
+
 ## Blockers
 
 > Record any blockers here. Include: what the blocker is, when it was encountered, and how it was resolved (or if it's still open).
@@ -190,9 +218,9 @@
 | Health check | https://api.47.130.41.30.nip.io/health |
 | EC2 SSH | `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30` |
 
-**Last task completed:** Phase 6 complete — all docs updated to reflect live deployment (2026-04-29)
-**Next task to work on:** Phase 7 (Post-Deployment) — CLF-C02 question bank audit and upgrade; deploy updated JSON to EC2.
-**Files recently modified:** PROGRESS.md, PLAN.md, TODOs.md, .github/workflows/deploy-frontend.yml
+**Last task completed:** Phase 8 T1–T6 fully implemented; production builds (Angular + backend) pass cleanly (2026-04-29)
+**Next task to work on:** Phase 8 — T7 only: local multi-tab smoke test + `git push -u origin feature/phase-8-enhancements`. Do NOT merge to master.
+**Files recently modified:** Branch `feature/phase-8-enhancements` — 28 files modified across `backend/src/{game,socket}`, `src/app/core/`, `src/app/pages/live/{host-dashboard,host-lobby,host-session,leaderboard,player-game}`, `src/environments/`, `package.json` (qrcode added)
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`
 - Admin IAM user is named `clf-quiz-admin-policy` (matches policy name — works fine)
