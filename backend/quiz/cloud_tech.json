@@ -3,7 +3,7 @@
     "id": 6,
     "question": "Which AWS service can be used to create a multi-account environment for a company with numerous accounts and teams?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/controltower/",
     "type": "single",
     "answers": [
       {
@@ -32,7 +32,7 @@
     "id": 7,
     "question": "Which AWS serverless data integration service should the company utilize to uncover, organize, transfer, and merge data from different sources for data analytics and machine learning purposes?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/glue/",
     "type": "single",
     "answers": [
       {
@@ -61,7 +61,7 @@
     "id": 8,
     "question": "What AWS service or feature allows users to connect Virtual Private Clouds (VPCs) and on-premises networks to a central hub?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/transit-gateway/",
     "type": "single",
     "answers": [
       {
@@ -119,7 +119,7 @@
     "id": 12,
     "question": "Which AWS service is used for transferring data between different AWS storage services?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/datasync/",
     "type": "single",
     "answers": [
       {
@@ -148,7 +148,7 @@
     "id": 18,
     "question": "Which feature of AWS Managed Services (AMS) will help a company understand the scope of operational support they can receive from AMS?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/managed-services/",
     "type": "single",
     "answers": [
       {
@@ -206,7 +206,7 @@
     "id": 22,
     "question": "Which AWS service or team provides specialized practice areas for users looking to speed up their cloud adoption journey through paid engagements?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/professional-services/",
     "type": "single",
     "answers": [
       {
@@ -269,7 +269,7 @@
     "id": 28,
     "question": "Which AWS service assists users in managing and keeping track of their server and application inventory migration data to AWS?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/migration-hub/",
     "type": "single",
     "answers": [
       {
@@ -298,7 +298,7 @@
     "id": 29,
     "question": "Which AWS service can a company utilize to execute a direct query on objects stored in an Amazon S3 bucket using SQL syntax?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/athena/",
     "type": "single",
     "answers": [
       {
@@ -327,7 +327,7 @@
     "id": 30,
     "question": "Which AWS service or feature would allow users to directly download files from the AWS Cloud using a public URL for a company's storage needs?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/download-objects.html",
     "type": "single",
     "answers": [
       {
@@ -356,7 +356,7 @@
     "id": 34,
     "question": "Where can users locate samples of AWS Cloud solution designs?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/architecture/",
     "type": "single",
     "answers": [
       {
@@ -414,7 +414,7 @@
     "id": 50,
     "question": "Which AWS service should the company utilize to ensure that its website reaches a global audience with minimal latency?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/cloudfront/",
     "type": "single",
     "answers": [
       {
@@ -430,7 +430,7 @@
       {
         "text": "Amazon CloudFront",
         "status": "correct",
-        "explanation": "Amazon CloudFront: It’s a content delivery network (CDN) service that distributes content globally through a network of edge locations. CloudFront caches and delivers static and dynamic content (including HTML, images, videos, and APIs) from the nearest edge location to the user, reducing latency significantly. By using CloudFront, the company can serve web content efficiently to users worldwide, improving their experience."
+        "explanation": "Amazon CloudFront: It\u2019s a content delivery network (CDN) service that distributes content globally through a network of edge locations. CloudFront caches and delivers static and dynamic content (including HTML, images, videos, and APIs) from the nearest edge location to the user, reducing latency significantly. By using CloudFront, the company can serve web content efficiently to users worldwide, improving their experience."
       },
       {
         "text": "Elastic Load Balancing",
@@ -443,7 +443,7 @@
     "id": 52,
     "question": "Which AWS service can the developers utilize to deploy their applications without the need to provision the infrastructure themselves, considering that the company uses AWS for all IT infrastructure?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/elasticbeanstalk/",
     "type": "single",
     "answers": [
       {
@@ -472,7 +472,7 @@
     "id": 53,
     "question": "Which AWS service or tool allows a company to automate the release of application changes?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/codedeploy/",
     "type": "single",
     "answers": [
       {
@@ -501,7 +501,7 @@
     "id": 59,
     "question": "Which AWS service should the company utilize in order to deploy their custom marketing application and order-processing application on different types of instances with varied configurations of CPU, memory, storage, and networking capacity?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/ec2/",
     "type": "single",
     "answers": [
       {
@@ -530,7 +530,7 @@
     "id": 60,
     "question": "What AWS service can businesses utilize to receive updates on AWS service issues by subscribing to RSS feeds?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/premiumsupport/technology/aws-health-dashboard/",
     "type": "single",
     "answers": [
       {
@@ -633,7 +633,7 @@
       {
         "text": "Amazon Rekognition",
         "status": "correct",
-        "explanation": "Amazon Rekognition is a cloud-based image and video analysis service that makes it easy to add advanced computer vision capabilities to your applications. The service is powered by proven deep learning technology and it requires no machine learning expertise to use. Amazon Rekognition includes a simple, easy-to-use API that can quickly analyze any image or video file that’s stored in Amazon S3. You can add features that detect objects, text, unsafe content, analyze images/videos, and compare faces to your application using Rekognition's APIs. With Amazon Rekognition's face recognition APIs, you can detect, analyze, and compare faces for a wide variety of use cases, including user verification, cataloging, people counting, and public safety."
+        "explanation": "Amazon Rekognition is a cloud-based image and video analysis service that makes it easy to add advanced computer vision capabilities to your applications. The service is powered by proven deep learning technology and it requires no machine learning expertise to use. Amazon Rekognition includes a simple, easy-to-use API that can quickly analyze any image or video file that\u2019s stored in Amazon S3. You can add features that detect objects, text, unsafe content, analyze images/videos, and compare faces to your application using Rekognition's APIs. With Amazon Rekognition's face recognition APIs, you can detect, analyze, and compare faces for a wide variety of use cases, including user verification, cataloging, people counting, and public safety."
       },
       {
         "text": "AWS Lambda",
@@ -802,7 +802,7 @@
       {
         "text": "Amazon Elastic Transcoder",
         "status": "correct",
-        "explanation": "Amazon Elastic Transcoder is media transcoding in the cloud. It is designed to be a highly scalable, easy to use and a cost effective way for developers and businesses to convert (or “transcode”) media files from their source format into versions that will playback on devices like smartphones, tablets and PCs."
+        "explanation": "Amazon Elastic Transcoder is media transcoding in the cloud. It is designed to be a highly scalable, easy to use and a cost effective way for developers and businesses to convert (or \u201ctranscode\u201d) media files from their source format into versions that will playback on devices like smartphones, tablets and PCs."
       },
       {
         "text": "Amazon Polly",
@@ -1086,7 +1086,7 @@
     "id": 102,
     "question": "What solution can the company implement to have its Amazon EC2 instances located in different areas within the same geographic region, using distinct power grids and separate networking connectivity?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-best-practices.html",
     "type": "single",
     "answers": [
       {
@@ -1305,7 +1305,7 @@
       {
         "text": "AWS Application Migration Service",
         "status": "correct",
-        "explanation": "AWS Application Migration Service (MGN) is a highly automated lift-and-shift (rehost) solution that simplifies, expedites, and reduces the cost of migrating applications to AWS. It allows companies to lift-and-shift a large number of physical, virtual, or cloud servers without compatibility issues, performance disruption, or long cutover windows. Application Migration Service replicates source servers into your AWS account. When you’re ready, it automatically converts and launches your servers on AWS so you can quickly benefit from the cost savings, productivity, resilience, and agility of the cloud. Once your applications are running on AWS, you can leverage AWS services and capabilities to quickly and easily replatform or refactor those applications – which makes lift-and-shift a fast route to modernization."
+        "explanation": "AWS Application Migration Service (MGN) is a highly automated lift-and-shift (rehost) solution that simplifies, expedites, and reduces the cost of migrating applications to AWS. It allows companies to lift-and-shift a large number of physical, virtual, or cloud servers without compatibility issues, performance disruption, or long cutover windows. Application Migration Service replicates source servers into your AWS account. When you\u2019re ready, it automatically converts and launches your servers on AWS so you can quickly benefit from the cost savings, productivity, resilience, and agility of the cloud. Once your applications are running on AWS, you can leverage AWS services and capabilities to quickly and easily replatform or refactor those applications \u2013 which makes lift-and-shift a fast route to modernization."
       },
       {
         "text": "AWS DataSync",
@@ -1318,7 +1318,7 @@
     "id": 114,
     "question": "Which solution can provide object storage access within a few milliseconds for a company's Amazon S3 needs?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/s3/storage-classes/",
     "type": "single",
     "answers": [
       {
@@ -1492,7 +1492,7 @@
     "id": 133,
     "question": "Which AWS service would be the most suitable to host the company's applications managing on-premises factory equipment in order to minimize latency?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/outposts/",
     "type": "single",
     "answers": [
       {
@@ -1521,7 +1521,7 @@
     "id": 134,
     "question": "Which configuration alteration can the company make to its Amazon EC2 instances with minimal operational overhead in order to rightsize them?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html",
     "type": "single",
     "answers": [
       {
@@ -1550,7 +1550,7 @@
     "id": 135,
     "question": "Which AWS service or feature can a company utilize to establish private network connectivity between its on-premises data center and the AWS Cloud, without relying on the public internet?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/directconnect/",
     "type": "single",
     "answers": [
       {
@@ -1579,7 +1579,7 @@
     "id": 138,
     "question": "What AWS service should the company use to offer customer service through voice calls and web chat?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/connect/",
     "type": "single",
     "answers": [
       {
@@ -1666,13 +1666,13 @@
     "id": 148,
     "question": "Which benefit of cloud computing will enable the company to rapidly establish infrastructure for new applications within minutes?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/what-is-cloud-computing/",
     "type": "single",
     "answers": [
       {
         "text": "Increase speed and agility",
         "status": "correct",
-        "explanation": "Increase speed and agility – In a cloud computing environment, new IT resources are only a click away, which means that you reduce the time to make those resources available to your developers from weeks to just minutes. This results in a dramatic increase in agility for the organization, since the cost and time it takes to experiment and develop is significantly lower."
+        "explanation": "Increase speed and agility \u2013 In a cloud computing environment, new IT resources are only a click away, which means that you reduce the time to make those resources available to your developers from weeks to just minutes. This results in a dramatic increase in agility for the organization, since the cost and time it takes to experiment and develop is significantly lower."
       },
       {
         "text": "Go global in minutes",
@@ -1695,7 +1695,7 @@
     "id": 149,
     "question": "Which AWS service utilizes edge locations for content caching?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/cloudfront/",
     "type": "single",
     "answers": [
       {
@@ -1724,7 +1724,7 @@
     "id": 151,
     "question": "Which AWS services do not require managing servers? (Choose TWO)",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/serverless/",
     "type": "multiple",
     "answers": [
       {
@@ -1758,13 +1758,13 @@
     "id": 153,
     "question": "Which AWS service is ideal for a company looking to efficiently organize, classify, and search through a vast amount of images?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/rekognition/",
     "type": "single",
     "answers": [
       {
         "text": "Amazon Rekognition",
         "status": "correct",
-        "explanation": "Amazon Rekognition is a cloud-based image and video analysis service that makes it easy to add advanced computer vision capabilities to your applications. The service is powered by proven deep learning technology and it requires no machine learning expertise to use. Amazon Rekognition includes a simple, easy-to-use API that can quickly analyze any image or video file that’s stored in Amazon S3. You can add features that detect objects, text, unsafe content, analyze images/videos, and compare faces to your application using Rekognition's APIs. With Amazon Rekognition's face recognition APIs, you can detect, analyze, and compare faces for a wide variety of use cases, including user verification, cataloging, people counting, and public safety."
+        "explanation": "Amazon Rekognition is a cloud-based image and video analysis service that makes it easy to add advanced computer vision capabilities to your applications. The service is powered by proven deep learning technology and it requires no machine learning expertise to use. Amazon Rekognition includes a simple, easy-to-use API that can quickly analyze any image or video file that\u2019s stored in Amazon S3. You can add features that detect objects, text, unsafe content, analyze images/videos, and compare faces to your application using Rekognition's APIs. With Amazon Rekognition's face recognition APIs, you can detect, analyze, and compare faces for a wide variety of use cases, including user verification, cataloging, people counting, and public safety."
       },
       {
         "text": "Amazon Aurora",
@@ -1787,7 +1787,7 @@
     "id": 156,
     "question": "Which AWS service can be used by a company to build an accessibility application that converts text into audible speech?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/polly/",
     "type": "single",
     "answers": [
       {
@@ -1808,7 +1808,7 @@
       {
         "text": "Amazon Polly",
         "status": "correct",
-        "explanation": "Amazon Polly is a cloud service that converts text into lifelike speech. You can use Amazon Polly to develop applications that increase engagement and accessibility. Amazon Polly supports multiple languages and includes a variety of lifelike voices. With Amazon Polly, you can build speech-enabled applications that work in multiple locations and use the ideal voice for your customers. Also, you only pay for the text you synthesize. You can also cache and replay Amazon Polly’s generated speech at no additional cost."
+        "explanation": "Amazon Polly is a cloud service that converts text into lifelike speech. You can use Amazon Polly to develop applications that increase engagement and accessibility. Amazon Polly supports multiple languages and includes a variety of lifelike voices. With Amazon Polly, you can build speech-enabled applications that work in multiple locations and use the ideal voice for your customers. Also, you only pay for the text you synthesize. You can also cache and replay Amazon Polly\u2019s generated speech at no additional cost."
       }
     ]
   },
@@ -1845,7 +1845,7 @@
     "id": 161,
     "question": "What advantage does using an Elastic Load Balancing (ELB) load balancer provide for applications hosted in the AWS Cloud?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/elasticloadbalancing/",
     "type": "single",
     "answers": [
       {
@@ -1874,13 +1874,13 @@
     "id": 165,
     "question": "Which AWS Cloud capabilities can the online retail company leverage to efficiently manage a surge in seasonal workload and migrate from on-premises systems? (Choose TWO)",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/pricing/",
     "type": "multiple",
     "answers": [
       {
         "text": "Pay-as-you-go pricing",
         "status": "correct",
-        "explanation": "Benefit from massive economies of scale – By using cloud computing, you can achieve a lower variable cost than you can get on your own. Because usage from hundreds of thousands of customers is aggregated in the cloud, providers such as AWS can achieve higher economies of scale, which translates into lower pay as-you-go prices."
+        "explanation": "Benefit from massive economies of scale \u2013 By using cloud computing, you can achieve a lower variable cost than you can get on your own. Because usage from hundreds of thousands of customers is aggregated in the cloud, providers such as AWS can achieve higher economies of scale, which translates into lower pay as-you-go prices."
       },
       {
         "text": "Built-in AWS CloudTrail audit capabilities",
@@ -1937,7 +1937,7 @@
     "id": 167,
     "question": "Which AWS service should the company utilize to collect information about their on-premises data center in preparation for migrating to the AWS Cloud?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/application-discovery/",
     "type": "single",
     "answers": [
       {
@@ -1966,7 +1966,7 @@
     "id": 168,
     "question": "Which AWS network services or features support the use of CIDR block notation for specifying IP address ranges? (Choose TWO)",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html",
     "type": "multiple",
     "answers": [
       {
@@ -2029,7 +2029,7 @@
     "id": 173,
     "question": "Which AWS service would be suitable for a company that needs to document and assess changes to configurations, as well as carry out corrective actions on AWS resources to meet compliance obligations?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/config/",
     "type": "single",
     "answers": [
       {
@@ -2058,7 +2058,7 @@
     "id": 176,
     "question": "Which AWS service would be most suitable for the one-time migration of a large dataset with millions of files from an on-premises data center to the AWS Cloud for the company?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/datasync/",
     "type": "single",
     "answers": [
       {
@@ -2087,7 +2087,7 @@
     "id": 177,
     "question": "Which AWS service or tool offers users a visual interface for the management of AWS services?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/console/",
     "type": "single",
     "answers": [
       {
@@ -2116,7 +2116,7 @@
     "id": 178,
     "question": "Which AWS service or feature can be used by a company to have a managed NFS file system for its AWS compute resources?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/efs/",
     "type": "single",
     "answers": [
       {
@@ -2145,7 +2145,7 @@
     "id": 183,
     "question": "Which Amazon Web Services (AWS) service utilizes technology that converts spoken words into written text to assist users in generating notes during meetings?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/transcribe/",
     "type": "single",
     "answers": [
       {
@@ -2174,7 +2174,7 @@
     "id": 185,
     "question": "Which AWS service can a company utilize to generate dashboards and charts for analyzing insights from business data?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/quicksight/",
     "type": "single",
     "answers": [
       {
@@ -2203,7 +2203,7 @@
     "id": 190,
     "question": "Which AWS service can be used to automate software deployment on both Amazon EC2 instances and on-premises instances for a company?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/codedeploy/",
     "type": "single",
     "answers": [
       {
@@ -2232,7 +2232,7 @@
     "id": 191,
     "question": "Which AWS service allows for the establishment of a secure network connection between on-premises environments and the AWS Cloud?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/directconnect/",
     "type": "single",
     "answers": [
       {
@@ -2290,7 +2290,7 @@
     "id": 195,
     "question": "Which AWS service could the company utilize to incorporate a conversational chatbot on their website?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/lex/",
     "type": "single",
     "answers": [
       {
@@ -2369,7 +2369,7 @@
       {
         "text": "Scalable and high performance",
         "status": "correct",
-        "explanation": "Using AWS tools, Auto Scaling, and Elastic Load Balancing, your application can scale up or down based on demand. Backed by Amazon’s massive infrastructure, you have access to compute and storage resources when you need them."
+        "explanation": "Using AWS tools, Auto Scaling, and Elastic Load Balancing, your application can scale up or down based on demand. Backed by Amazon\u2019s massive infrastructure, you have access to compute and storage resources when you need them."
       }
     ]
   },
@@ -2377,7 +2377,7 @@
     "id": 198,
     "question": "Which AWS service can be utilized to enhance the performance of public applications deployed behind Application Load Balancers?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/global-accelerator/",
     "type": "single",
     "answers": [
       {
@@ -2464,7 +2464,7 @@
     "id": 207,
     "question": "Which AWS principle can assist the company in conducting testing for the new application?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/what-is-cloud-computing/",
     "type": "single",
     "answers": [
       {
@@ -2480,7 +2480,7 @@
       {
         "text": "Scale up and down when needed without any long-term commitments.",
         "status": "correct",
-        "explanation": "Scalable and high-performance Using AWS tools, Auto Scaling, and Elastic Load Balancing, your application can scale up or down based on demand. Backed by Amazon’s massive infrastructure, you have access to compute and storage resources when you need them."
+        "explanation": "Scalable and high-performance Using AWS tools, Auto Scaling, and Elastic Load Balancing, your application can scale up or down based on demand. Backed by Amazon\u2019s massive infrastructure, you have access to compute and storage resources when you need them."
       },
       {
         "text": "Make long-term commitments in exchange for a cost discount.",
@@ -2493,7 +2493,7 @@
     "id": 209,
     "question": "Which AWS service can be used to provide remote access for a company's employees using Windows or Linux desktops, allowing them to work from home using any supported devices at any time and from anywhere?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/workspaces/",
     "type": "single",
     "answers": [
       {
@@ -2522,7 +2522,7 @@
     "id": 210,
     "question": "Which AWS service provides the capability to dynamically adjust the number of Amazon EC2 instances in use based on current workload?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html",
     "type": "single",
     "answers": [
       {
@@ -2551,7 +2551,7 @@
     "id": 211,
     "question": "Which AWS service or feature can serve as a central gateway between multiple VPCs and on-premises networks for a company's networking needs?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/transit-gateway/",
     "type": "single",
     "answers": [
       {
@@ -2580,7 +2580,7 @@
     "id": 212,
     "question": "Which AWS service can be used by a company to collect usage and configuration data for its application components when migrating from on-premises to the AWS Cloud?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/application-discovery/",
     "type": "single",
     "answers": [
       {
@@ -2638,7 +2638,7 @@
     "id": 219,
     "question": "How can the company utilize the AWS Cloud to host workloads that are not mandated to be on premises, while ensuring consistency in API calls for both on-premises and cloud workloads, given the need for some of the workloads to be kept on premises for regulatory compliance?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/outposts/",
     "type": "single",
     "answers": [
       {
@@ -2667,7 +2667,7 @@
     "id": 220,
     "question": "Which AWS service can fulfill a company's need for a centralized and automated data protection solution across both AWS services and hybrid workloads?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/backup/",
     "type": "single",
     "answers": [
       {
@@ -2696,7 +2696,7 @@
     "id": 221,
     "question": "Which AWS solution would be suitable for a company that needs to maintain its application on its own premises in order to comply with regulations, but also wants to leverage Amazon EC2 instances for other purposes?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/outposts/",
     "type": "single",
     "answers": [
       {
@@ -2783,7 +2783,7 @@
     "id": 224,
     "question": "Which AWS service or resource can be utilized by an ecommerce company to balance the traffic load between the Amazon EC2 instances hosting its website?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/elasticloadbalancing/application-load-balancer/",
     "type": "single",
     "answers": [
       {
@@ -2812,7 +2812,7 @@
     "id": 225,
     "question": "Which AWS service or feature necessitates the involvement of an internet service provider (ISP) and a colocation facility for implementation?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/directconnect/",
     "type": "single",
     "answers": [
       {
@@ -2841,7 +2841,7 @@
     "id": 226,
     "question": "Which AWS service allows a company to execute their application code without the need to manage servers?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/lambda/",
     "type": "single",
     "answers": [
       {
@@ -2870,7 +2870,7 @@
     "id": 234,
     "question": "Which AWS service can the company use to ensure that the data store for their application can scale to accommodate millions of database queries per second?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/dynamodb/",
     "type": "single",
     "answers": [
       {
@@ -2944,7 +2944,7 @@
       {
         "text": "Amazon DataZone",
         "status": "skipped",
-        "explanation": "Amazon DataZone is not an AWS service."
+        "explanation": "Amazon DataZone is an AWS data management service for cataloging and sharing data. However, it does not improve latency for multi-region applications \u2014 that is the role of Amazon CloudFront."
       },
       {
         "text": "AWS Auto Scaling",
@@ -2957,7 +2957,7 @@
     "id": 243,
     "question": "Which AWS service or tool can help a company centralize its call centers in order to enhance the customer voice and chat interaction with call center agents?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/connect/",
     "type": "single",
     "answers": [
       {
@@ -2986,7 +2986,7 @@
     "id": 244,
     "question": "Which AWS service or feature can the company use to enable new remote employees to access Windows virtual desktops from any location using either their computer or a web browser?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/workspaces/",
     "type": "single",
     "answers": [
       {
@@ -3015,13 +3015,13 @@
     "id": 245,
     "question": "What AWS service can the company use to enhance employee productivity by allowing them to search for and access specific answers through a unified intelligent search interface?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/kendra/",
     "type": "single",
     "answers": [
       {
         "text": "Amazon Kendra",
         "status": "correct",
-        "explanation": "Amazon Kendra is a managed information retrieval and intelligent search service that uses natural language processing and advanced deep learning model. Unlike traditional keyword-based search, Amazon Kendra uses semantic and contextual similarity—and ranking capabilities—to decide whether a text chunk or document is relevant to a retrieval query. With Amazon Kendra, you can create a unified search and retrieval experience by connecting multiple data repositories to an index and ingesting and crawling documents. You can use your document metadata to create a feature-rich and customized search experience for your users, helping them efficiently find the right answers to their queries."
+        "explanation": "Amazon Kendra is a managed information retrieval and intelligent search service that uses natural language processing and advanced deep learning model. Unlike traditional keyword-based search, Amazon Kendra uses semantic and contextual similarity\u2014and ranking capabilities\u2014to decide whether a text chunk or document is relevant to a retrieval query. With Amazon Kendra, you can create a unified search and retrieval experience by connecting multiple data repositories to an index and ingesting and crawling documents. You can use your document metadata to create a feature-rich and customized search experience for your users, helping them efficiently find the right answers to their queries."
       },
       {
         "text": "Amazon Connect",
@@ -3044,7 +3044,7 @@
     "id": 248,
     "question": "Which AWS service is suited for a company that needs to maintain part of its workload on-site for compliance while running other parts in the AWS Cloud?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/outposts/",
     "type": "single",
     "answers": [
       {
@@ -3073,11 +3073,11 @@
     "id": 249,
     "question": "Which AWS service is compatible with MySQL database engines?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/rds/",
     "type": "single",
     "answers": [
       {
-        "text": "Amazon Dynamo DВ",
+        "text": "Amazon DynamoDB",
         "status": "skipped",
         "explanation": "Amazon DynamoDB is not the correct answer because it is a NoSQL database service provided by AWS, not a service that supports MySQL database engines. DynamoDB is designed to provide fast and predictable performance with seamless scalability, making it a good choice for applications that require high availability and low latency, but it is not specific to MySQL databases."
       },
@@ -3102,7 +3102,7 @@
     "id": 253,
     "question": "Which AWS service or tool offers suggestions to assist users in selecting appropriately sized Amazon EC2 instances by analyzing past workload usage data?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/compute-optimizer/",
     "type": "single",
     "answers": [
       {
@@ -3131,7 +3131,7 @@
     "id": 254,
     "question": "Which AWS service can a company use to analyze and explore data stored in Amazon S3 using a programming language?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/athena/",
     "type": "single",
     "answers": [
       {
@@ -3247,7 +3247,7 @@
     "id": 264,
     "question": "What AWS service offers a fully managed graph database designed for handling interconnected datasets?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/neptune/",
     "type": "single",
     "answers": [
       {
@@ -3305,7 +3305,7 @@
     "id": 270,
     "question": "Which AWS services are capable of hosting PostgreSQL databases? (Choose TWO)",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/rds/postgresql/",
     "type": "multiple",
     "answers": [
       {
@@ -3368,7 +3368,7 @@
     "id": 273,
     "question": "What is the purpose of utilizing AWS CloudFormation templates?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/cloudformation/",
     "type": "single",
     "answers": [
       {
@@ -3397,7 +3397,7 @@
     "id": 274,
     "question": "Which AWS service allows users to deploy infrastructure configurations in a consistent and repeatable manner?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/cloudformation/",
     "type": "single",
     "answers": [
       {
@@ -3426,7 +3426,7 @@
     "id": 277,
     "question": "Which Amazon Web Services (AWS) service allows users to replicate resources across different AWS Regions?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/cloudformation/",
     "type": "single",
     "answers": [
       {
@@ -3455,7 +3455,7 @@
     "id": 278,
     "question": "Which AWS service can a company utilize for an application that requires a serverless compute service?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/lambda/",
     "type": "single",
     "answers": [
       {
@@ -3484,7 +3484,7 @@
     "id": 280,
     "question": "Which AWS service is responsible for DNS resolution?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/route53/",
     "type": "single",
     "answers": [
       {
@@ -3513,7 +3513,7 @@
     "id": 284,
     "question": "Which AWS service enables a company to manage infrastructure using code?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/cloudformation/",
     "type": "single",
     "answers": [
       {
@@ -3542,7 +3542,7 @@
     "id": 285,
     "question": "Which AWS service or concept can the company use to ensure that its application can efficiently scale in response to sudden increases in demand on Amazon EC2 instances while minimizing costs?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/autoscaling/",
     "type": "single",
     "answers": [
       {
@@ -3571,7 +3571,7 @@
     "id": 286,
     "question": "Which AWS service is specifically tailored for users who are operating workloads that incorporate a NoSQL database?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/dynamodb/",
     "type": "single",
     "answers": [
       {
@@ -3600,7 +3600,7 @@
     "id": 287,
     "question": "What technology should the company utilize to establish a reliable network connection with low latency between the on-premises data center and the AWS application for real-time data feed delivery?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/directconnect/",
     "type": "single",
     "answers": [
       {
@@ -3629,7 +3629,7 @@
     "id": 288,
     "question": "Which AWS service should the company utilize to host the domain name for their public website during the migration process to AWS?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/route53/",
     "type": "single",
     "answers": [
       {
@@ -3658,7 +3658,7 @@
     "id": 290,
     "question": "Which AWS service offers serverless computing options for running containers?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/fargate/",
     "type": "single",
     "answers": [
       {
@@ -3687,7 +3687,7 @@
     "id": 293,
     "question": "Which pair of AWS services can be utilized to migrate a proprietary relational database to an Amazon-managed open-source database?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/dms/schema-conversion-tool/",
     "type": "multiple",
     "answers": [
       {
@@ -3721,7 +3721,7 @@
     "id": 295,
     "question": "Which AWS service or tool can the company use to develop and deploy interactive business intelligence dashboards that incorporate machine learning-powered insights?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/quicksight/",
     "type": "single",
     "answers": [
       {
@@ -3750,7 +3750,7 @@
     "id": 297,
     "question": "What AWS service can the company use to set up and manage relationship databases in the AWS Cloud, ensuring that the database is installed and software updates are regularly applied?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/rds/",
     "type": "single",
     "answers": [
       {
@@ -3779,7 +3779,7 @@
     "id": 298,
     "question": "What AWS service allows for the sending of notifications when a particular Amazon CloudWatch alarm is triggered?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/sns/",
     "type": "single",
     "answers": [
       {
@@ -3808,7 +3808,7 @@
     "id": 299,
     "question": "Which functionality of Amazon RDS can be utilized to guarantee high availability of the product database being used by the company?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
     "type": "single",
     "answers": [
       {
@@ -3837,7 +3837,7 @@
     "id": 303,
     "question": "Which AWS service enables the sharing of files among several Amazon EC2 instances?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/efs/",
     "type": "single",
     "answers": [
       {
@@ -3866,13 +3866,13 @@
     "id": 305,
     "question": "Which AWS service offers machine learning functionality to identify and evaluate content in images and videos?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/rekognition/",
     "type": "single",
     "answers": [
       {
         "text": "Amazon Rekognition",
         "status": "correct",
-        "explanation": "Amazon Rekognition is a cloud-based image and video analysis service that makes it easy to add advanced computer vision capabilities to your applications. The service is powered by proven deep learning technology and it requires no machine learning expertise to use. Amazon Rekognition includes a simple, easy-to-use API that can quickly analyze any image or video file that’s stored in Amazon S3."
+        "explanation": "Amazon Rekognition is a cloud-based image and video analysis service that makes it easy to add advanced computer vision capabilities to your applications. The service is powered by proven deep learning technology and it requires no machine learning expertise to use. Amazon Rekognition includes a simple, easy-to-use API that can quickly analyze any image or video file that\u2019s stored in Amazon S3."
       },
       {
         "text": "Amazon Lightsail",
@@ -3895,7 +3895,7 @@
     "id": 312,
     "question": "Which AWS service would be best suited for the company's employees to access a managed workstation in the AWS Cloud using their personal devices while working from home?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/workspaces/",
     "type": "single",
     "answers": [
       {
@@ -3924,7 +3924,7 @@
     "id": 318,
     "question": "What AWS service enables user registration and authentication for mobile and web applications?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/cognito/",
     "type": "single",
     "answers": [
       {
@@ -3945,7 +3945,7 @@
       {
         "text": "Amazon Cognito",
         "status": "correct",
-        "explanation": "Amazon Cognito is an identity platform for web and mobile apps. It’s a user directory, an authentication server, and an authorization service for OAuth 2.0 access tokens and AWS credentials. With Amazon Cognito, you can authenticate and authorize users from the built-in user directory, from your enterprise directory, and from consumer identity providers like Google and Facebook."
+        "explanation": "Amazon Cognito is an identity platform for web and mobile apps. It\u2019s a user directory, an authentication server, and an authorization service for OAuth 2.0 access tokens and AWS credentials. With Amazon Cognito, you can authenticate and authorize users from the built-in user directory, from your enterprise directory, and from consumer identity providers like Google and Facebook."
       }
     ]
   },
@@ -3953,7 +3953,7 @@
     "id": 322,
     "question": "Which AWS service can a cloud practitioner utilize to ensure a reliable and scalable DNS service for their AWS workload?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/route53/",
     "type": "single",
     "answers": [
       {
@@ -3982,7 +3982,7 @@
     "id": 325,
     "question": "Which AWS service or tool could the company utilize in order to monitor, assess, evaluate, and predict the emissions generated by its AWS applications for the purpose of enhancing sustainability?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/carbon-footprint/",
     "type": "single",
     "answers": [
       {
@@ -4011,7 +4011,7 @@
     "id": 327,
     "question": "Which AWS service can provide assistance in managing cluster size, scheduling, and environment maintenance for a company that is currently operating its own Docker environment on Amazon EC2 instances?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/fargate/",
     "type": "single",
     "answers": [
       {
@@ -4040,7 +4040,7 @@
     "id": 328,
     "question": "Which AWS service can be utilized by a company to control deployed IT services and manage its infrastructure using code templates?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/servicecatalog/",
     "type": "single",
     "answers": [
       {
@@ -4069,7 +4069,7 @@
     "id": 330,
     "question": "Which AWS service enables the delivery of highly available applications with rapid failover in multi-Region and Multi-AZ setups?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/global-accelerator/",
     "type": "single",
     "answers": [
       {
@@ -4098,7 +4098,7 @@
     "id": 332,
     "question": "Which AWS service can a company use to perform data analysis without having to manage the infrastructure of a data warehouse?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/redshift/features/redshift-serverless/",
     "type": "single",
     "answers": [
       {
@@ -4161,7 +4161,7 @@
     "id": 337,
     "question": "Which AWS service can be used by a company to automate infrastructure deployment through infrastructure as code (IaC) and scale production stacks for deployment in multiple AWS Regions?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/cloudformation/",
     "type": "single",
     "answers": [
       {
@@ -4190,7 +4190,7 @@
     "id": 339,
     "question": "What is the most operationally efficient AWS solution for a company that needs to expand file storage capacity for a centralized group of users with high storage demands, while maintaining the performance advantages of local content sharing?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/storagegateway/",
     "type": "single",
     "answers": [
       {
@@ -4199,7 +4199,7 @@
         "explanation": "The solution of deploying an Amazon EC2 instance and attaching an Amazon EBS volume to share directly with users is not the most operationally efficient solution for this scenario. This approach would require managing the EC2 instance, configuring access controls, and potentially having to scale the instance as storage requirements grow. It would not provide the most efficient and scalable solution for a centralized group of users with large file storage requirements."
       },
       {
-        "text": "Move each user’s working environment to Amazon WorkSpaces. Set up an Amazon WorkDocs account for each user.",
+        "text": "Move each user\u2019s working environment to Amazon WorkSpaces. Set up an Amazon WorkDocs account for each user.",
         "status": "skipped",
         "explanation": "The suggested solution of moving each user's working environment to Amazon WorkSpaces and setting up an Amazon WorkDocs account for each user may not be the most operationally efficient option for the scenario described. While Amazon WorkSpaces provides virtual desktops for users to access their working environments remotely and Amazon WorkDocs offers file storage and sharing capabilities, these solutions may not efficiently address the specific requirement of extending file storage capabilities for a centralized group of users with large storage requirements while retaining performance benefits."
       },
@@ -4209,7 +4209,7 @@
         "explanation": "Yes, the proposed solution of creating an Amazon S3 bucket for each user and mounting each bucket using an S3 file system mounting utility is not the most operationally efficient AWS solution for the given scenario. While this solution would technically provide additional file storage capabilities for each user and allow them to access their files like a local drive, it is not the most operationally efficient option due to the management overhead involved. Managing individual S3 buckets for each user can become cumbersome, especially as the number of users grows. Additionally, constantly mounting and unmounting S3 buckets for each user may lead to performance issues and could complicate troubleshooting."
       },
       {
-        "text": "Configure and deploy an AWS Storage Gateway file gateway. Connect each user’s workstation to the file gateway.",
+        "text": "Configure and deploy an AWS Storage Gateway file gateway. Connect each user\u2019s workstation to the file gateway.",
         "status": "correct",
         "explanation": "Using an AWS Storage Gateway file gateway allows you to extend your on-premises file storage into the AWS Cloud seamlessly. It provides low-latency access to your data stored in Amazon S3 while maintaining the performance benefits of local access. This solution enables centralized management of storage while still allowing users to access files as if they were stored locally. Additionally, it eliminates the need for managing individual S3 buckets for each user, simplifying administration and scalability."
       }
@@ -4248,7 +4248,7 @@
     "id": 344,
     "question": "Which feature or service provided by AWS enables users to create a secure, direct connection between their on-premises data center and the AWS Cloud?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/directconnect/",
     "type": "single",
     "answers": [
       {
@@ -4259,7 +4259,7 @@
       {
         "text": "AWS VPN",
         "status": "skipped",
-        "explanation": "AWS VPN is not the correct answer because it is a service that enables you to establish a secure and private connection from your on-premises network to your AWS resources. It uses virtual private network (VPN) technology to create an encrypted tunnel between your network and the AWS Cloud. However, when establishing a dedicated network connection between a company’s on-premises data center and the AWS Cloud, the correct answer is AWS Direct Connect. AWS Direct Connect is a dedicated network connection service that allows you to establish a private, low-latency connection between your on-premises data center and the AWS Cloud. This service can provide a more consistent network experience compared to using the public internet or a VPN connection."
+        "explanation": "AWS VPN is not the correct answer because it is a service that enables you to establish a secure and private connection from your on-premises network to your AWS resources. It uses virtual private network (VPN) technology to create an encrypted tunnel between your network and the AWS Cloud. However, when establishing a dedicated network connection between a company\u2019s on-premises data center and the AWS Cloud, the correct answer is AWS Direct Connect. AWS Direct Connect is a dedicated network connection service that allows you to establish a private, low-latency connection between your on-premises data center and the AWS Cloud. This service can provide a more consistent network experience compared to using the public internet or a VPN connection."
       },
       {
         "text": "VPC peering",
@@ -4306,7 +4306,7 @@
     "id": 347,
     "question": "Which AWS service allows organizations to host an application in proximity to their target audience?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/cloudfront/",
     "type": "single",
     "answers": [
       {
@@ -4364,7 +4364,7 @@
     "id": 353,
     "question": "To reduce costs, which fully managed AWS service can a company use to migrate a NoSQL database that automatically scales throughput capacity to match workload demands?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/dynamodb/",
     "type": "single",
     "answers": [
       {
@@ -4393,7 +4393,7 @@
     "id": 355,
     "question": "Which combination of AWS services should the company utilize to discover, transform, and visualize various types of data within its central data platform for customers? (Choose TWO)",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/quicksight/",
     "type": "multiple",
     "answers": [
       {
@@ -4427,7 +4427,7 @@
     "id": 358,
     "question": "Which AWS service can a developer utilize to rapidly deploy an application on the cloud without the need for manual resource creation?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/elasticbeanstalk/",
     "type": "single",
     "answers": [
       {
@@ -4456,7 +4456,7 @@
     "id": 359,
     "question": "Which AWS service offers object storage with high durability?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/s3/",
     "type": "single",
     "answers": [
       {
@@ -4548,7 +4548,7 @@
     "id": 374,
     "question": "What AWS service would be the most cost-efficient choice for the company to run analysis queries on the 5 TB of data stored in Amazon S3?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/athena/",
     "type": "single",
     "answers": [
       {
@@ -4577,7 +4577,7 @@
     "id": 376,
     "question": "WWhich AWS service or feature enables distributed applications to send both text and email messages?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/sns/",
     "type": "single",
     "answers": [
       {
@@ -4606,7 +4606,7 @@
     "id": 377,
     "question": "What AWS service or capability can establish a secure connection between a workload in an on-premises environment and a workload in the AWS Cloud?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/directconnect/",
     "type": "single",
     "answers": [
       {
@@ -4635,7 +4635,7 @@
     "id": 379,
     "question": "Which AWS service or functionality enhances network performance by routing traffic via the AWS global network infrastructure?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/global-accelerator/",
     "type": "single",
     "answers": [
       {
@@ -4664,7 +4664,7 @@
     "id": 381,
     "question": "What AWS service allows for the management of infrastructure using code?",
     "domain": "Cloud Technology and Services",
-    "resource": "",
+    "resource": "https://aws.amazon.com/cloudformation/",
     "type": "single",
     "answers": [
       {

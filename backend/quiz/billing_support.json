@@ -3,7 +3,7 @@
     "id": 2,
     "question": "Which AWS Support plan offers the complete range of AWS Trusted Advisor checks at the most affordable price?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/premiumsupport/plans/",
     "type": "single",
     "answers": [
       {
@@ -53,7 +53,7 @@
       {
         "text": "AWS Billing Conductor",
         "status": "skipped",
-        "explanation": "AWS Billing Conductor is not a valid AWS service and does not exist within the AWS ecosystem. As a result, it cannot be used to optimize existing Amazon EC2 resources."
+        "explanation": "AWS Billing Conductor is an AWS service that allows you to customize billing data for showback and chargeback purposes within your organization. It is not a tool for optimizing EC2 resource utilization or rightsizing EC2 instances \u2014 those tasks are performed by AWS Cost Explorer and AWS Compute Optimizer."
       },
       {
         "text": "AWS Cost Explorer",
@@ -116,7 +116,7 @@
       {
         "text": "AWS Enterprise On-Ramp Support",
         "status": "correct",
-        "explanation": ""
+        "explanation": "AWS Enterprise On-Ramp Support is one of the two plans that provide access to a Technical Account Manager (TAM). Enterprise On-Ramp provides access to a pool of TAMs who deliver proactive guidance and best practices, rather than a dedicated TAM available only to you as in the full Enterprise Support plan."
       },
       {
         "text": "AWS Developer Support",
@@ -129,7 +129,7 @@
     "id": 14,
     "question": "What AWS service or feature could the company use to help estimate the cost of their AWS architecture solution prior to migration?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://calculator.aws/",
     "type": "single",
     "answers": [
       {
@@ -158,7 +158,7 @@
     "id": 16,
     "question": "Which AWS service can the company utilize to establish budget limits and receive notifications in case of surpassing those limits, as they migrate some of their on-premises IT services to the AWS Cloud and the finance department needs to forecast expenditures accurately?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/aws-cost-management/aws-budgets/",
     "type": "single",
     "answers": [
       {
@@ -187,7 +187,7 @@
     "id": 26,
     "question": "What is the most economical way for a company to purchase Amazon EC2 instances for a research lab where they need instances to run uninterrupted for 3 hours per week?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-on-demand-instances.html",
     "type": "single",
     "answers": [
       {
@@ -208,7 +208,7 @@
       {
         "text": "On-Demand Instances",
         "status": "correct",
-        "explanation": "The most cost-effective instance purchasing option for this scenario is On-Demand Instances. Here’s why: On-Demand Instances are ideal for workloads that run for short durations and cannot be interrupted. They provide the flexibility to pay for compute capacity by the hour or second, with no long-term commitments."
+        "explanation": "The most cost-effective instance purchasing option for this scenario is On-Demand Instances. Here\u2019s why: On-Demand Instances are ideal for workloads that run for short durations and cannot be interrupted. They provide the flexibility to pay for compute capacity by the hour or second, with no long-term commitments."
       }
     ]
   },
@@ -245,7 +245,7 @@
     "id": 33,
     "question": "What type of Amazon EC2 instance should the company invest in to receive a discount on pricing, considering that the application will need to be available and running continuously for three years or more?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
     "type": "single",
     "answers": [
       {
@@ -274,7 +274,7 @@
     "id": 35,
     "question": "Which solution is best suited for a company looking to optimize costs while running a critical compute workload on Amazon EC2 instances over the next 3 years?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/savingsplans/",
     "type": "single",
     "answers": [
       {
@@ -303,7 +303,7 @@
     "id": 36,
     "question": "Which purchasing option for Amazon EC2 instances would be suitable for a company with fluctuating and temporary workloads that require uninterrupted processing of short bursts of work?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-on-demand-instances.html",
     "type": "single",
     "answers": [
       {
@@ -332,7 +332,7 @@
     "id": 38,
     "question": "How would you describe the approach taken by the company in choosing the Amazon EC2 instance types and sizes to meet their performance and capacity needs while minimizing costs?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-rightsizing.html",
     "type": "single",
     "answers": [
       {
@@ -361,7 +361,7 @@
     "id": 39,
     "question": "What cloud concept is illustrated when utilizing AWS Cost Explorer?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/aws-cost-management/aws-cost-explorer/",
     "type": "single",
     "answers": [
       {
@@ -390,7 +390,7 @@
     "id": 41,
     "question": "Which AWS Support plan provides the most cost-effective option for a new AWS user who needs to interact with AWS Support through API calls?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/premiumsupport/plans/",
     "type": "single",
     "answers": [
       {
@@ -419,13 +419,13 @@
     "id": 45,
     "question": "What is the most cost-efficient purchasing option for running short-duration batch workloads on Amazon EC2 instances, considering the need for flexibility to handle interruptions and resume from where they left off?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/ec2/spot/",
     "type": "single",
     "answers": [
       {
         "text": "Spot Instances",
         "status": "correct",
-        "explanation": "Spot Instances – Request unused EC2 instances, which can reduce your Amazon EC2 costs significantly. Spot Instances are the most cost-effective EC2 purchasing option for batch workloads that can handle interruptions and start again from where they ended. Spot Instances allow you to bid on unused EC2 capacity, potentially saving you up to 90% compared to On-Demand instances. However, there is a risk of interruption if the Spot price exceeds your bid. Since your workloads can handle interruptions and resume from where they left off, Spot Instances are a suitable and cost-effective choice for this specific scenario."
+        "explanation": "Spot Instances \u2013 Request unused EC2 instances, which can reduce your Amazon EC2 costs significantly. Spot Instances are the most cost-effective EC2 purchasing option for batch workloads that can handle interruptions and start again from where they ended. Spot Instances allow you to bid on unused EC2 capacity, potentially saving you up to 90% compared to On-Demand instances. However, there is a risk of interruption if the Spot price exceeds your bid. Since your workloads can handle interruptions and resume from where they left off, Spot Instances are a suitable and cost-effective choice for this specific scenario."
       },
       {
         "text": "Dedicated Instances",
@@ -477,7 +477,7 @@
     "id": 49,
     "question": "What term commitment for Amazon EC2 Reserved Instances provides users with the HIGHEST cost savings?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
     "type": "single",
     "answers": [
       {
@@ -535,7 +535,7 @@
     "id": 64,
     "question": "Which Amazon S3 storage class is the most cost-effective for a company that stores a large amount of data accessed by auditors only twice a year?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/s3/storage-classes/",
     "type": "single",
     "answers": [
       {
@@ -551,7 +551,7 @@
       {
         "text": "Amazon S3 Glacier Instant Retrieval",
         "status": "correct",
-        "explanation": "The best choice for storing data that is accessed infrequently (only twice a year) at the lowest cost is Amazon S3 Glacier Deep Archive. However, since this option isn’t listed, the closest alternative is Amazon S3 Glacier Instant Retrieval. Therefore, Amazon S3 Glacier Instant Retrieval is the most suitable choice among the given options for infrequent access at a lower cost."
+        "explanation": "The best choice for storing data that is accessed infrequently (only twice a year) at the lowest cost is Amazon S3 Glacier Deep Archive. However, since this option isn\u2019t listed, the closest alternative is Amazon S3 Glacier Instant Retrieval. Therefore, Amazon S3 Glacier Instant Retrieval is the most suitable choice among the given options for infrequent access at a lower cost."
       },
       {
         "text": "Amazon S3 Outposts",
@@ -564,7 +564,7 @@
     "id": 65,
     "question": "Which purchasing option from AWS would be the most cost-effective for the company looking to transition to a serverless architecture in the next year while also needing to pay for resources upfront?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/savingsplans/",
     "type": "single",
     "answers": [
       {
@@ -801,7 +801,7 @@
     "id": 132,
     "question": "Which AWS service or tool should be used to monitor the monthly expenses and usage of all Amazon EC2 instances within a designated AWS environment for a company?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/aws-cost-management/aws-budgets/",
     "type": "single",
     "answers": [
       {
@@ -846,7 +846,7 @@
       {
         "text": "Trade fixed expense for variable expense",
         "status": "correct",
-        "explanation": "Trade fixed expense for variable expense – Instead of having to invest heavily in data centers and servers before you know how you’re going to use them, you can pay only when you consume computing resources, and pay only for how much you consume."
+        "explanation": "Trade fixed expense for variable expense \u2013 Instead of having to invest heavily in data centers and servers before you know how you\u2019re going to use them, you can pay only when you consume computing resources, and pay only for how much you consume."
       },
       {
         "text": "Benefit from massive economies of scale",
@@ -893,7 +893,7 @@
     "id": 174,
     "question": "Which purchasing option for Amazon EC2 will provide the most cost savings for a company running a workload that must operate continuously without any service interruptions for a duration of one year?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
     "type": "single",
     "answers": [
       {
@@ -922,7 +922,7 @@
     "id": 175,
     "question": "Which storage class in Amazon S3 would be the most cost-effective option for a cloud engineer who needs to store data that will be accessed both yearly and daily?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/s3/storage-classes/",
     "type": "single",
     "answers": [
       {
@@ -951,7 +951,7 @@
     "id": 181,
     "question": "Which AWS service or tool offers a graphical representation of past AWS expenses and forecasts future AWS expenditures?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/aws-cost-management/aws-cost-explorer/",
     "type": "single",
     "answers": [
       {
@@ -991,7 +991,7 @@
       {
         "text": "Programmatic case management",
         "status": "skipped",
-        "explanation": "Programmatic case management is the incorrect answer because it is not a benefit that is always free of charge with AWS, regardless of a user’s AWS Support plan. Programmatic case management refers to the ability to programmatically manage AWS Support cases using the AWS Support API. This feature is included with the AWS Business and Enterprise Support plans, but it is not a free feature and is not available with the free Basic Support plan."
+        "explanation": "Programmatic case management is the incorrect answer because it is not a benefit that is always free of charge with AWS, regardless of a user\u2019s AWS Support plan. Programmatic case management refers to the ability to programmatically manage AWS Support cases using the AWS Support API. This feature is included with the AWS Business and Enterprise Support plans, but it is not a free feature and is not available with the free Basic Support plan."
       },
       {
         "text": "AWS Developer Support",
@@ -1009,18 +1009,18 @@
     "id": 184,
     "question": "What billing model would be the most cost-effective for a company running a reporting web server application on Amazon EC2 instances that are only utilized once a week and at the end of the month, with the ability to shut down the instances when not in use?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-on-demand-instances.html",
     "type": "single",
     "answers": [
       {
         "text": "On-Demand Capacity Reservations",
-        "status": "correct",
-        "explanation": "On-Demand Capacity Reservations: -Purpose: Reserve compute capacity in a specific Availability Zone for any duration. -Flexibility: Can be created, modified, or canceled at any time. -Use Cases: Ideal for ensuring capacity for business-critical workloads, regulatory requirements, and disaster recovery."
+        "status": "skipped",
+        "explanation": "On-Demand Capacity Reservations guarantee EC2 capacity in a specific Availability Zone, but you are billed for the reserved capacity whether or not the instances are running. For a workload that runs only once a week and is shut down when not in use, Capacity Reservations would charge you for idle reserved capacity, making them less cost-effective than On-Demand Instances."
       },
       {
         "text": "On-Demand Instances",
-        "status": "skipped",
-        "explanation": "On-Demand Instances are the most cost-effective billing model for this use case because they do not require any upfront payment or long-term commitment. Since the application runs only once every week and once at the end of the month, On-Demand Instances allow the company to pay for only the compute capacity they consume during those specific periods. This flexibility helps minimize costs as the instances can be shut down when they are not in use, ensuring that the company is only billed for the actual usage of the EC2 instances but in dis case On-Demand Capacity Reservations would be a better choice."
+        "status": "correct",
+        "explanation": "On-Demand Instances are the most cost-effective billing model for a workload that runs only once a week and is shut down when not in use. With On-Demand pricing, you pay only for the compute time you actually consume \u2014 by the hour or second \u2014 with no upfront costs and no charges when the instance is stopped."
       },
       {
         "text": "Standard Reserved Instances",
@@ -1038,7 +1038,7 @@
     "id": 188,
     "question": "Which AWS service is available to users at no cost?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/iam/",
     "type": "single",
     "answers": [
       {
@@ -1088,7 +1088,7 @@
       {
         "text": "Spot Instances",
         "status": "correct",
-        "explanation": "Spot Instances – Request unused EC2 instances, which can reduce your Amazon EC2 costs significantly. A Spot Instance is an instance that uses spare EC2 capacity that is available for less than the On-Demand price. Because Spot Instances enable you to request unused EC2 instances at steep discounts, you can lower your Amazon EC2 costs significantly. The hourly price for a Spot Instance is called a Spot price. The Spot price of each instance type in each Availability Zone is set by Amazon EC2, and is adjusted gradually based on the long-term supply of and demand for Spot Instances. Your Spot Instance runs whenever capacity is available."
+        "explanation": "Spot Instances \u2013 Request unused EC2 instances, which can reduce your Amazon EC2 costs significantly. A Spot Instance is an instance that uses spare EC2 capacity that is available for less than the On-Demand price. Because Spot Instances enable you to request unused EC2 instances at steep discounts, you can lower your Amazon EC2 costs significantly. The hourly price for a Spot Instance is called a Spot price. The Spot price of each instance type in each Availability Zone is set by Amazon EC2, and is adjusted gradually based on the long-term supply of and demand for Spot Instances. Your Spot Instance runs whenever capacity is available."
       }
     ]
   },
@@ -1096,7 +1096,7 @@
     "id": 204,
     "question": "What can the company do with the Amazon EC2 Standard Reserved Instances (RIs) that they had purchased, but are no longer applicable to the new instance family they are moving part of their workload to in the AWS Cloud?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/ec2/purchasing-options/reserved-instances/marketplace/",
     "type": "single",
     "answers": [
       {
@@ -1125,7 +1125,7 @@
     "id": 206,
     "question": "Which AWS service or tool should the company utilize to monitor and manage the expenses associated with running the ecommerce website that includes an extensive product catalog with images, while staying within a predefined budget?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/aws-cost-management/aws-cost-explorer/",
     "type": "single",
     "answers": [
       {
@@ -1154,7 +1154,7 @@
     "id": 229,
     "question": "For what type of workload is it recommended to utilize Amazon EC2 Spot Instances within a company?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/ec2/spot/",
     "type": "single",
     "answers": [
       {
@@ -1183,7 +1183,7 @@
     "id": 230,
     "question": "What is the most cost-effective EC2 instance purchasing option for a company looking to run an application on Amazon EC2 instances continuously without interruptions?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
     "type": "single",
     "answers": [
       {
@@ -1228,7 +1228,7 @@
       {
         "text": "Reserved Instances",
         "status": "correct",
-        "explanation": "Reserved Instances – Reduce your Amazon EC2 costs by making a commitment to a consistent instance configuration, including instance type and Region, for a term of 1 or 3 years."
+        "explanation": "Reserved Instances \u2013 Reduce your Amazon EC2 costs by making a commitment to a consistent instance configuration, including instance type and Region, for a term of 1 or 3 years."
       },
       {
         "text": "Spot Instances",
@@ -1270,7 +1270,7 @@
     "id": 239,
     "question": "Which AWS service or feature should the company utilize to receive a consolidated AWS bill and centrally manage security and compliance across its multiple AWS accounts?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html",
     "type": "single",
     "answers": [
       {
@@ -1328,7 +1328,7 @@
     "id": 255,
     "question": "What purchasing option for Amazon EC2 instances allows a company to provision instances on demand and pay for compute capacity by the second?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-on-demand-instances.html",
     "type": "single",
     "answers": [
       {
@@ -1339,7 +1339,7 @@
       {
         "text": "On-Demand Instances",
         "status": "correct",
-        "explanation": "With On-Demand Instances, you pay for compute capacity by the second with no long-term commitments. You have full control over the instance's lifecycle—you decide when to launch, stop, hibernate, start, reboot, or terminate it. There is no long-term commitment required when you purchase On-Demand Instances. You pay only for the seconds that your On-Demand Instances are in the running state, with a 60-second minimum. The price per second for a running On-Demand Instance is fixed, and is listed on the Amazon EC2 Pricing, On-Demand Pricing page."
+        "explanation": "With On-Demand Instances, you pay for compute capacity by the second with no long-term commitments. You have full control over the instance's lifecycle\u2014you decide when to launch, stop, hibernate, start, reboot, or terminate it. There is no long-term commitment required when you purchase On-Demand Instances. You pay only for the seconds that your On-Demand Instances are in the running state, with a 60-second minimum. The price per second for a running On-Demand Instance is fixed, and is listed on the Amazon EC2 Pricing, On-Demand Pricing page."
       },
       {
         "text": "Dedicated Instances",
@@ -1391,7 +1391,7 @@
     "id": 263,
     "question": "How can the company deploy Amazon EC2 instances as web servers to minimize operational costs while efficiently catering to customers worldwide, many of whom access the servers during specific hours of the day?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html",
     "type": "single",
     "answers": [
       {
@@ -1420,7 +1420,7 @@
     "id": 279,
     "question": "Which AWS service or storage option would be the most cost-effective choice for a company looking to store data for data archives and long-term backups that are infrequently accessed?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/s3/storage-classes/",
     "type": "single",
     "answers": [
       {
@@ -1449,7 +1449,7 @@
     "id": 282,
     "question": "Which Amazon S3 storage class would be the most cost-effective choice for a company that needs to store 5MB audio files, accesses them rarely, but requires immediate retrieval?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/s3/storage-classes/",
     "type": "single",
     "answers": [
       {
@@ -1507,7 +1507,7 @@
     "id": 300,
     "question": "Which AWS service or tool should the finance team utilize in order to consolidate the billing for all of the company's AWS accounts used by different business teams?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html",
     "type": "single",
     "answers": [
       {
@@ -1536,7 +1536,7 @@
     "id": 306,
     "question": "Which AWS service or approach should the company utilize to calculate the anticipated expenses of operating its existing on-premises infrastructure in the AWS Cloud before transitioning?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://calculator.aws/",
     "type": "single",
     "answers": [
       {
@@ -1565,7 +1565,7 @@
     "id": 313,
     "question": "Which purchasing option for Amazon EC2 instances would be the most cost-effective for a company that needs to host a web server continuously for at least one year without any interruptions?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
     "type": "single",
     "answers": [
       {
@@ -1586,7 +1586,7 @@
       {
         "text": "Partial Upfront Reserved Instances",
         "status": "correct",
-        "explanation": "Reserved Instances – Reduce your Amazon EC2 costs by making a commitment to a consistent instance configuration, including instance type and Region, for a term of 1 or 3 years. The following payment options are available for Reserved Instances: All Upfront: Full payment is made at the start of the term, with no other costs or additional hourly charges incurred for the remainder of the term, regardless of hours used. Partial Upfront: A portion of the cost must be paid upfront and the remaining hours in the term are billed at a discounted hourly rate, regardless of whether the Reserved Instance is being used. No Upfront: You are billed a discounted hourly rate for every hour within the term, regardless of whether the Reserved Instance is being used. No upfront payment is required."
+        "explanation": "Reserved Instances \u2013 Reduce your Amazon EC2 costs by making a commitment to a consistent instance configuration, including instance type and Region, for a term of 1 or 3 years. The following payment options are available for Reserved Instances: All Upfront: Full payment is made at the start of the term, with no other costs or additional hourly charges incurred for the remainder of the term, regardless of hours used. Partial Upfront: A portion of the cost must be paid upfront and the remaining hours in the term are billed at a discounted hourly rate, regardless of whether the Reserved Instance is being used. No Upfront: You are billed a discounted hourly rate for every hour within the term, regardless of whether the Reserved Instance is being used. No upfront payment is required."
       }
     ]
   },
@@ -1594,7 +1594,7 @@
     "id": 316,
     "question": "What capabilities does the AWS Pricing Calculator offer?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://calculator.aws/",
     "type": "single",
     "answers": [
       {
@@ -1623,7 +1623,7 @@
     "id": 319,
     "question": "Which AWS service can the company use to run their fault-tolerant batch jobs application cost-effectively while being able to handle interruptions efficiently?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/ec2/spot/",
     "type": "single",
     "answers": [
       {
@@ -1652,7 +1652,7 @@
     "id": 324,
     "question": "Which purchasing option for Amazon EC2 instances would be the most cost-effective for a company looking to run a stable production workload continuously for one year?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
     "type": "single",
     "answers": [
       {
@@ -1710,7 +1710,7 @@
     "id": 329,
     "question": "Which cost is the direct responsibility of the ecommerce company that has moved its IT infrastructure from an on-premises data center to the AWS Cloud?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/compliance/shared-responsibility-model/",
     "type": "single",
     "answers": [
       {
@@ -1768,7 +1768,7 @@
     "id": 346,
     "question": "What is the most cost-effective way to purchase Amazon EC2 instances for a company with a growing workload running an uninterrupted application that processes files in an Amazon Simple Queue Service (SQS) queue?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/savingsplans/",
     "type": "single",
     "answers": [
       {
@@ -1797,7 +1797,7 @@
     "id": 350,
     "question": "Which purchasing option for Amazon EC2 instances can an online gaming company choose for 1 year to ensure that the instances remain online and available without disruptions, while also being cost-effective, given the consistent traffic with predictable increases?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
     "type": "single",
     "answers": [
       {
@@ -1832,7 +1832,7 @@
       {
         "text": "On-Demand Instances",
         "status": "correct",
-        "explanation": "For an uninterruptible workload that runs once a year just for 24 hours, the most cost-efficient Amazon EC2 pricing model would be On-Demand Instances. On-Demand Instances are ideal for short-term workloads that spike periodically or unpredictable workloads that can’t be interrupted. Reserved Instances are best suited for workloads that run continuously for a year or longer, while Spot Instances are most cost-effective for workloads that can tolerate downtime and have flexible start and end times. Dedicated Instances are not a pricing model, but rather a physical Amazon EC2 server dedicated to a single customer."
+        "explanation": "For an uninterruptible workload that runs once a year just for 24 hours, the most cost-efficient Amazon EC2 pricing model would be On-Demand Instances. On-Demand Instances are ideal for short-term workloads that spike periodically or unpredictable workloads that can\u2019t be interrupted. Reserved Instances are best suited for workloads that run continuously for a year or longer, while Spot Instances are most cost-effective for workloads that can tolerate downtime and have flexible start and end times. Dedicated Instances are not a pricing model, but rather a physical Amazon EC2 server dedicated to a single customer."
       },
       {
         "text": "Dedicated Instances",
@@ -1942,7 +1942,7 @@
     "id": 368,
     "question": "For a steady, predictable, and uninterruptible compute workload, which Amazon EC2 purchasing option is the most cost-effective? (Choose TWO)",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html",
     "type": "multiple",
     "answers": [
       {
@@ -1976,7 +1976,7 @@
     "id": 371,
     "question": "Which activities involving an Amazon Snowball Edge device are offered at no cost to a company planning to use it for transferring files to the AWS Cloud?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/snowball/pricing/",
     "type": "single",
     "answers": [
       {
@@ -2039,7 +2039,7 @@
     "id": 385,
     "question": "Which AWS service or resource can be utilized to expedite and ensure a reliable migration of third-party applications to the AWS Cloud, with guidance from a team of international experts following AWS internal best practices?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/professional-services/",
     "type": "single",
     "answers": [
       {
@@ -2068,7 +2068,7 @@
     "id": 388,
     "question": "Which AWS service or tool enables users to visualize, comprehend, and manage their spending and usage trends?",
     "domain": "Billing, Pricing, and Support",
-    "resource": "",
+    "resource": "https://aws.amazon.com/aws-cost-management/aws-cost-explorer/",
     "type": "single",
     "answers": [
       {

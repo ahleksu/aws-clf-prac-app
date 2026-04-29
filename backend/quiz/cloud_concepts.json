@@ -134,7 +134,7 @@
     "id": 24,
     "question": "Which aspect of AWS' worldwide infrastructure will assist the company in adhering to regulatory requirements by enabling them to host their application in a specific geographical region?",
     "domain": "Cloud Concepts",
-    "resource": "",
+    "resource": "https://aws.amazon.com/about-aws/global-infrastructure/regions_az/",
     "type": "single",
     "answers": [
       {
@@ -163,7 +163,7 @@
     "id": 32,
     "question": "Which perspective within the AWS Cloud Adoption Framework (AWS CAF) is dedicated to overseeing the management of identities and permissions on a large scale?",
     "domain": "Cloud Concepts",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/whitepapers/latest/overview-aws-cloud-adoption-framework/security-perspective.html",
     "type": "single",
     "answers": [
       {
@@ -221,7 +221,7 @@
     "id": 56,
     "question": "Which AWS design principle focuses on minimizing the connections and dependencies between different parts of an application?",
     "domain": "Cloud Concepts",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_prevent_interaction_failure_loosely_coupled_system.html",
     "type": "single",
     "answers": [
       {
@@ -300,7 +300,7 @@
       {
         "text": "Scaling horizontally",
         "status": "skipped",
-        "explanation": "The Reliability pillar encompasses the ability of a workload to perform its intended function correctly and consistently when it’s expected to. This includes the ability to operate and test the workload through its total lifecycle. You can find prescriptive guidance on implementation in the Reliability Pillar whitepaper. There are five design principles for reliability in the cloud: Automatically recover from failure Test recovery procedures Scale horizontally to increase aggregate workload availability Stop guessing capacity Manage change in automation"
+        "explanation": "The Reliability pillar encompasses the ability of a workload to perform its intended function correctly and consistently when it\u2019s expected to. This includes the ability to operate and test the workload through its total lifecycle. You can find prescriptive guidance on implementation in the Reliability Pillar whitepaper. There are five design principles for reliability in the cloud: Automatically recover from failure Test recovery procedures Scale horizontally to increase aggregate workload availability Stop guessing capacity Manage change in automation"
       }
     ]
   },
@@ -387,7 +387,7 @@
       {
         "text": "Trade fixed expense for variable expense",
         "status": "correct",
-        "explanation": "Trade fixed expense for variable expense – Instead of having to invest heavily in data centers and servers before you know how you’re going to use them, you can pay only when you consume computing resources, and pay only for how much you consume."
+        "explanation": "Trade fixed expense for variable expense \u2013 Instead of having to invest heavily in data centers and servers before you know how you\u2019re going to use them, you can pay only when you consume computing resources, and pay only for how much you consume."
       }
     ]
   },
@@ -792,7 +792,7 @@
     "id": 186,
     "question": "Which aspect of the AWS Well-Architected Framework is focused on the capacity to implement regular, incremental, and easily reversible modifications in AWS Cloud architecture?",
     "domain": "Cloud Concepts",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/wellarchitected/latest/operational-excellence-pillar/welcome.html",
     "type": "single",
     "answers": [
       {
@@ -850,13 +850,13 @@
     "id": 201,
     "question": "Which feature of the AWS Cloud caters to the need for low latency for users globally for a company?",
     "domain": "Cloud Concepts",
-    "resource": "",
+    "resource": "https://aws.amazon.com/about-aws/global-infrastructure/",
     "type": "single",
     "answers": [
       {
         "text": "Global infrastructure",
         "status": "correct",
-        "explanation": "Go global in minutes – Easily deploy your application in multiple regions around the world with just a few clicks. This means you can provide lower latency and a better experience for your customers at minimal cost."
+        "explanation": "Go global in minutes \u2013 Easily deploy your application in multiple regions around the world with just a few clicks. This means you can provide lower latency and a better experience for your customers at minimal cost."
       },
       {
         "text": "Economy of scale",
@@ -879,7 +879,7 @@
     "id": 203,
     "question": "How can the company benefit from cloud computing to rapidly provision additional servers needed for the new line of business, considering their current on-premises server setup?",
     "domain": "Cloud Concepts",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/whitepapers/latest/aws-overview/six-advantages-of-cloud-computing.html",
     "type": "single",
     "answers": [
       {
@@ -900,7 +900,7 @@
       {
         "text": "Increase speed and agility",
         "status": "correct",
-        "explanation": "Increase speed and agility – In a cloud computing environment, new IT resources are only a click away, which means that you reduce the time to make those resources available to your developers from weeks to just minutes. This results in a dramatic increase in agility for the organization, since the cost and time it takes to experiment and develop is significantly lower."
+        "explanation": "Increase speed and agility \u2013 In a cloud computing environment, new IT resources are only a click away, which means that you reduce the time to make those resources available to your developers from weeks to just minutes. This results in a dramatic increase in agility for the organization, since the cost and time it takes to experiment and develop is significantly lower."
       }
     ]
   },
@@ -972,7 +972,7 @@
       {
         "text": "Security",
         "status": "skipped",
-        "explanation": "''Security'' is not the incorrect answer, as security is one of the five pillars of the AWS Well-Architected Framework along with Operational Excellence, Reliability, Performance Efficiency, and Cost Optimization."
+        "explanation": "Security is one of the six pillars of the AWS Well-Architected Framework (Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, and Sustainability). However, the Security pillar focuses on protecting information, systems, and assets\u2014not on the capability to automatically recover from service interruptions. Automatic recovery from failures is the defining characteristic of the Reliability pillar."
       },
       {
         "text": "Performance efficiency",
@@ -987,7 +987,7 @@
       {
         "text": "Reliability",
         "status": "correct",
-        "explanation": "Reliability: The ability of a workload to perform its intended function correctly and consistently when it’s expected to. This includes the ability to operate and test the workload through its total lifecycle."
+        "explanation": "Reliability: The ability of a workload to perform its intended function correctly and consistently when it\u2019s expected to. This includes the ability to operate and test the workload through its total lifecycle."
       }
     ]
   },
@@ -1029,7 +1029,7 @@
     "id": 237,
     "question": "Which perspective of the AWS Cloud Adoption Framework (AWS CAF) focuses on the capability of managing strategy?",
     "domain": "Cloud Concepts",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/whitepapers/latest/overview-aws-cloud-adoption-framework/business-perspective.html",
     "type": "single",
     "answers": [
       {
@@ -1108,7 +1108,7 @@
       {
         "text": "Economies of scale",
         "status": "correct",
-        "explanation": "Benefit from massive economies of scale – By using cloud computing, you can achieve a lower variable cost than you can get on your own. Because usage from hundreds of thousands of customers is aggregated in the cloud, providers such as AWS can achieve higher economies of scale, which translates into lower pay as-you-go prices."
+        "explanation": "Benefit from massive economies of scale \u2013 By using cloud computing, you can achieve a lower variable cost than you can get on your own. Because usage from hundreds of thousands of customers is aggregated in the cloud, providers such as AWS can achieve higher economies of scale, which translates into lower pay as-you-go prices."
       },
       {
         "text": "High availability",
@@ -1161,12 +1161,12 @@
       {
         "text": "Stop guessing capacity",
         "status": "correct",
-        "explanation": "Stop guessing capacity – Eliminate guessing on your infrastructure capacity needs. When you make a capacity decision prior to deploying an application, you often end up either sitting on expensive idle resources or dealing with limited capacity. With cloud computing, these problems go away. You can access as much or as little capacity as you need, and scale up and down as required with only a few minutes’ notice."
+        "explanation": "Stop guessing capacity \u2013 Eliminate guessing on your infrastructure capacity needs. When you make a capacity decision prior to deploying an application, you often end up either sitting on expensive idle resources or dealing with limited capacity. With cloud computing, these problems go away. You can access as much or as little capacity as you need, and scale up and down as required with only a few minutes\u2019 notice."
       },
       {
         "text": "Trade fixed expense for variable expense",
         "status": "skipped",
-        "explanation": "The statement \"Trade fixed expense for variable expense\" is not entirely incorrect; however, it does not specifically address the advantage of cloud computing that allows users to scale resources up and down based on the amount of load that an application supports. \"Trade fixed expense for variable expense\" is a broader concept related to one of the key benefits of cloud computing—the shift from large, upfront capital expenditures (fixed expenses) for on-premises hardware and software to more manageable, pay-as-you-go operational expenditures (variable expenses) in the cloud. While this cost advantage is related to the overall economics of cloud computing, it does not directly address the specific advantage of scalability in adjusting resources based on workload."
+        "explanation": "The statement \"Trade fixed expense for variable expense\" is not entirely incorrect; however, it does not specifically address the advantage of cloud computing that allows users to scale resources up and down based on the amount of load that an application supports. \"Trade fixed expense for variable expense\" is a broader concept related to one of the key benefits of cloud computing\u2014the shift from large, upfront capital expenditures (fixed expenses) for on-premises hardware and software to more manageable, pay-as-you-go operational expenditures (variable expenses) in the cloud. While this cost advantage is related to the overall economics of cloud computing, it does not directly address the specific advantage of scalability in adjusting resources based on workload."
       },
       {
         "text": "Benefit from massive economies of scale",
@@ -1179,7 +1179,7 @@
     "id": 265,
     "question": "What is a recommended AWS best practice for ensuring that AWS workloads remain operational in the event of component failures during design?",
     "domain": "Cloud Concepts",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html",
     "type": "single",
     "answers": [
       {
@@ -1237,7 +1237,7 @@
     "id": 307,
     "question": "Which design principles are encompassed within the reliability aspect of the AWS Well-Architected Framework? (Choose TWO)",
     "domain": "Cloud Concepts",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/design-principles.html",
     "type": "multiple",
     "answers": [
       {
@@ -1271,7 +1271,7 @@
     "id": 311,
     "question": "Which advantage of utilizing the AWS Cloud allows firms to reduce their usage expenses due to the combined usage of all AWS users?",
     "domain": "Cloud Concepts",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/whitepapers/latest/aws-overview/six-advantages-of-cloud-computing.html",
     "type": "single",
     "answers": [
       {
@@ -1287,7 +1287,7 @@
       {
         "text": "Economies of scale",
         "status": "correct",
-        "explanation": "Benefit from massive economies of scale – By using cloud computing, you can achieve a lower variable cost than you can get on your own. Because usage from hundreds of thousands of customers is aggregated in the cloud, providers such as AWS can achieve higher economies of scale, which translates into lower pay as-you-go prices."
+        "explanation": "Benefit from massive economies of scale \u2013 By using cloud computing, you can achieve a lower variable cost than you can get on your own. Because usage from hundreds of thousands of customers is aggregated in the cloud, providers such as AWS can achieve higher economies of scale, which translates into lower pay as-you-go prices."
       },
       {
         "text": "Increased speed and agility",
@@ -1300,7 +1300,7 @@
     "id": 315,
     "question": "What migration approach should the company adopt when moving a monolithic application to AWS and transforming it into microservices for deployment on the cloud platform?",
     "domain": "Cloud Concepts",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-guide/migration-strategies.html",
     "type": "single",
     "answers": [
       {
@@ -1329,7 +1329,7 @@
     "id": 320,
     "question": "What are AWS services or features that make up the global infrastructure of the AWS Cloud? (Choose TWO)",
     "domain": "Cloud Concepts",
-    "resource": "",
+    "resource": "https://aws.amazon.com/about-aws/global-infrastructure/",
     "type": "multiple",
     "answers": [
       {
@@ -1363,7 +1363,7 @@
     "id": 321,
     "question": "What action should the company take in order to enhance its responsiveness to customer inquiries and feedback during its migration to the AWS Cloud, as outlined in the AWS Cloud Adoption Framework (AWS CAF)?",
     "domain": "Cloud Concepts",
-    "resource": "",
+    "resource": "https://aws.amazon.com/cloud-adoption-framework/",
     "type": "single",
     "answers": [
       {
@@ -1484,18 +1484,18 @@
     "id": 349,
     "question": "Which components are considered as pillars of the AWS Well-Architected Framework? (Choose TWO)",
     "domain": "Cloud Concepts",
-    "resource": "",
+    "resource": "https://aws.amazon.com/architecture/well-architected/",
     "type": "multiple",
     "answers": [
       {
         "text": "Scalability",
         "status": "skipped",
-        "explanation": "The AWS Well-Architected Framework is designed to help cloud architects build secure, high-performing, resilient, and efficient infrastructure for their applications. While scalability is an important consideration in cloud architecture, it is not considered one of the pillars of the Well-Architected Framework. The five pillars of the AWS Well-Architected Framework are: 1. Operational Excellence 2. Security 3. Reliability 4. Performance Efficiency 5. Cost Optimization These pillars cover various aspects of building and managing cloud architectures, including optimizing costs, ensuring high performance, maintaining security, and improving operational processes. While scalability is critical for cloud applications, it is not listed as one of the core pillars in the Well-Architected Framework."
+        "explanation": "Scalability is not one of the pillars of the AWS Well-Architected Framework. The six pillars are: Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, and Sustainability. While scalability is an important architectural consideration in AWS, it is not a distinct pillar within the framework."
       },
       {
         "text": "Availability",
         "status": "skipped",
-        "explanation": "Availability is actually one of the five pillars of the AWS Well-Architected Framework. The five pillars are as follows: 1. Operational Excellence 2. Security 3. Reliability 4. Performance Efficiency 5. Cost Optimization So, Availability is actually a correct answer and not incorrect."
+        "explanation": "Availability is not one of the pillars of the AWS Well-Architected Framework. The six pillars are: Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, and Sustainability. High availability is a quality addressed by the Reliability pillar, but Availability itself is not a separate pillar."
       },
       {
         "text": "Operational excellence",
@@ -1655,7 +1655,7 @@
       {
         "text": "Data monetization",
         "status": "correct",
-        "explanation": "Data monetization – Leverage data to obtain measurable business benefit. Cloud facilitates the collection, storage, and analysis of vast amounts of data. To obtain measurable business benefits, develop a comprehensive and long-term data monetization strategy that’s aligned with your strategic intent. Identify opportunities for leveraging data and analytics to improve operations, customer and employee experience, and decision-making, as well as to enable new business models."
+        "explanation": "Data monetization \u2013 Leverage data to obtain measurable business benefit. Cloud facilitates the collection, storage, and analysis of vast amounts of data. To obtain measurable business benefits, develop a comprehensive and long-term data monetization strategy that\u2019s aligned with your strategic intent. Identify opportunities for leveraging data and analytics to improve operations, customer and employee experience, and decision-making, as well as to enable new business models."
       },
       {
         "text": "Event management",
@@ -1668,7 +1668,7 @@
     "id": 387,
     "question": "Which AWS Cloud advantage is highlighted by an architecture's capability to endure failures while experiencing minimal downtime?",
     "domain": "Cloud Concepts",
-    "resource": "",
+    "resource": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html",
     "type": "single",
     "answers": [
       {
