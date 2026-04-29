@@ -6,10 +6,11 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { LiveQuizService } from '../../../core/live-quiz.service';
-import { QuizDomain } from '../../../core/live-quiz.model';
+import { QuizDomain, ScoringMode } from '../../../core/live-quiz.model';
 
 const MIN_SESSION_QUESTIONS = 5;
 const MAX_SESSION_QUESTIONS = 65;
@@ -23,6 +24,7 @@ const MAX_SESSION_QUESTIONS = 65;
     ButtonModule,
     InputNumberModule,
     SelectModule,
+    SelectButtonModule,
     ToastModule
   ],
   providers: [MessageService],
@@ -51,9 +53,15 @@ export class HostDashboardComponent {
     { label: '60 seconds', value: 60 }
   ];
 
+  readonly scoringOptions: { label: string; value: ScoringMode }[] = [
+    { label: '⚡ Speed Scoring', value: 'speed' },
+    { label: '📋 Points Only', value: 'points' }
+  ];
+
   domain: QuizDomain = 'all';
   questionCount: number | null = 20;
   timePerQuestion = 30;
+  scoringMode: ScoringMode = 'speed';
   creating = false;
   private readonly domainQuestionCounts: Partial<Record<QuizDomain, number>> = {};
 
@@ -96,7 +104,8 @@ export class HostDashboardComponent {
     this.quiz.createSession({
       domain: this.domain,
       questionCount: count,
-      timePerQuestion: this.timePerQuestion
+      timePerQuestion: this.timePerQuestion,
+      scoringMode: this.scoringMode
     });
   }
 

@@ -63,6 +63,18 @@
   color: #b45309;
 }
 
+.scoring-hint {
+  color: #6b7280;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+:host ::ng-deep .scoring-mode-buttons .p-togglebutton,
+:host ::ng-deep .scoring-mode-buttons .p-selectbutton-button {
+  font-weight: 700;
+}
+
 :host ::ng-deep .invalid-count .p-inputnumber-input {
   border-color: #f59e0b;
 }
