@@ -18,16 +18,17 @@ function fisherYatesShuffle<T>(input: T[]): T[] {
 function toLiveQuestion(source: SourceQuestion): LiveQuestion {
   const answers: LiveAnswer[] = source.answers.map((a, idx) => ({
     text: a.text,
-    label: ANSWER_LABELS[idx] ?? String(idx + 1)
+    label: ANSWER_LABELS[idx] ?? String(idx + 1),
+    isCorrect: a.status === 'correct',
+    explanation: a.explanation ?? ''
   }));
 
-  const correctAnswers = source.answers
-    .map((a, idx) => ({ status: a.status, label: ANSWER_LABELS[idx] ?? String(idx + 1) }))
-    .filter((a) => a.status === 'correct')
+  const correctAnswers = answers
+    .filter((a) => a.isCorrect)
     .map((a) => a.label);
 
-  const explanation = source.answers
-    .filter((a) => a.status === 'correct' && a.explanation)
+  const explanation = answers
+    .filter((a) => a.isCorrect && a.explanation)
     .map((a) => a.explanation)
     .join(' ')
     .trim();

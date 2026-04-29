@@ -7,9 +7,18 @@ export type QuizDomain =
 
 export type SessionState = 'lobby' | 'active' | 'paused' | 'between' | 'ended';
 
+export type ScoringMode = 'speed' | 'points';
+
 export interface LiveAnswer {
   text: string;
   label: string;
+}
+
+export interface RevealAnswer {
+  label: string;
+  text: string;
+  isCorrect: boolean;
+  explanation: string;
 }
 
 export interface QuestionPayload {
@@ -80,10 +89,12 @@ export interface QuestionStats {
 export interface QuestionReveal {
   answerLabels: string[];
   explanation: string;
+  answers?: RevealAnswer[];
 }
 
 export interface CreateSessionConfig {
   domain: QuizDomain;
   questionCount: number;
   timePerQuestion: number;
+  scoringMode?: ScoringMode;
 }

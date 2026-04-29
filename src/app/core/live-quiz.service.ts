@@ -10,12 +10,15 @@ import {
   QuestionPayload,
   QuestionReveal,
   QuestionStats,
+  ScoringMode,
   SessionState
 } from './live-quiz.model';
 
 interface SessionCreatedPayload {
   sessionCode: string;
   hostToken?: string;
+  scoringMode?: ScoringMode;
+  totalQuestions?: number;
 }
 
 interface SessionJoinedPayload {
@@ -90,6 +93,9 @@ export class LiveQuizService {
   readonly lastError = signal<string | null>(null);
   readonly paused = signal<boolean>(false);
   readonly hostDisconnected = signal<boolean>(false);
+  readonly scoringMode = signal<ScoringMode>('speed');
+  readonly totalQuestions = signal<number>(0);
+  readonly role = signal<'host' | 'player' | null>(null);
 
   constructor() {
     this.socket.connect(environment.wsUrl);
@@ -99,6 +105,9 @@ export class LiveQuizService {
   createSession(config: CreateSessionConfig): void {
     this.resetHostState();
     this.joinConfirmed.set(false);
+    this.role.set('host');
+    this.scoringMode.set(config.scoringMode ?? 'speed');
+    this.totalQuestions.set(config.questionCount);
     this.socket.emit('host:create', config);
   }
 
@@ -108,6 +117,7 @@ export class LiveQuizService {
     this.lastError.set(null);
     this.joinConfirmed.set(false);
     this.sessionCode.set(code);
+    this.role.set('player');
     this.myProfile.set({
       nickname: cleanNickname,
       score: 0,
@@ -147,6 +157,7 @@ export class LiveQuizService {
   reconnectHost(sessionCode: string, hostToken = ''): void {
     const code = this.normalizeCode(sessionCode);
     this.sessionCode.set(code);
+    this.role.set('host');
     this.socket.emit('host:reconnect', { sessionCode: code, hostToken });
   }
 
@@ -162,6 +173,13 @@ export class LiveQuizService {
         sessionStorage.setItem('liveHostSessionCode', payload.sessionCode);
         sessionStorage.setItem('liveHostToken', payload.hostToken);
       }
+      if (payload.scoringMode) {
+        this.scoringMode.set(payload.scoringMode);
+      }
+      if (typeof payload.totalQuestions === 'number') {
+        this.totalQuestions.set(payload.totalQuestions);
+      }
+      this.role.set('host');
       this.gameState.set('lobby');
       this.lastError.set(null);
     });
@@ -330,6 +348,8 @@ export class LiveQuizService {
     this.lastError.set(null);
     this.paused.set(false);
     this.hostDisconnected.set(false);
+    this.scoringMode.set('speed');
+    this.totalQuestions.set(0);
   }
 
   private applyLeaderboard(rankings: LeaderboardEntry[]): void {

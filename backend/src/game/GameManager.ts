@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { GameSession } from './GameSession';
-import { GameSessionData, QuizDomain } from './types';
+import { GameSessionData, QuizDomain, ScoringMode } from './types';
 import { loadQuestions } from './QuestionLoader';
 
 const CODE_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -63,7 +63,8 @@ export class GameManager {
     hostSocketId: string,
     domain: QuizDomain,
     questionCount: number,
-    timePerQuestion: number
+    timePerQuestion: number,
+    scoringMode: ScoringMode = 'speed'
   ): Promise<GameSession> {
     const questions = await loadQuestions(domain, questionCount);
     if (questions.length === 0) {
@@ -83,6 +84,7 @@ export class GameManager {
       questionStartTime: 0,
       timePerQuestion,
       totalQuestions: questions.length,
+      scoringMode,
       createdAt: new Date()
     };
     const session = new GameSession(data);

@@ -5,6 +5,10 @@
     <div *ngIf="quiz.currentQuestion() as question">
       <p>Question {{ question.questionNumber }} of {{ question.total }}</p>
       <h1>{{ sessionCode }}</h1>
+      <span class="scoring-badge" [class.points-mode]="quiz.scoringMode() === 'points'">
+        <i class="pi" [ngClass]="scoringModeIcon()"></i>
+        {{ scoringModeLabel() }}
+      </span>
     </div>
     <div class="bar-actions">
       <p-button
@@ -49,7 +53,20 @@
         <strong>Correct answer{{ reveal.answerLabels.length > 1 ? 's' : '' }}:
           {{ reveal.answerLabels.join(', ') }}
         </strong>
-        <p *ngIf="reveal.explanation">{{ reveal.explanation }}</p>
+
+        <ul *ngIf="hasReveal()" class="reveal-answer-list">
+          <li *ngFor="let answer of revealAnswers()" [class.correct]="answer.isCorrect">
+            <span class="reveal-answer-label">{{ answer.label }}</span>
+            <div>
+              <strong>{{ answer.text }}</strong>
+              <p *ngIf="answer.explanation">{{ answer.explanation }}</p>
+              <p *ngIf="!answer.explanation" class="muted">No explanation provided.</p>
+            </div>
+            <i *ngIf="answer.isCorrect" class="pi pi-check-circle correct-mark"></i>
+          </li>
+        </ul>
+
+        <p *ngIf="!hasReveal() && reveal.explanation">{{ reveal.explanation }}</p>
       </div>
     </article>
 

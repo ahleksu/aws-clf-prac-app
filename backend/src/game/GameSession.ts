@@ -6,6 +6,7 @@ import {
   QuestionPayload,
   QuestionRevealPayload,
   Ranking,
+  RevealAnswer,
   SessionState
 } from './types';
 
@@ -153,11 +154,22 @@ export class GameSession {
   }
 
   getCurrentQuestionReveal(): QuestionRevealPayload | null {
+    return this.buildRevealPayload();
+  }
+
+  buildRevealPayload(): QuestionRevealPayload | null {
     const q = this.currentQuestion();
     if (!q) return null;
+    const answers: RevealAnswer[] = q.answers.map((a) => ({
+      label: a.label,
+      text: a.text,
+      isCorrect: a.isCorrect,
+      explanation: a.explanation ?? ''
+    }));
     return {
       answerLabels: [...q.correctAnswers],
-      explanation: q.explanation
+      explanation: q.explanation,
+      answers
     };
   }
 
@@ -241,6 +253,9 @@ export class GameSession {
     streak: number
   ): number {
     if (!correct) return 0;
+    if (this.data.scoringMode === 'points') {
+      return BASE_POINTS;
+    }
     const ratio = Math.max(0, Math.min(1, timeMs / timeLimitMs));
     const timeBonus = Math.round(MAX_TIME_BONUS * (1 - ratio));
     const streakBonus = Math.min(streak * STREAK_INCREMENT, MAX_STREAK_BONUS);

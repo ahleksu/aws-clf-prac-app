@@ -7,6 +7,9 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { LiveQuizService } from '../../../core/live-quiz.service';
 import { SocketService } from '../../../core/socket.service';
+import { RevealAnswer } from '../../../core/live-quiz.model';
+
+type PlayerViewState = 'answering' | 'answered' | 'leaderboard' | 'waiting' | 'paused';
 
 @Component({
   selector: 'app-player-game',
@@ -27,10 +30,10 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
   readonly circumference = 276.46;
   sessionCode = '';
   selectedAnswers: string[] = [];
-  submitted = false;
-  showLeaderboard = false;
   timeLeftSeconds = 0;
   timerFraction = 1;
+  playerViewState: PlayerViewState = 'answering';
+  private prePauseState: PlayerViewState = 'answering';
 
   private timerId: ReturnType<typeof setInterval> | null = null;
   private timerDeadline = 0;
@@ -43,15 +46,16 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
       const question = this.quiz.currentQuestion();
       if (!question) return;
       this.selectedAnswers = [];
-      this.submitted = this.quiz.answeredCurrentQuestion();
-      this.showLeaderboard = false;
+      this.setViewState(
+        this.quiz.answeredCurrentQuestion() ? 'answered' : 'answering'
+      );
       const remaining = this.quiz.timeRemainingMs();
       this.startTimer(remaining > 0 ? remaining : question.timeLimit * 1000);
     });
 
     effect(() => {
-      if (this.quiz.answeredCurrentQuestion()) {
-        this.submitted = true;
+      if (this.quiz.answeredCurrentQuestion() && this.playerViewState === 'answering') {
+        this.setViewState('answered');
       }
     });
 
@@ -59,9 +63,17 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
       if (this.quiz.paused()) {
         this.setTimerStatic(this.quiz.timeRemainingMs());
         this.stopTimer();
+        if (this.playerViewState !== 'paused') {
+          this.prePauseState = this.playerViewState;
+          this.playerViewState = 'paused';
+        }
         return;
       }
-      if (this.quiz.gameState() === 'active' && !this.timerId && this.quiz.currentQuestion()) {
+      if (this.playerViewState === 'paused') {
+        this.playerViewState = this.prePauseState;
+      }
+      if (this.quiz.gameState() === 'active' && !this.timerId && this.quiz.currentQuestion()
+          && this.playerViewState === 'answering') {
         const remaining = this.quiz.timeRemainingMs();
         this.startTimer(remaining > 0 ? remaining : this.quiz.currentQuestion()!.timeLimit * 1000);
       }
@@ -70,7 +82,7 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
     effect(() => {
       if (this.quiz.gameState() !== 'between') return;
       this.stopTimer();
-      this.showLeaderboard = true;
+      this.setViewState('leaderboard');
     });
 
     effect(() => {
@@ -129,7 +141,7 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
 
   chooseAnswer(label: string): void {
     const question = this.quiz.currentQuestion();
-    if (!question || this.submitted || this.quiz.paused()) return;
+    if (!question || this.playerViewState !== 'answering' || this.quiz.paused()) return;
 
     if (question.type === 'single') {
       this.selectedAnswers = [label];
@@ -145,13 +157,27 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
   }
 
   submitAnswer(): void {
-    if (!this.selectedAnswers.length || this.submitted) return;
-    this.submitted = true;
+    if (!this.selectedAnswers.length || this.playerViewState !== 'answering') return;
+    this.setViewState('answered');
     this.quiz.submitAnswer([...this.selectedAnswers]);
   }
 
   dismissLeaderboard(): void {
-    this.showLeaderboard = false;
+    this.setViewState('waiting');
+  }
+
+  revealAnswers(): RevealAnswer[] {
+    return this.quiz.answerReveal()?.answers ?? [];
+  }
+
+  hasReveal(): boolean {
+    return this.revealAnswers().length > 0;
+  }
+
+  revealClass(answer: RevealAnswer): string {
+    if (answer.isCorrect) return 'reveal-correct';
+    if (this.selectedAnswers.includes(answer.label)) return 'reveal-wrong-pick';
+    return 'reveal-unchosen';
   }
 
   strokeOffset(): number {
@@ -162,6 +188,10 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
     if (this.timerFraction > 0.5) return '#26890c';
     if (this.timerFraction > 0.25) return '#d89e00';
     return '#e21b3c';
+  }
+
+  private setViewState(next: PlayerViewState): void {
+    this.playerViewState = next;
   }
 
   private startTimer(durationMs: number): void {

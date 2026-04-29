@@ -8,7 +8,11 @@
         <h1>{{ quiz.myProfile().nickname }}</h1>
       </div>
 
-      <div class="timer-wrap" [style.--timer-color]="timerColor()">
+      <div
+        *ngIf="playerViewState === 'answering' || playerViewState === 'answered'"
+        class="timer-wrap"
+        [style.--timer-color]="timerColor()"
+      >
         <svg viewBox="0 0 100 100" aria-hidden="true">
           <circle class="timer-track" cx="50" cy="50" r="44"></circle>
           <circle
@@ -24,45 +28,139 @@
       </div>
     </header>
 
-    <article class="question-card">
-      <p class="question-type">
-        {{ question.type === 'multiple' ? 'Select all that apply' : 'Choose one answer' }}
-      </p>
-      <h2>{{ question.questionText }}</h2>
-    </article>
+    @switch (playerViewState) {
+      @case ('answering') {
+        <article class="question-card">
+          <p class="question-type">
+            {{ question.type === 'multiple' ? 'Select all that apply' : 'Choose one answer' }}
+          </p>
+          <h2>{{ question.questionText }}</h2>
+        </article>
 
-    <div class="answer-grid">
-      <button
-        *ngFor="let answer of question.answers"
-        type="button"
-        class="answer-button"
-        [class.selected]="isSelected(answer.label)"
-        [disabled]="submitted || quiz.paused() || quiz.gameState() !== 'active'"
-        [ngStyle]="answerStyle(answer.label)"
-        (click)="chooseAnswer(answer.label)"
-      >
-        <strong>{{ answer.label }}</strong>
-        <span>{{ answer.text }}</span>
-      </button>
-    </div>
+        <div class="answer-grid">
+          <button
+            *ngFor="let answer of question.answers"
+            type="button"
+            class="answer-button"
+            [class.selected]="isSelected(answer.label)"
+            [disabled]="quiz.paused() || quiz.gameState() !== 'active'"
+            [ngStyle]="answerStyle(answer.label)"
+            (click)="chooseAnswer(answer.label)"
+          >
+            <strong>{{ answer.label }}</strong>
+            <span>{{ answer.text }}</span>
+          </button>
+        </div>
 
-    <div *ngIf="question.type === 'multiple' && !submitted" class="submit-row">
-      <p-button
-        label="Submit Answer"
-        icon="pi pi-check"
-        [disabled]="selectedAnswers.length === 0 || quiz.paused()"
-        (onClick)="submitAnswer()"
-      />
-    </div>
+        <div *ngIf="question.type === 'multiple'" class="submit-row">
+          <p-button
+            label="Submit Answer"
+            icon="pi pi-check"
+            [disabled]="selectedAnswers.length === 0 || quiz.paused()"
+            (onClick)="submitAnswer()"
+          />
+        </div>
+      }
+      @case ('answered') {
+        <article class="question-card">
+          <p class="question-type">Answer submitted</p>
+          <h2>{{ question.questionText }}</h2>
+        </article>
 
-    <section *ngIf="quiz.answerResult() as result" class="result-panel" [class.correct]="result.correct">
-      <i [class]="result.correct ? 'pi pi-check-circle' : 'pi pi-times-circle'"></i>
-      <div>
-        <strong>{{ result.correct ? 'Correct' : 'Incorrect' }}</strong>
-        <p>{{ result.pointsEarned }} points earned</p>
-        <small *ngIf="result.explanation">{{ result.explanation }}</small>
-      </div>
-    </section>
+        <ng-container *ngIf="hasReveal(); else awaitingReveal">
+          <div class="answer-grid">
+            <button
+              *ngFor="let answer of revealAnswers()"
+              type="button"
+              class="answer-button"
+              [ngClass]="revealClass(answer)"
+              disabled
+            >
+              <strong>{{ answer.label }}</strong>
+              <span>{{ answer.text }}</span>
+              <i *ngIf="answer.isCorrect" class="pi pi-check-circle reveal-icon"></i>
+            </button>
+          </div>
+
+          <ul class="reveal-explanations">
+            <li *ngFor="let answer of revealAnswers()">
+              <span class="reveal-label" [ngClass]="revealClass(answer)">{{ answer.label }}</span>
+              <p *ngIf="answer.explanation">{{ answer.explanation }}</p>
+              <p *ngIf="!answer.explanation" class="muted">No explanation provided.</p>
+            </li>
+          </ul>
+        </ng-container>
+
+        <ng-template #awaitingReveal>
+          <div class="answer-grid">
+            <button
+              *ngFor="let answer of question.answers"
+              type="button"
+              class="answer-button"
+              [class.selected]="isSelected(answer.label)"
+              [ngStyle]="answerStyle(answer.label)"
+              disabled
+            >
+              <strong>{{ answer.label }}</strong>
+              <span>{{ answer.text }}</span>
+            </button>
+          </div>
+        </ng-template>
+
+        <section *ngIf="quiz.answerResult() as result" class="result-panel" [class.correct]="result.correct">
+          <i [class]="result.correct ? 'pi pi-check-circle' : 'pi pi-times-circle'"></i>
+          <div>
+            <strong>{{ result.correct ? 'Correct' : 'Incorrect' }}</strong>
+            <p>{{ result.pointsEarned }} points earned</p>
+          </div>
+        </section>
+      }
+      @case ('leaderboard') {
+        <section class="overlay" (click)="dismissLeaderboard()">
+          <div class="overlay-panel leaderboard-panel">
+            <p class="eyebrow">Leaderboard</p>
+            <ol>
+              <li *ngFor="let entry of quiz.rankings().slice(0, 5)">
+                <span>#{{ entry.rank }}</span>
+                <strong>{{ entry.nickname }}</strong>
+                <em>{{ entry.score }}</em>
+              </li>
+            </ol>
+            <p class="dismiss-hint">Tap anywhere to continue</p>
+          </div>
+        </section>
+      }
+      @case ('waiting') {
+        <section class="waiting-host">
+          <i class="pi pi-clock pulse-icon"></i>
+          <h2>Waiting for host to advance...</h2>
+          <p class="waiting-hint">Hang tight — the next question is coming.</p>
+          <div class="waiting-stats">
+            <div>
+              <small>Your score</small>
+              <strong>{{ quiz.myProfile().score }}</strong>
+            </div>
+            <div>
+              <small>Your rank</small>
+              <strong>#{{ quiz.myProfile().rank || '—' }}</strong>
+            </div>
+            <div>
+              <small>Streak</small>
+              <strong>{{ quiz.myProfile().streak }}</strong>
+            </div>
+          </div>
+        </section>
+      }
+      @case ('paused') {
+        <section class="overlay">
+          <div class="overlay-panel">
+            <i class="pi pi-pause-circle"></i>
+            <h2>Paused</h2>
+            <p>Host has paused the quiz.</p>
+          </div>
+        </section>
+      }
+    }
   </section>
 
   <ng-template #waiting>
@@ -71,27 +169,6 @@
       <p>Rejoining session...</p>
     </section>
   </ng-template>
-
-  <section *ngIf="showLeaderboard" class="overlay" (click)="dismissLeaderboard()">
-    <div class="overlay-panel leaderboard-panel">
-      <p class="eyebrow">Leaderboard</p>
-      <ol>
-        <li *ngFor="let entry of quiz.rankings().slice(0, 5)">
-          <span>#{{ entry.rank }}</span>
-          <strong>{{ entry.nickname }}</strong>
-          <em>{{ entry.score }}</em>
-        </li>
-      </ol>
-    </div>
-  </section>
-
-  <section *ngIf="quiz.paused() && !quiz.hostDisconnected()" class="overlay">
-    <div class="overlay-panel">
-      <i class="pi pi-pause-circle"></i>
-      <h2>Paused</h2>
-      <p>Host has paused the quiz.</p>
-    </div>
-  </section>
 
   <section *ngIf="quiz.hostDisconnected()" class="overlay">
     <div class="overlay-panel">

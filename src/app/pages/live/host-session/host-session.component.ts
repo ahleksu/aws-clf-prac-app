@@ -6,6 +6,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ConfirmationService } from 'primeng/api';
 import { LiveQuizService } from '../../../core/live-quiz.service';
+import { RevealAnswer } from '../../../core/live-quiz.model';
 
 @Component({
   selector: 'app-host-session',
@@ -74,6 +75,22 @@ export class HostSessionComponent implements OnInit {
 
   isCorrectAnswer(label: string): boolean {
     return this.quiz.answerReveal()?.answerLabels.includes(label) ?? false;
+  }
+
+  revealAnswers(): RevealAnswer[] {
+    return this.quiz.answerReveal()?.answers ?? [];
+  }
+
+  hasReveal(): boolean {
+    return this.revealAnswers().length > 0;
+  }
+
+  scoringModeLabel(): string {
+    return this.quiz.scoringMode() === 'points' ? 'Points Only' : 'Speed Scoring';
+  }
+
+  scoringModeIcon(): string {
+    return this.quiz.scoringMode() === 'points' ? 'pi-list-check' : 'pi-bolt';
   }
 
   togglePause(): void {

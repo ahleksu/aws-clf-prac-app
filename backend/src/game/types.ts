@@ -7,9 +7,13 @@ export type QuizDomain =
 
 export type SessionState = 'lobby' | 'active' | 'paused' | 'between' | 'ended';
 
+export type ScoringMode = 'speed' | 'points';
+
 export interface LiveAnswer {
   text: string;
   label: string;
+  isCorrect: boolean;
+  explanation?: string;
 }
 
 export interface LiveQuestion {
@@ -54,6 +58,7 @@ export interface GameSessionData {
   questionStartTime: number;
   timePerQuestion: number;
   totalQuestions: number;
+  scoringMode: ScoringMode;
   createdAt: Date;
   questionTimer?: NodeJS.Timeout;
 }
@@ -66,19 +71,32 @@ export interface Ranking {
   streak: number;
 }
 
+export interface ClientAnswer {
+  text: string;
+  label: string;
+}
+
 export interface QuestionPayload {
   questionNumber: number;
   total: number;
   questionText: string;
   type: 'single' | 'multiple';
-  answers: LiveAnswer[];
+  answers: ClientAnswer[];
   timeLimit: number;
   domain: string;
+}
+
+export interface RevealAnswer {
+  label: string;
+  text: string;
+  isCorrect: boolean;
+  explanation: string;
 }
 
 export interface QuestionRevealPayload {
   answerLabels: string[];
   explanation: string;
+  answers: RevealAnswer[];
 }
 
 export interface AnswerResult {

@@ -1,6 +1,6 @@
 import type { Server, Socket } from 'socket.io';
 import { GameManager } from '../game/GameManager';
-import { QuizDomain } from '../game/types';
+import { QuizDomain, ScoringMode } from '../game/types';
 import {
   broadcastLeaderboard,
   broadcastQuestion,
@@ -11,7 +11,10 @@ interface HostCreatePayload {
   domain: QuizDomain;
   questionCount: number;
   timePerQuestion: number;
+  scoringMode?: ScoringMode;
 }
+
+const VALID_SCORING_MODES: ScoringMode[] = ['speed', 'points'];
 
 interface SessionCodePayload {
   sessionCode: string;
@@ -48,11 +51,23 @@ export function registerHostHandlers(
         socket.emit('session:error', { message: 'Time per question must be between 15 and 60 seconds.' });
         return;
       }
-      const session = await manager.createSession(socket.id, domain, questionCount, timePerQuestion);
+      const requestedMode = (payload?.scoringMode ?? 'speed') as ScoringMode;
+      const scoringMode: ScoringMode = VALID_SCORING_MODES.includes(requestedMode)
+        ? requestedMode
+        : 'speed';
+      const session = await manager.createSession(
+        socket.id,
+        domain,
+        questionCount,
+        timePerQuestion,
+        scoringMode
+      );
       socket.join(session.code);
       socket.emit('session:created', {
         sessionCode: session.code,
-        hostToken: session.data.hostToken
+        hostToken: session.data.hostToken,
+        scoringMode: session.data.scoringMode,
+        totalQuestions: session.data.totalQuestions
       });
     } catch (err) {
       console.error('[host:create] error', err);
@@ -82,6 +97,12 @@ export function registerHostHandlers(
   socket.on('host:next', (payload: SessionCodePayload) => {
     const session = manager.getSession(payload?.sessionCode);
     if (!session || !session.isHost(socket.id)) return;
+    if (session.state === 'active' || session.state === 'paused') {
+      const reveal = session.buildRevealPayload();
+      if (reveal) {
+        io.to(session.code).emit('question:reveal', reveal);
+      }
+    }
     const result = session.advanceQuestion();
     if (result.ended) {
       const finalLeaderboard = session.endQuiz();
