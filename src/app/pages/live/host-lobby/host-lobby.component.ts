@@ -2,13 +2,18 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, effect, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import QRCode from 'qrcode';
+import { environment } from '../../../../environments/environment';
 import { LiveQuizService } from '../../../core/live-quiz.service';
 import { PlayerState } from '../../../core/live-quiz.model';
 
 @Component({
   selector: 'app-host-lobby',
   standalone: true,
-  imports: [CommonModule, ButtonModule],
+  imports: [CommonModule, ButtonModule, ToastModule],
+  providers: [MessageService],
   templateUrl: './host-lobby.component.html',
   styleUrl: './host-lobby.component.css'
 })
@@ -16,9 +21,11 @@ export class HostLobbyComponent implements OnInit {
   readonly quiz = inject(LiveQuizService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly messages = inject(MessageService);
 
   sessionCode = '';
   joinUrl = '';
+  qrDataUrl = '';
   starting = false;
   lobbyError = '';
 
@@ -46,8 +53,12 @@ export class HostLobbyComponent implements OnInit {
       return;
     }
     this.sessionCode = code;
-    const origin = globalThis.location?.origin ?? '';
-    this.joinUrl = `${origin}/join?code=${code}`;
+    this.joinUrl = `${environment.frontendBaseUrl}/join?code=${code}`;
+    QRCode.toDataURL(this.joinUrl, { width: 220, margin: 2 })
+      .then((url) => {
+        this.qrDataUrl = url;
+      })
+      .catch((err) => console.error('[host-lobby] QR generation failed', err));
     sessionStorage.setItem('liveHostSessionCode', code);
     this.quiz.reconnectHost(code, sessionStorage.getItem('liveHostToken') ?? '');
   }
@@ -67,5 +78,35 @@ export class HostLobbyComponent implements OnInit {
     this.quiz.endSession();
     sessionStorage.removeItem('liveHostSessionCode');
     this.router.navigate(['/host']);
+  }
+
+  copyJoinUrl(): void {
+    if (!this.joinUrl) return;
+    const writeFn = navigator.clipboard?.writeText.bind(navigator.clipboard);
+    if (!writeFn) {
+      this.messages.add({
+        severity: 'warn',
+        summary: 'Copy unavailable',
+        detail: 'Clipboard not supported in this browser.'
+      });
+      return;
+    }
+    writeFn(this.joinUrl).then(
+      () => {
+        this.messages.add({
+          severity: 'success',
+          summary: 'Copied!',
+          detail: 'Join link copied to clipboard.',
+          life: 2000
+        });
+      },
+      () => {
+        this.messages.add({
+          severity: 'error',
+          summary: 'Copy failed',
+          detail: 'Could not copy link to clipboard.'
+        });
+      }
+    );
   }
 }
