@@ -593,6 +593,8 @@
   - Manual reveal smoke: resource links appear post-answer where available.
   - Deploy if requested: push `master` for Vercel and update EC2 backend via
     `git pull origin master`, backend build, PM2 restart, and `/health` check.
+    ✅ Done 2026-04-30; instructor endpoint returned 401 unauthenticated and
+    data with the configured key.
 
 ---
 

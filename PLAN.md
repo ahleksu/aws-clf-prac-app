@@ -17,10 +17,11 @@
 
 **Note on original S3+CloudFront plan:** S3 bucket `aws-clf-quiz-frontend` (ap-southeast-1) and OAC `E37IFEDVTLC7J6` remain provisioned. CloudFront activation pending AWS Support case (account verification). Can migrate frontend from Vercel to S3+CloudFront at any time.
 
-**Current production branch:** `master` includes Phase 8 T1–T6 and the backend
-EC2 lifecycle helper as of commit `5598b8c`. Vercel auto-deploys from `master`.
-The EC2 backend has also pulled `master`, rebuilt, and restarted PM2. Phase 8
-still remains **In Progress** until P8-T7 is manually smoke-tested.
+**Current production branch:** `master` includes Phase 9 T1–T7 as of commit
+`8dd7a5b`. Vercel auto-deploys from `master`. The EC2 backend has pulled that
+commit, rebuilt, restarted PM2, and verified `/health` plus instructor endpoint
+auth behavior. Phase 8 still remains **In Progress** until P8-T7 is manually
+smoke-tested.
 
 ---
 
@@ -1511,11 +1512,11 @@ in the live session to quickly find the matching answer key while teaching.
 4. Expand the result to view correct labels, answer explanations, and the AWS
    resource link when present.
 
-**Production deployment note:** Do not deploy this branch to `master` or EC2
-until P9-T7 manual smoke validation passes. After merge, set
-`INSTRUCTOR_KEY` in the EC2 backend environment, restart PM2 with the updated
-environment, then re-run the unauthenticated/authenticated endpoint checks
-against `https://api.47.130.41.30.nip.io`.
+**Production deployment note:** P9-T7 manual smoke validation passed on
+2026-04-30. Phase 9 was merged to `master`, pushed for Vercel, and deployed to
+EC2. `INSTRUCTOR_KEY` is configured in the EC2 backend environment, PM2 was
+restarted with the updated environment, and unauthenticated/authenticated
+endpoint checks passed against `https://api.47.130.41.30.nip.io`.
 
 **Frontend instructor view:**
 - Add an instructor-only page such as `/instructor/answer-key`.

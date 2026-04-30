@@ -19,7 +19,7 @@
 | OPS | Backend EC2 Lifecycle | **Active** | 1 / 2 | Idempotent helper added for EC2 status/start/stop/restart; start-before-demo check remains an operator task |
 | P7 | CLF-C02 Question Bank Audit | **Not Started** | 0 / 7 | Comprehensive audit + EC2 redeploy; see TODOs.md |
 | P8 | Live Session Feature Enhancements | **In Progress** | 6 / 7 | T1–T6 implemented and deployed to master/EC2 by user request; production builds pass; T7 pending user-run local smoke test |
-| P9 | Live Session UX + Instructor Answer Key | **Complete** | 7 / 7 | T1–T7 complete on `feature/phase-9-live-session-ux-answer-key`; user smoke validation confirmed 2026-04-30 |
+| P9 | Live Session UX + Instructor Answer Key | **Complete** | 7 / 7 | T1–T7 complete; merged/pushed to `master`, Vercel triggered, EC2 backend updated, instructor endpoint verified 2026-04-30 |
 
 ---
 
@@ -245,9 +245,9 @@
 | Health check | https://api.47.130.41.30.nip.io/health |
 | EC2 SSH | `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30` |
 
-**Last task completed:** P9-T7 user smoke validation confirmed 2026-04-30. Phase 9 is complete and ready for `master` merge plus EC2 backend update.
-**Next task to work on:** Merge `feature/phase-9-live-session-ux-answer-key` to `master`, push for Vercel deployment, set `INSTRUCTOR_KEY` on EC2, rebuild/restart the backend, and verify `/health` plus instructor endpoint auth behavior. Phase 8 still has P8-T7 pending user smoke; do not mark Phase 8 complete without explicit confirmation.
-**Files recently modified:** `PLAN.md`, `TODOs.md`, `PROGRESS.md` updated to mark P9-T7 complete. Phase 9 implementation includes lobby/join cancel actions, missing-session fallback, instructor answer-key endpoint/UI, host-only question keys, resource links, and player payload sanitization.
+**Last task completed:** Phase 9 was merged and pushed to `master` at `8dd7a5b`, Vercel deployment was triggered, and the EC2 backend pulled `master`, rebuilt, restarted PM2, and verified `/health`. The instructor endpoint now has `INSTRUCTOR_KEY` configured on EC2; unauthenticated requests return `401`, and authenticated lookup for `cloud_concepts:15` returns data.
+**Next task to work on:** Phase 8 still has P8-T7 pending user smoke; do not mark Phase 8 complete without explicit confirmation. For Phase 9 follow-up, use `/instructor/answer-key` with the configured instructor key and rotate the key if it is shared outside the instructor group.
+**Files recently modified:** `PLAN.md`, `TODOs.md`, `PROGRESS.md` updated to record Phase 9 merge/deployment and EC2 instructor endpoint verification.
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`
 - Admin IAM user is named `clf-quiz-admin-policy` (matches policy name — works fine)
@@ -259,6 +259,7 @@
 - After CloudFront unblocks and distribution is created: MUST manually set (a) default root object = `index.html`, (b) custom error pages 403→/index.html→200 and 404→/index.html→200 — the new wizard doesn't expose these.
 - EC2 instance: `i-042b91a08364b6e01` | Elastic IP: `47.130.41.30` | nip.io domain: `api.47.130.41.30.nip.io`
 - SSH key: `~/Desktop/live-quiz-backend-key.pem` (chmod 400) — SSH: `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30`
+- SSH security group now includes the observed admin source `136.158.152.66/32`; temporary `0.0.0.0/0` SSH debug access was removed immediately after deployment.
 - EC2 setup script: `scripts/ec2-setup.sh` — run P6-B3 through P6-B8 sections via SSH
 - EC2 lifecycle helper: `./scripts/ec2-backend-lifecycle.sh status|start|stop|restart` — defaults to profile `clf-quiz`, region `ap-southeast-1`, instance `i-042b91a08364b6e01`, and API `https://api.47.130.41.30.nip.io`
 - Stopping EC2 makes the live backend unavailable until `./scripts/ec2-backend-lifecycle.sh start` succeeds and `/health` passes; storage/static IP costs may still apply.
