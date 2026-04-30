@@ -538,6 +538,10 @@
     secrecy requires a later public-quiz sanitization refactor.
   - **Acceptance:** Unauthorized requests get 401/403; authorized requests can
     filter/search across all domains and include answer explanations + links.
+  - **Operator workflow:** Set `INSTRUCTOR_KEY` in `backend/.env`, restart the
+    backend, verify unauthenticated requests are denied, then verify Bearer or
+    `x-instructor-key` requests return filtered data. Do not update EC2 until
+    this branch passes P9-T7 and is merged.
 
 - [x] **P9-T4:** Instructor answer-key UI.
   - Add a route such as `/instructor/answer-key`.
@@ -552,12 +556,18 @@
 - [x] **P9-T5:** Question ID/key display in live session.
   - Add `questionId` and `questionKey` to backend `QuestionPayload`,
     `QuestionRevealPayload`, and frontend live models.
-  - Display `Question N of M · ID <questionKey>` in host and player live
-    session headers.
+  - Display `Question N of M · ID <questionKey>` in the host live-session
+    header only.
+  - Strip `questionId`/`questionKey` from player `game:question` and
+    `question:reveal` payloads.
+  - Hide `questionId`/`questionKey` from player live-session headers and
+    player reveal/review panels so only the instructor can use the answer-key
+    lookup.
   - Keep IDs visible before answering but continue hiding correct answers and
     explanations until reveal.
-  - **Acceptance:** The instructor can read an ID/key from the live screen and
-    find that exact question in the instructor answer-key page.
+  - **Acceptance:** The instructor can read an ID/key from the host screen and
+    find that exact question in the instructor answer-key page; players do not
+    see that key.
 
 - [x] **P9-T6:** Resource links in live answer reveal.
   - Preserve source JSON `resource` through the backend reveal payload.
@@ -576,7 +586,10 @@
   - Manual stale-route smoke: missing host/player session URLs show fallback,
     not an endless spinner.
   - Manual instructor smoke: unauthorized answer-key endpoint denied;
-    authorized answer-key UI searches by live displayed question key.
+    authorized answer-key UI searches by host-displayed live question key.
+  - Manual key-visibility smoke: host session header shows `· ID <key>`;
+    player session header does not show question IDs or keys; player socket
+    payloads for `game:question` and `question:reveal` do not include IDs/keys.
   - Manual reveal smoke: resource links appear post-answer where available.
   - Deploy if requested: push `master` for Vercel and update EC2 backend via
     `git pull origin master`, backend build, PM2 restart, and `/health` check.

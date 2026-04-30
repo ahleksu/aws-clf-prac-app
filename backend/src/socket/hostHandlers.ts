@@ -4,6 +4,7 @@ import { QuizDomain, ScoringMode } from '../game/types';
 import {
   broadcastLeaderboard,
   broadcastQuestion,
+  revealForPlayer,
   scheduleQuestionTimer
 } from './sessionHelpers';
 
@@ -100,7 +101,10 @@ export function registerHostHandlers(
     if (session.state === 'active' || session.state === 'paused') {
       const reveal = session.buildRevealPayload();
       if (reveal) {
-        io.to(session.code).emit('question:reveal', reveal);
+        io.to(session.hostSocketId).emit('question:reveal', reveal);
+        io.to(session.code)
+          .except(session.hostSocketId)
+          .emit('question:reveal', revealForPlayer(reveal));
       }
     }
     const result = session.advanceQuestion();

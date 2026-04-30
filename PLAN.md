@@ -1481,6 +1481,41 @@ in the live session to quickly find the matching answer key while teaching.
 - Prefer a stable composite key such as `<domainSlug>:<id>` because numeric
   IDs may not be globally unique across domain files.
 
+**Local endpoint setup and smoke test:**
+1. Add a non-production secret to `backend/.env`:
+   ```bash
+   INSTRUCTOR_KEY=<strong-local-instructor-key>
+   ```
+2. Start or restart the backend so `dotenv` loads the key.
+3. Confirm unauthenticated requests are denied:
+   ```bash
+   curl -i 'http://localhost:3000/api/instructor/questions?domain=all&id=cloud_concepts:15'
+   ```
+   Expected result: `401 Unauthorized` when `INSTRUCTOR_KEY` is configured, or
+   `503` when the key is missing.
+4. Confirm authenticated requests return data:
+   ```bash
+   curl -s \
+     -H "Authorization: Bearer $INSTRUCTOR_KEY" \
+     'http://localhost:3000/api/instructor/questions?domain=all&id=cloud_concepts:15'
+   ```
+   The endpoint also accepts `x-instructor-key: <key>`.
+
+**Instructor UI workflow:**
+1. Open `/instructor/answer-key`.
+2. Enter the same instructor key. The browser stores it in `sessionStorage`
+   only.
+3. Search by the host-displayed composite key, such as `cloud_concepts:15`, or
+   by domain, numeric ID, or question text.
+4. Expand the result to view correct labels, answer explanations, and the AWS
+   resource link when present.
+
+**Production deployment note:** Do not deploy this branch to `master` or EC2
+until P9-T7 manual smoke validation passes. After merge, set
+`INSTRUCTOR_KEY` in the EC2 backend environment, restart PM2 with the updated
+environment, then re-run the unauthenticated/authenticated endpoint checks
+against `https://api.47.130.41.30.nip.io`.
+
 **Frontend instructor view:**
 - Add an instructor-only page such as `/instructor/answer-key`.
 - Prompt for the instructor key and store it in `sessionStorage` only.
@@ -1497,10 +1532,14 @@ question back to the answer-key data.
 **Requirements:**
 - Add `questionId` and preferably `questionKey` to `QuestionPayload`,
   `QuestionRevealPayload`, and relevant frontend model types.
-- Display the key in host and player live-session headers, e.g.
+- Display the key only in the host live-session header, e.g.
   `Question 2 of 5 · ID cloud_concepts:15`.
+- Do not send or display `questionId` or `questionKey` in player live-session
+  question/reveal payloads, headers, or reveal/review panels. Players should
+  not see the lookup key during the game; the key is for the instructor to use
+  with the answer-key endpoint.
 - Do not reveal correct answers before submission; ID/key metadata is safe to
-  send pre-answer.
+  send pre-answer to the host only, but player payloads must be sanitized.
 - Ensure CSV/export or final session data can still correlate answers to
   question IDs if later analytics are added.
 
@@ -1535,8 +1574,11 @@ not expose the source/resource link, so students cannot verify the explanation.
 - Stale host/player URLs for missing sessions show a fallback with **Back to
   Home**, never an endless spinner.
 - Unauthorized answer-key endpoint requests return no data.
-- Authorized answer-key search can find a live question by displayed
+- Authorized answer-key search can find a live question by host-displayed
   `questionKey`.
+- Host session header shows `· ID <questionKey>`; player session header does
+  not show question IDs or keys, and player `game:question` /
+  `question:reveal` payloads do not include them.
 - Live reveal panels include clickable resource links when source JSON provides
   them.
 

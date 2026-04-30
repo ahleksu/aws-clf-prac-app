@@ -19,7 +19,7 @@
 | OPS | Backend EC2 Lifecycle | **Active** | 1 / 2 | Idempotent helper added for EC2 status/start/stop/restart; start-before-demo check remains an operator task |
 | P7 | CLF-C02 Question Bank Audit | **Not Started** | 0 / 7 | Comprehensive audit + EC2 redeploy; see TODOs.md |
 | P8 | Live Session Feature Enhancements | **In Progress** | 6 / 7 | T1–T6 implemented and deployed to master/EC2 by user request; production builds pass; T7 pending user-run local smoke test |
-| P9 | Live Session UX + Instructor Answer Key | **In Progress** | 6 / 7 | T1–T6 implemented on `feature/phase-9-live-session-ux-answer-key`; production builds pass; T7 manual smoke pending user validation |
+| P9 | Live Session UX + Instructor Answer Key | **In Progress** | 6 / 7 | T1–T6 implemented on `feature/phase-9-live-session-ux-answer-key`; answer-key runbook + host-only key visibility refinement complete; T7 manual smoke pending user validation |
 
 ---
 
@@ -188,11 +188,11 @@
 
 - [x] P9-T1: Host dashboard cancel, join form cancel, host lobby cancel, and player lobby leave actions clear relevant live-session state and route home; backend `player:leave` removes the player from a `lobby`-state session and updates host counts.
 - [x] P9-T2: Live host/player routes call `LiveQuizService.validateSession()` against `GET /session/:code` on entry and render a shared `SessionMissingComponent` with Back to Home when the session is missing or ended.
-- [x] P9-T3: Backend `GET /api/instructor/questions` requires `INSTRUCTOR_KEY` via Bearer or `x-instructor-key`; returns question key/ID/domain/answers/correct labels/explanations/resource. Rate-limited; 401 when unauthorized; 503 when not configured.
+- [x] P9-T3: Backend `GET /api/instructor/questions` requires `INSTRUCTOR_KEY` via Bearer or `x-instructor-key`; returns question key/ID/domain/answers/correct labels/explanations/resource. Rate-limited; 401 when unauthorized; 503 when not configured. PLAN.md now documents local setup, curl checks, UI workflow, and the post-validation EC2 deployment note.
 - [x] P9-T4: `/instructor/answer-key` page prompts for key (sessionStorage-only), searches by domain/ID/text, and renders dense expandable answers + clickable resource links.
-- [x] P9-T5: `LiveQuestion` now carries `domainSlug`/`questionKey`; `QuestionPayload` and `QuestionRevealPayload` expose `questionId`/`questionKey`; host and player session headers display `· ID <questionKey>`.
+- [x] P9-T5: `LiveQuestion` now carries `domainSlug`/`questionKey`; `QuestionPayload` and `QuestionRevealPayload` expose `questionId`/`questionKey` for host/instructor use; the host session header displays `· ID <questionKey>` for answer-key lookup, while player question/reveal payloads and UI must hide question IDs/keys.
 - [x] P9-T6: Reveal payload includes source `resource`; host and player reveal panels render `View AWS reference` links with `target="_blank" rel="noopener noreferrer"`.
-- [ ] P9-T7: Production builds pass (`npm run build -- --configuration production` and `cd backend && npm run build`). Manual UX smoke (lobby leave, stale fallback, instructor auth/search, live key lookup, reveal resource links) pending user validation.
+- [ ] P9-T7: Production builds pass (`npm run build -- --configuration production` and `cd backend && npm run build`). Manual UX smoke (lobby leave, stale fallback, instructor auth/search, host-only live key lookup, reveal resource links) pending user validation.
 
 ---
 
@@ -245,9 +245,9 @@
 | Health check | https://api.47.130.41.30.nip.io/health |
 | EC2 SSH | `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30` |
 
-**Last task completed:** Added the join form **Cancel Session** action: it clears code/nickname entry plus stale player live-session state, returns to `/`, and is documented under Phase 9 cancel UX. Earlier Phase 9 T1–T6 work remains in place: dashboard/lobby cancel/leave with state cleanup, missing-session fallback on all live routes, secured `/api/instructor/questions` endpoint (`INSTRUCTOR_KEY`), `/instructor/answer-key` UI, `questionKey` plumbed through live payloads + headers, and resource links in host/player reveal panels.
-**Next task to work on:** P9-T7 manual smoke validation by the user (lobby leave flows, stale route fallback, unauthorized/authorized instructor endpoint + UI, live question key lookup, reveal resource links). Phase 8 still has P8-T7 pending user smoke; do not mark Phase 8 complete without explicit confirmation.
-**Files recently modified:** `src/app/pages/live/join/join.component.{ts,html}` for the join-form cancel action; `PLAN.md`, `TODOs.md`, `PROGRESS.md` updated with Phase 9 cancel UX coverage. Recent production implementation remains Phase 8 across `backend/src/{game,socket}`, `src/app/core/`, `src/app/pages/live/{host-dashboard,host-lobby,host-session,leaderboard,player-game}`, `src/environments/`, `package.json` (qrcode added).
+**Last task completed:** Documented the answer-key endpoint operator workflow and made question IDs/keys host-only: player headers no longer render them, backend `game:question` / `question:reveal` emissions to player sockets are sanitized, and both production builds pass.
+**Next task to work on:** P9-T7 manual smoke validation by the user (lobby leave flows, stale route fallback, unauthorized/authorized instructor endpoint + UI, host-only live key lookup, reveal resource links). Phase 8 still has P8-T7 pending user smoke; do not mark Phase 8 complete without explicit confirmation.
+**Files recently modified:** `PLAN.md`, `TODOs.md`, `PROGRESS.md` updated with answer-key endpoint usage and host-only key visibility intent; `src/app/pages/live/player-game/player-game.component.{html,css}` updated so player screens no longer display question IDs/keys; `backend/src/socket/{sessionHelpers,hostHandlers,playerHandlers}.ts` and `backend/src/game/types.ts` updated so player socket payloads do not include question IDs/keys.
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`
 - Admin IAM user is named `clf-quiz-admin-policy` (matches policy name — works fine)
@@ -271,6 +271,6 @@
   - Use branch `feature/phase-9-live-session-ux-answer-key` from `master`.
   - Add lobby cancel/leave buttons for host and player waiting lobbies; intentional leave must clear host token, nickname, role, session code, current question, reveal payload, rankings, and any related `sessionStorage`.
   - Add missing/ended session fallback for stale host/player live URLs; do not leave users in a spinner.
-  - Add secured instructor answer-key endpoint protected by `INSTRUCTOR_KEY`; current `public/quiz/*.json` still exposes solo-mode answer data, so do not claim strong secrecy until public quiz JSON is sanitized.
-  - Add `questionId`/`questionKey` to live payloads and show it in host/player headers.
+  - Add secured instructor answer-key endpoint protected by `INSTRUCTOR_KEY`; current `public/quiz/*.json` still exposes solo-mode answer data, so do not claim strong secrecy until public quiz JSON is sanitized. Configure `INSTRUCTOR_KEY`, restart the backend, verify unauthenticated `401` and authenticated data before relying on it.
+  - Add `questionId`/`questionKey` to live payloads and show it only in the host header. Player screens should not display question IDs/keys.
   - Add post-answer resource links in reveal panels using source JSON `resource` values when present.

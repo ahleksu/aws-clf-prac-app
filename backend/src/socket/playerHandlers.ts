@@ -1,6 +1,6 @@
 import type { Server, Socket } from 'socket.io';
 import { GameManager } from '../game/GameManager';
-import { autoAdvanceIfDone } from './sessionHelpers';
+import { autoAdvanceIfDone, questionForPlayer, revealForPlayer } from './sessionHelpers';
 
 interface PlayerJoinPayload {
   sessionCode: string;
@@ -77,10 +77,10 @@ export function registerPlayerHandlers(
     if (session.state === 'active' || session.state === 'paused') {
       const question = session.getCurrentQuestion();
       if (question) {
-        socket.emit('game:question', {
+        socket.emit('game:question', questionForPlayer({
           ...question,
           timeRemaining: session.timeRemainingMs()
-        });
+        }));
       }
       if (session.state === 'paused') {
         socket.emit('game:paused', { timeRemaining: session.timeRemainingMs() });
@@ -89,12 +89,13 @@ export function registerPlayerHandlers(
 
     if (session.state === 'between') {
       const answerReveal = session.getCurrentQuestionReveal();
+      const playerAnswerReveal = answerReveal ? revealForPlayer(answerReveal) : answerReveal;
       if (answerReveal) {
-        socket.emit('question:reveal', answerReveal);
+        socket.emit('question:reveal', playerAnswerReveal);
       }
       socket.emit('leaderboard:show', {
         rankings,
-        answerReveal,
+        answerReveal: playerAnswerReveal,
         myRank: myRanking?.rank
       });
     }

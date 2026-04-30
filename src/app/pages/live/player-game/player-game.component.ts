@@ -38,7 +38,7 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
   validating = true;
   playerViewState: PlayerViewState = 'answering';
   private prePauseState: PlayerViewState = 'answering';
-  private activeQuestionKey = '';
+  private activeQuestionSignature = '';
 
   private timerId: ReturnType<typeof setInterval> | null = null;
   private timerDeadline = 0;
@@ -50,9 +50,9 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
     effect(() => {
       const question = this.quiz.currentQuestion();
       if (!question) return;
-      const questionKey = `${question.questionNumber}:${question.questionText}`;
-      if (questionKey === this.activeQuestionKey) return;
-      this.activeQuestionKey = questionKey;
+      const questionSignature = `${question.questionNumber}:${question.questionText}`;
+      if (questionSignature === this.activeQuestionSignature) return;
+      this.activeQuestionSignature = questionSignature;
       this.selectedAnswers = [];
       this.submittedAnswers = [];
       this.setViewState('answering');

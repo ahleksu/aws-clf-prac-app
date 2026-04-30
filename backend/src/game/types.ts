@@ -86,8 +86,8 @@ export interface QuestionPayload {
   answers: ClientAnswer[];
   timeLimit: number;
   domain: string;
-  questionId: number;
-  questionKey: string;
+  questionId?: number;
+  questionKey?: string;
 }
 
 export interface RevealAnswer {
@@ -101,8 +101,8 @@ export interface QuestionRevealPayload {
   answerLabels: string[];
   explanation: string;
   answers: RevealAnswer[];
-  questionId: number;
-  questionKey: string;
+  questionId?: number;
+  questionKey?: string;
   resource?: string;
 }
 
