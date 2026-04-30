@@ -83,6 +83,15 @@
         [loading]="creating"
         styleClass="w-full"
       />
+      <p-button
+        type="button"
+        label="Cancel Session"
+        icon="pi pi-home"
+        severity="secondary"
+        styleClass="w-full"
+        [disabled]="creating"
+        (onClick)="cancelSession()"
+      />
     </form>
   </section>
 </main>

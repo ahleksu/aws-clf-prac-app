@@ -109,6 +109,12 @@ export class HostDashboardComponent {
     });
   }
 
+  cancelSession(): void {
+    this.creating = false;
+    this.quiz.cancelHostSession();
+    this.router.navigate(['/']);
+  }
+
   maxQuestionCount(): number {
     const available = this.domainQuestionCounts[this.domain] ?? MAX_SESSION_QUESTIONS;
     return Math.max(MIN_SESSION_QUESTIONS, Math.min(MAX_SESSION_QUESTIONS, available));

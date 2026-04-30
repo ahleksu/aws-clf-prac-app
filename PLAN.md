@@ -1417,8 +1417,12 @@ identity state rather than preserving nicknames, host tokens, or stale session
 codes.
 
 **Requirements:**
+- Add a visible **Cancel Session** action on the host dashboard setup form so a
+  host can abandon lobby setup and return home before creating a room.
 - Add a visible **Back to Home** / **Cancel Session** action on the host lobby.
 - Add a visible **Back to Home** / **Leave Lobby** action on the player lobby.
+- Host dashboard cancel should clear any stale host live-session state and
+  navigate to `/` without submitting the create-session form.
 - Host cancel should confirm intent, emit the existing end/cancel flow, clear
   the host `hostToken`, session code, role, cached live state, and navigate to
   `/`.
@@ -1515,6 +1519,8 @@ not expose the source/resource link, so students cannot verify the explanation.
 
 - `npm run build -- --configuration production` passes.
 - `cd backend && npm run build` passes.
+- Host dashboard cancel clears setup/live host state and returns home without
+  creating a session.
 - Host lobby cancel ends the lobby/session, clears host token/state, and
   returns home.
 - Player lobby leave removes the waiting player, clears nickname/session state,
