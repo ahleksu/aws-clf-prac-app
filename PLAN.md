@@ -4,7 +4,7 @@
 
 ---
 
-## 🚀 Deployment Status (as of 2026-04-29)
+## 🚀 Deployment Status (as of 2026-04-30)
 
 | Layer | Service | URL | Status |
 |---|---|---|---|
@@ -16,6 +16,11 @@
 | TLS (backend) | Let's Encrypt via nip.io | Expires 2026-07-27, auto-renews | ✅ Active |
 
 **Note on original S3+CloudFront plan:** S3 bucket `aws-clf-quiz-frontend` (ap-southeast-1) and OAC `E37IFEDVTLC7J6` remain provisioned. CloudFront activation pending AWS Support case (account verification). Can migrate frontend from Vercel to S3+CloudFront at any time.
+
+**Current production branch:** `master` includes Phase 8 T1–T6 and the backend
+EC2 lifecycle helper as of commit `5598b8c`. Vercel auto-deploys from `master`.
+The EC2 backend has also pulled `master`, rebuilt, and restarted PM2. Phase 8
+still remains **In Progress** until P8-T7 is manually smoke-tested.
 
 ---
 
@@ -41,13 +46,13 @@ Transform the current self-paced solo quiz SPA into a **Kahoot-style live quiz p
 | Architecture | Pure static SPA, no backend | Add Node.js + Socket.io backend |
 | State | In-memory, resets on refresh | Server-side session state |
 | Multiplayer | None | WebSocket-based real-time sync |
-| Frontend Deployment | **None** (Vercel removed) | S3 + CloudFront + ACM (see §4) |
-| Backend Deployment | None | EC2 t2.micro free tier (see §4) |
+| Frontend Deployment | Vercel live on `master` auto-deploy; original S3+CloudFront plan retained as fallback | No change unless migrating away from Vercel |
+| Backend Deployment | EC2 t2.micro live with nginx + PM2 + Let's Encrypt | Keep EC2 updated from `master` after backend changes |
 | Quiz Data | Static JSON in `/public/quiz/` | Backend loads same JSON files |
 | Routing | 4 solo pages | +6 new live-session pages |
 | Auth | None | Simple session code + nickname (no accounts) |
 | SSL | N/A | ACM on CloudFront (frontend) + Let's Encrypt on EC2 via nip.io (backend) |
-| CI/CD | None | GitHub Actions → S3 sync on push to `master` |
+| CI/CD | Vercel auto-deploys frontend on push to `master`; S3 workflow is fallback/reference | Preserve Vercel unless CloudFront migration is explicitly resumed |
 
 **Existing routes to preserve (do not break):**
 - `/` → `HomeComponent`
@@ -120,30 +125,37 @@ Scholars & Host (Browsers)
 - Eliminates AWS cost and latency overhead
 - DynamoDB can be added later as Phase 2 enhancement
 
-### Frontend: Angular 19 (existing, extended) — hosted on S3 + CloudFront
+### Frontend: Angular 19 (existing, extended) — hosted on Vercel in production
 
 - Add `socket.io-client` npm package
 - Create a `SocketService` and `LiveQuizService`
 - Add 6 new route pages; all existing pages untouched
-- Build output (`ng build --configuration production`) synced to S3 via GitHub Actions
+- Current production: Vercel auto-builds and deploys from `master`
+- Historical/fallback path: build output (`ng build --configuration production`) can be synced to S3 via GitHub Actions once CloudFront is unblocked
 
-### Frontend Hosting: S3 + CloudFront (replaces Vercel)
+### Frontend Hosting: Vercel Current, S3 + CloudFront Fallback
 
-**Why S3 + CloudFront over alternatives:**
+**Current production decision:** Vercel is the active frontend host because the
+AWS account is still blocked from creating CloudFront distributions until AWS
+Support verifies the account. The S3 bucket and OAC remain provisioned so the
+project can migrate to S3+CloudFront later.
+
+**Original S3 + CloudFront rationale:**
 
 | Option | Monthly Cost | DDoS Protection | SSL | CI/CD | Notes |
 |---|---|---|---|---|---|
-| **S3 + CloudFront** ← chosen | **~$0.05–$1.50** | AWS Shield Standard | ACM (free) | GitHub Actions | Educational, AWS-native, most control |
+| **Vercel** ← current production | $0 | Platform managed | Auto | Auto on `master` | Active because CloudFront is blocked pending account verification |
+| **S3 + CloudFront** ← AWS fallback | **~$0.05–$1.50** | AWS Shield Standard | ACM (free) | GitHub Actions | Educational, AWS-native, most control once CloudFront is available |
 | AWS Amplify Hosting | $0 (free tier) | CloudFront + Shield | Auto | Built-in | Easier but hides infrastructure |
 | EC2 + nginx (static files) | $0 extra | EC2 security group only | Let's Encrypt | Manual | Single point of failure, no CDN |
 | Netlify / GitHub Pages | $0 | CDN varies | Auto | Built-in | Not AWS; less relevant for re/Start |
 
-S3 + CloudFront is chosen because it:
+S3 + CloudFront remains the AWS-native fallback because it:
 1. Teaches students the proper AWS static hosting pattern relevant to CLF-C02
 2. AWS Shield Standard (free) blocks Layer 3/4 volumetric attacks at edge
 3. ACM provides free, auto-renewing TLS — no certificate expiry during demo
 4. CloudFront caches assets globally so all 30 students get fast, parallel loads
-5. GitHub Actions CI/CD replaces Vercel's auto-deploy: `aws s3 sync dist/ s3://bucket`
+5. GitHub Actions can deploy it with `aws s3 sync dist/ s3://bucket`
 
 ### Angular Socket.io Client: `socket.io-client` (direct, no wrapper)
 
@@ -151,20 +163,26 @@ S3 + CloudFront is chosen because it:
 - ngx-socket-io lags behind socket.io versions
 - Direct `socket.io-client` with an Angular service wrapper is cleaner and simpler
 
-### Backend Compute: EC2 t2.micro (AWS Free Tier, Always-On)
+### Backend Compute: EC2 t2.micro (AWS Free Tier, Usually On)
 
-**Why EC2 t2.micro always-on instead of stop/start:**
+**Cost note for stop/start:**
 
-Stopping an EC2 instance does NOT eliminate the Elastic IP cost. The original stop/start idea is flawed:
+Stopping an EC2 instance pauses compute, but it does not necessarily eliminate
+all costs. Attached storage remains, and static public IP/Elastic IP billing can
+apply depending on AWS's current public IPv4 pricing and whether the instance is
+stopped. Use `scripts/ec2-backend-lifecycle.sh` when the backend must be
+temporarily stopped, but run the pre-demo start/health flow before class.
 
-| Resource | EC2 t2.micro — stop/start | EC2 t2.micro — always-on (free tier) |
+| Resource | EC2 t2.micro — stop/start | EC2 t2.micro — running during free tier |
 |---|---|---|
-| Compute | $0.00 (stopped, free tier hours) | **$0.00** (750 hrs/month free = always-on) |
-| Elastic IP | **$3.65/mo** (billed per hour when stopped) | **$0.00** (free when instance running) |
+| Compute | Paused while stopped | Covered by 750 hrs/month free tier for first 12 months |
+| Storage/static IP | May still incur charges | May still incur current AWS public IPv4/static IP charges |
 | Demo reliability | Medium (risk forgetting to start) | **High** |
-| **Total (12 months)** | **$3.65/mo** | **$0.00/mo** |
+| Operational burden | Must remember to start and verify health | Lower |
 
-Keep the EC2 t2.micro **always running** during the free tier period. The Elastic IP is free when the instance is running, and 750 free hours per month = 24/7 operation. No stop/start overhead, no risk of forgetting to start before the demo.
+Default recommendation for classroom reliability: keep the backend running
+during active teaching periods. For idle periods where temporary shutdown is
+desired, use the idempotent lifecycle helper and verify `/health` before use.
 
 **t2.micro specs vs. load for 30 users:**
 - 1 GB RAM, 1 vCPU (burstable T2 credits)
@@ -1382,11 +1400,142 @@ game:ended                               → navigate to /leaderboard/:code
 
 ---
 
-## 20. Out of Scope (This Version)
+## 20. Phase 9 — Live Session UX + Instructor Answer Key
+
+> **Status:** Planned, not implemented. Create a new branch from `master`
+> before implementation, recommended name:
+> `feature/phase-9-live-session-ux-answer-key`.
+
+**Goal:** Improve live-session recovery/cancel UX and give the instructor a
+controlled way to look up answer keys, explanations, and resource links while
+teaching.
+
+### 20.1 Lobby Cancel / Back-To-Home UX
+
+**Problem:** Host and player waiting lobbies do not provide a clear way back to
+the home screen. Leaving should be intentional and should clear session-local
+identity state rather than preserving nicknames, host tokens, or stale session
+codes.
+
+**Requirements:**
+- Add a visible **Back to Home** / **Cancel Session** action on the host lobby.
+- Add a visible **Back to Home** / **Leave Lobby** action on the player lobby.
+- Host cancel should confirm intent, emit the existing end/cancel flow, clear
+  the host `hostToken`, session code, role, cached live state, and navigate to
+  `/`.
+- Player lobby leave should intentionally invalidate that nickname for the
+  current browser: emit a leave/disconnect pathway as needed, remove the player
+  from the lobby if the quiz has not started, clear nickname/session cache, and
+  navigate to `/`.
+- Host lobby player counts must update after an intentional player leave.
+- Do not break refresh/reconnect during an active quiz; intentional lobby leave
+  is different from accidental disconnect/reconnect.
+
+### 20.2 Missing / Ended Session Fallback UX
+
+**Problem:** Stale `/host/lobby/:code`, `/host/session/:code`,
+`/play/:code`, and `/play/:code/game` routes can leave users in an endless
+loading state when the session no longer exists.
+
+**Requirements:**
+- On route entry, validate the session code using the existing
+  `GET /session/:code` endpoint or a small live-session service helper.
+- If the backend returns missing/ended/invalid, show a clear "Session no longer
+  exists" state with a **Back to Home** button.
+- Clear stale `sessionStorage`/service state for host token, role, nickname,
+  session code, current question, reveal payload, and rankings.
+- Handle `session:error` from socket events the same way: stop spinners, show
+  the fallback state, and provide navigation home.
+
+### 20.3 Secure Instructor Answer Key
+
+**Problem:** The instructor needs a way to search all questions across domains,
+view answer keys, explanations, and resource links, and use a question ID shown
+in the live session to quickly find the matching answer key while teaching.
+
+**Security boundary:**
+- Add a backend-only, instructor-protected read endpoint. Do not put answer-key
+  data into a public Angular bundle or into pre-answer live-session payloads.
+- Use an environment secret such as `INSTRUCTOR_KEY` and require it via
+  `Authorization: Bearer <key>` or `x-instructor-key`.
+- Unauthorized requests must return `401`/`403` and no question data.
+- Important limitation: the current solo quiz mode still ships full quiz JSON
+  under `public/quiz/`, so answer secrecy is not absolute until Phase 7 or a
+  later refactor removes correct-answer metadata from public static JSON. This
+  Phase 9 endpoint is still useful as an instructor workflow and avoids adding
+  more answer-key exposure to live-session payloads.
+
+**Endpoint shape:**
+- `GET /api/instructor/questions?domain=all&q=&id=` returns a filtered list.
+- Include: stable question key, numeric ID, domain, type, question text,
+  answers with labels/status/explanations, correct answer labels, and
+  `resource`/`referenceUrl` when available.
+- Prefer a stable composite key such as `<domainSlug>:<id>` because numeric
+  IDs may not be globally unique across domain files.
+
+**Frontend instructor view:**
+- Add an instructor-only page such as `/instructor/answer-key`.
+- Prompt for the instructor key and store it in `sessionStorage` only.
+- Provide search by question ID/key, domain, and text.
+- Render answer explanations and clickable resource links.
+- Keep this page utilitarian and dense: table/list, filters, expandable answer
+  detail, no marketing/hero layout.
+
+### 20.4 Live Question ID / Key Display
+
+**Problem:** During a live session, the instructor cannot easily map the shown
+question back to the answer-key data.
+
+**Requirements:**
+- Add `questionId` and preferably `questionKey` to `QuestionPayload`,
+  `QuestionRevealPayload`, and relevant frontend model types.
+- Display the key in host and player live-session headers, e.g.
+  `Question 2 of 5 · ID cloud_concepts:15`.
+- Do not reveal correct answers before submission; ID/key metadata is safe to
+  send pre-answer.
+- Ensure CSV/export or final session data can still correlate answers to
+  question IDs if later analytics are added.
+
+### 20.5 Resource Links In Reveal / Review
+
+**Problem:** Correct/incorrect answer reveal panels show explanations but do
+not expose the source/resource link, so students cannot verify the explanation.
+
+**Requirements:**
+- Preserve `resource` from source JSON through the backend reveal pathway.
+- Add `resource` or `resourceUrl` to the post-answer reveal payload, not as a
+  correct-answer hint before answering unless explicitly desired later.
+- In host and player reveal/review panels, render a clear clickable link when
+  available: `View AWS reference`.
+- Links must use `target="_blank"` and `rel="noopener noreferrer"`.
+- If a question has no resource link yet, show no link or a subtle "Reference
+  pending" note in instructor-only surfaces. Phase 7 remains responsible for
+  auditing/filling missing official AWS references.
+
+### 20.6 Phase 9 Validation
+
+- `npm run build -- --configuration production` passes.
+- `cd backend && npm run build` passes.
+- Host lobby cancel ends the lobby/session, clears host token/state, and
+  returns home.
+- Player lobby leave removes the waiting player, clears nickname/session state,
+  updates host lobby count, and returns home.
+- Stale host/player URLs for missing sessions show a fallback with **Back to
+  Home**, never an endless spinner.
+- Unauthorized answer-key endpoint requests return no data.
+- Authorized answer-key search can find a live question by displayed
+  `questionKey`.
+- Live reveal panels include clickable resource links when source JSON provides
+  them.
+
+---
+
+## 21. Out of Scope (This Version)
 
 - User accounts / authentication
 - Persistent quiz history / analytics dashboard
-- Admin panel for question management
+- Full CRUD admin panel for question management (Phase 9 only adds a secured
+  read-only instructor answer-key view unless explicitly expanded)
 - Team mode (individual scoring only)
 - Custom question creation in-browser
 - Mobile app (PWA might be added later)

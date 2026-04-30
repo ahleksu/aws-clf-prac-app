@@ -19,6 +19,7 @@
 | OPS | Backend EC2 Lifecycle | **Active** | 1 / 2 | Idempotent helper added for EC2 status/start/stop/restart; start-before-demo check remains an operator task |
 | P7 | CLF-C02 Question Bank Audit | **Not Started** | 0 / 7 | Comprehensive audit + EC2 redeploy; see TODOs.md |
 | P8 | Live Session Feature Enhancements | **In Progress** | 6 / 7 | T1–T6 implemented and deployed to master/EC2 by user request; production builds pass; T7 pending user-run local smoke test |
+| P9 | Live Session UX + Instructor Answer Key | **Planned** | 0 / 7 | New requested work: lobby leave/back-home UX, missing-session fallback, secured instructor answer-key lookup, live question IDs, and resource links in reveal |
 
 ---
 
@@ -113,7 +114,7 @@
 
 ---
 
-## Phase 6 — AWS Deployment (Free Tier: S3+CloudFront + EC2 t2.micro)
+## Phase 6 — AWS Deployment (Hybrid: Vercel + EC2 t2.micro)
 
 **Part A — Frontend (S3 + CloudFront)**
 - [x] P6-A1: Create private S3 bucket (`aws-clf-quiz-frontend`, ap-southeast-1, all public access blocked) — ✅ 2026-04-29
@@ -183,6 +184,18 @@
 
 ---
 
+## Phase 9 — Live Session UX + Instructor Answer Key
+
+- [ ] P9-T1: Add host/player lobby Back-to-Home / Cancel actions that intentionally clear host token, nickname, session code, role, cached live state, and update lobby counts as needed.
+- [ ] P9-T2: Add missing/ended session fallback for stale host/player live routes so users see a clear "Session no longer exists" state with Back to Home instead of an endless spinner.
+- [ ] P9-T3: Add secured backend instructor answer-key endpoint for all domains; require `INSTRUCTOR_KEY` and return question key, ID, domain, answers, correct labels, explanations, and resource links.
+- [ ] P9-T4: Add instructor answer-key UI (`/instructor/answer-key`) with key prompt, search/filter, expandable answers, explanations, correct/skipped status, and clickable resource links.
+- [ ] P9-T5: Add stable `questionId`/`questionKey` to live payloads and display it in host/player live-session headers for deterministic instructor lookup.
+- [ ] P9-T6: Attach source `resource` links to post-answer reveal/review panels for host and player when available.
+- [ ] P9-T7: Build + manual validation: lobby leave flows, stale route fallback, unauthorized/authorized answer-key endpoint/UI, live question key lookup, and reveal resource links.
+
+---
+
 ## Blockers
 
 > Record any blockers here. Include: what the blocker is, when it was encountered, and how it was resolved (or if it's still open).
@@ -215,6 +228,7 @@
 | 2026-04-29 | P6-A (frontend) | **Pivoted frontend hosting from S3+CloudFront to Vercel** | CloudFront account verification blocked by AWS Support case (account too new). Vercel provides equivalent free HTTPS hosting with automatic SPA routing support via `vercel.json`. Backend remains on EC2 t2.micro (unchanged). `vercel.json` created specifying Angular build command, `dist/aws-clf-prac-app/browser` output dir, and catch-all rewrite to `index.html` for SPA routing. S3 bucket and OAC remain provisioned — can revert to S3+CloudFront once AWS Support resolves the case. |
 | 2026-04-30 | OPS-T1 | Added an idempotent EC2 lifecycle helper instead of relying on manual console stop/start | `scripts/ec2-backend-lifecycle.sh` lets the operator stop backend compute when idle and start it again with EC2 waiters plus `/health` verification. Stopping EC2 makes the live backend unavailable until `start` succeeds. |
 | 2026-04-30 | P8 deploy | User requested promoting Phase 8 changes to `master` before the P8-T7 manual smoke test is marked complete | Vercel and the EC2 backend need the latest UI/backend changes on `master`; Phase 8 remains **In Progress (6/7)** until the user-run multi-tab smoke test passes. |
+| 2026-04-30 | P9 planning | Added Phase 9 as a new live-session UX + instructor answer-key work package | The user requested clean lobby cancellation, stale-session fallback, instructor answer-key lookup, live question IDs, and resource links in reveal panels. The answer-key endpoint should be protected by `INSTRUCTOR_KEY`, but current solo mode still exposes full quiz JSON under `public/quiz/`, so true answer secrecy requires a later public-quiz sanitization refactor. |
 
 ---
 
@@ -231,9 +245,9 @@
 | Health check | https://api.47.130.41.30.nip.io/health |
 | EC2 SSH | `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30` |
 
-**Last task completed:** Promoted `feature/phase-8-enhancements` to `master` by explicit user request, pushed `master` to GitHub/Vercel, deployed the EC2 backend from `master`, and verified both public frontend and backend health. Added `scripts/ec2-backend-lifecycle.sh` for idempotent backend EC2 `status/start/stop/restart`; corrected `scripts/pre-demo-check.sh` to use the Vercel frontend URL. Phase 8 backend source changes are now on `master` (`backend/src/game/*`, `backend/src/socket/hostHandlers.ts`).
-**Next task to work on:** Phase 8 — P8-T7 user-run local multi-tab smoke test. Keep Phase 8 at **6/7** until the smoke test passes; then tick P8-T7 and mark Phase 8 complete.
-**Files recently modified:** Branch `feature/phase-8-enhancements` — 28 files modified across `backend/src/{game,socket}`, `src/app/core/`, `src/app/pages/live/{host-dashboard,host-lobby,host-session,leaderboard,player-game}`, `src/environments/`, `package.json` (qrcode added)
+**Last task completed:** Reviewed and updated context files for the current production state and added Phase 9 planning for live-session UX + instructor answer-key work. Phase 8 T1–T6 are already on `master` and deployed to Vercel/EC2; P8-T7 remains pending user-run smoke validation.
+**Next task to work on:** If validating Phase 8, run P8-T7 manual multi-tab smoke and only then mark Phase 8 complete. If implementing new requested work, create `feature/phase-9-live-session-ux-answer-key` from `master` and start with P9-T1/P9-T2 before the secured answer-key tasks.
+**Files recently modified:** `PLAN.md`, `TODOs.md`, `PROGRESS.md` updated with Phase 9 scope and current handoff. Recent production implementation remains Phase 8 across `backend/src/{game,socket}`, `src/app/core/`, `src/app/pages/live/{host-dashboard,host-lobby,host-session,leaderboard,player-game}`, `src/environments/`, `package.json` (qrcode added).
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`
 - Admin IAM user is named `clf-quiz-admin-policy` (matches policy name — works fine)
@@ -253,3 +267,10 @@
 - Angular `environment.prod.ts` `wsUrl` MUST be `https://` — browsers block `ws://` from HTTPS pages
 - Use `export AWS_PROFILE=clf-quiz` per terminal session before AWS CLI commands
 - GitHub Actions workflow targets `dist/aws-clf-prac-app/browser/` (Angular 19 output path — verified)
+- Phase 9 implementation notes:
+  - Use branch `feature/phase-9-live-session-ux-answer-key` from `master`.
+  - Add lobby cancel/leave buttons for host and player waiting lobbies; intentional leave must clear host token, nickname, role, session code, current question, reveal payload, rankings, and any related `sessionStorage`.
+  - Add missing/ended session fallback for stale host/player live URLs; do not leave users in a spinner.
+  - Add secured instructor answer-key endpoint protected by `INSTRUCTOR_KEY`; current `public/quiz/*.json` still exposes solo-mode answer data, so do not claim strong secrecy until public quiz JSON is sanitized.
+  - Add `questionId`/`questionKey` to live payloads and show it in host/player headers.
+  - Add post-answer resource links in reveal panels using source JSON `resource` values when present.

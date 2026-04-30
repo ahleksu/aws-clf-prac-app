@@ -486,6 +486,98 @@
 
 ---
 
+## Phase 9 — Live Session UX + Instructor Answer Key
+
+> **Branch:** create from `master`, recommended
+> `feature/phase-9-live-session-ux-answer-key`.
+> **Goal:** Fix live-session cancel/recovery UX and add an instructor-only
+> answer-key lookup workflow with question IDs, explanations, and resource
+> links. See PLAN.md §20.
+> **Important:** P8-T7 is still pending user smoke validation. Do not mark Phase
+> 8 complete as part of Phase 9 work.
+
+- [ ] **P9-T1:** Lobby Back-to-Home / Cancel UX.
+  - Add host lobby **Cancel Session / Back to Home** action.
+  - Add player lobby **Leave Lobby / Back to Home** action.
+  - Host cancel confirms intent, ends/cancels the session, clears host token,
+    role, session code, cached live state, and navigates to `/`.
+  - Player leave clears nickname/session cache, intentionally removes the
+    player from the lobby if the quiz has not started, updates host player
+    counts, and navigates to `/`.
+  - Do not break active-game accidental reconnect behavior.
+  - **Acceptance:** Host/player can leave waiting lobbies cleanly; returning to
+    `/join` or `/host` starts fresh without stale nickname/token/session state.
+
+- [ ] **P9-T2:** Missing/ended session fallback.
+  - Validate `/host/lobby/:code`, `/host/session/:code`, `/play/:code`, and
+    `/play/:code/game` on route entry using backend session state.
+  - Convert missing/ended/invalid session responses and socket `session:error`
+    events into a clear "Session no longer exists" view.
+  - Add **Back to Home** button to the fallback view.
+  - Clear stale live service/sessionStorage state when the fallback appears.
+  - **Acceptance:** Stale host/player URLs never spin forever; they show a
+    stable error state and a working route home.
+
+- [ ] **P9-T3:** Secured instructor answer-key endpoint.
+  - Add a backend-only read endpoint, e.g.
+    `GET /api/instructor/questions?domain=all&q=&id=`.
+  - Protect it with `INSTRUCTOR_KEY` via `Authorization: Bearer <key>` or
+    `x-instructor-key`; unauthorized requests return no question data.
+  - Return stable question key, numeric ID, domain, type, question text,
+    answer labels/text/status/explanations, correct labels, and
+    `resource`/`referenceUrl` when present.
+  - Use a composite `questionKey` such as `<domainSlug>:<id>` if numeric IDs
+    are not globally unique.
+  - **Security note:** Current solo mode still exposes full JSON under
+    `public/quiz/`; this endpoint improves instructor workflow but true answer
+    secrecy requires a later public-quiz sanitization refactor.
+  - **Acceptance:** Unauthorized requests get 401/403; authorized requests can
+    filter/search across all domains and include answer explanations + links.
+
+- [ ] **P9-T4:** Instructor answer-key UI.
+  - Add a route such as `/instructor/answer-key`.
+  - Prompt for instructor key and store it in `sessionStorage` only.
+  - Provide filters/search by domain, numeric ID, composite key, and question
+    text.
+  - Render a dense instructor-facing list/table with expandable answers,
+    explanations, correct/skipped status, and clickable resource links.
+  - **Acceptance:** Instructor can search for a displayed live question ID/key
+    and see the answer key, explanations, and official resource link quickly.
+
+- [ ] **P9-T5:** Question ID/key display in live session.
+  - Add `questionId` and `questionKey` to backend `QuestionPayload`,
+    `QuestionRevealPayload`, and frontend live models.
+  - Display `Question N of M · ID <questionKey>` in host and player live
+    session headers.
+  - Keep IDs visible before answering but continue hiding correct answers and
+    explanations until reveal.
+  - **Acceptance:** The instructor can read an ID/key from the live screen and
+    find that exact question in the instructor answer-key page.
+
+- [ ] **P9-T6:** Resource links in live answer reveal.
+  - Preserve source JSON `resource` through the backend reveal payload.
+  - Render a `View AWS reference` link in host and player post-answer reveal
+    panels when a resource is available.
+  - Use `target="_blank"` and `rel="noopener noreferrer"` for external links.
+  - Do not add resource links to pre-answer payloads unless explicitly approved
+    later.
+  - **Acceptance:** After answers reveal, host and player can open the source
+    link for the current question when the JSON provides one.
+
+- [ ] **P9-T7 (Validation):**
+  - `npm run build -- --configuration production` passes.
+  - `cd backend && npm run build` passes.
+  - Manual UX smoke: host/player lobby leave flows clear state and route home.
+  - Manual stale-route smoke: missing host/player session URLs show fallback,
+    not an endless spinner.
+  - Manual instructor smoke: unauthorized answer-key endpoint denied;
+    authorized answer-key UI searches by live displayed question key.
+  - Manual reveal smoke: resource links appear post-answer where available.
+  - Deploy if requested: push `master` for Vercel and update EC2 backend via
+    `git pull origin master`, backend build, PM2 restart, and `/health` check.
+
+---
+
 ## Optional Enhancements (Post-V1)
 
 These are nice-to-haves. Do NOT implement until Phase 6 is complete and tested.
