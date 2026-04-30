@@ -16,8 +16,9 @@
 | P4 | Frontend: Player Interface | **Complete** | 4 / 4 | Angular + backend builds pass; warnings only |
 | P5 | Integration Testing | **Complete** | 7 / 7 | P5-T1 through P5-T7 verified; production builds pass with existing Angular budget/selector warnings |
 | P6 | AWS Deployment (Hybrid: Vercel + EC2) | **Complete** ✅ | 14 / 14 | Frontend: https://aws-clf-prac-app.vercel.app · Backend: https://api.47.130.41.30.nip.io |
+| OPS | Backend EC2 Lifecycle | **Active** | 1 / 2 | Idempotent helper added for EC2 status/start/stop/restart; start-before-demo check remains an operator task |
 | P7 | CLF-C02 Question Bank Audit | **Not Started** | 0 / 7 | Comprehensive audit + EC2 redeploy; see TODOs.md |
-| P8 | Live Session Feature Enhancements | **In Progress** | 6 / 7 | T1–T6 implemented; P8-T6 UI/UX follow-up fixed; production builds pass; T7 pending user-run local smoke test |
+| P8 | Live Session Feature Enhancements | **In Progress** | 6 / 7 | T1–T6 implemented; P8-T6 UI/UX follow-up fixed; production builds pass; user requested master deployment before T7; T7 pending user-run local smoke test |
 
 ---
 
@@ -146,6 +147,16 @@
 
 ---
 
+## Operations — Backend EC2 Lifecycle
+
+- [x] OPS-T1: Added `scripts/ec2-backend-lifecycle.sh` idempotent helper for backend EC2 `status`, `start`, `stop`, and `restart`.
+  - Defaults: AWS profile `clf-quiz`, region `ap-southeast-1`, instance `i-042b91a08364b6e01`, API `https://api.47.130.41.30.nip.io`.
+  - `start` waits for EC2 running state, EC2 status checks, and backend `/health`.
+  - `stop` safely no-ops if already stopped.
+- [ ] OPS-T2: Before each classroom session after stopping EC2, run `./scripts/ec2-backend-lifecycle.sh start` and `./scripts/pre-demo-check.sh`.
+
+---
+
 ## Phase 7 — CLF-C02 Question Bank Audit
 
 - [ ] P7-T1: Audit `public/quiz/cloud_concepts.json` — rewrite outdated questions, add `referenceUrl`, cover all Domain 1 task statements
@@ -202,6 +213,8 @@
 | 2026-04-29 | P6-A2 | CloudFront distribution creation must be done via console (new plan-based wizard) rather than CLI | New AWS account verification requirement blocks all CloudFront CLI API calls. Console wizard uses a new 5-step flow: Choose plan (Free) → Get started → Specify origin → Enable security → Review and create. OAC is now configured automatically by checking "Allow private S3 bucket access to CloudFront". Post-creation manual steps still required: set default root object `index.html` and add custom error pages. PLAN.md §13A-2 updated to reflect new console flow. |
 | 2026-04-29 | P6-A3 | Skipped ACM/Route53 setup | Free plan on the new CloudFront console includes a TLS certificate automatically for the `*.cloudfront.net` domain. No custom domain or ACM cert needed for this deployment. |
 | 2026-04-29 | P6-A (frontend) | **Pivoted frontend hosting from S3+CloudFront to Vercel** | CloudFront account verification blocked by AWS Support case (account too new). Vercel provides equivalent free HTTPS hosting with automatic SPA routing support via `vercel.json`. Backend remains on EC2 t2.micro (unchanged). `vercel.json` created specifying Angular build command, `dist/aws-clf-prac-app/browser` output dir, and catch-all rewrite to `index.html` for SPA routing. S3 bucket and OAC remain provisioned — can revert to S3+CloudFront once AWS Support resolves the case. |
+| 2026-04-30 | OPS-T1 | Added an idempotent EC2 lifecycle helper instead of relying on manual console stop/start | `scripts/ec2-backend-lifecycle.sh` lets the operator stop backend compute when idle and start it again with EC2 waiters plus `/health` verification. Stopping EC2 makes the live backend unavailable until `start` succeeds. |
+| 2026-04-30 | P8 deploy | User requested promoting Phase 8 changes to `master` before the P8-T7 manual smoke test is marked complete | Vercel and the EC2 backend need the latest UI/backend changes on `master`; Phase 8 remains **In Progress (6/7)** until the user-run multi-tab smoke test passes. |
 
 ---
 
@@ -218,8 +231,8 @@
 | Health check | https://api.47.130.41.30.nip.io/health |
 | EC2 SSH | `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30` |
 
-**Last task completed:** Phase 8 T1–T6 fully implemented; P8-T6 UI/UX follow-up restored player answer feedback during leaderboard/waiting, fixed submitted-answer display, moved waiting status to a compact top-right card, cleaned answer-letter badges to dark backgrounds with white letters, and fixed reveal icon alignment in player answer buttons; production builds (Angular + backend) pass with warnings only; branch `feature/phase-8-enhancements` is already pushed (2026-04-29)
-**Next task to work on:** Phase 8 — T7 only: user-run local multi-tab smoke test. If it passes, tick P8-T7, mark Phase 8 complete, update this session to Phase 7 question-bank audit, commit `docs(P8-T7): smoke test passed; phase 8 complete`, and push the branch. Do NOT merge to master.
+**Last task completed:** Added `scripts/ec2-backend-lifecycle.sh` for idempotent backend EC2 `status/start/stop/restart`, corrected `scripts/pre-demo-check.sh` to use the Vercel frontend URL, and confirmed Phase 8 backend source changes exist on this branch (`backend/src/game/*`, `backend/src/socket/hostHandlers.ts`). The latest UI polish did not require additional backend source changes.
+**Next task to work on:** Promote `feature/phase-8-enhancements` to `master` by explicit user request, redeploy the EC2 backend from `master`, then keep Phase 8 at **6/7** until the user-run P8-T7 multi-tab smoke test passes.
 **Files recently modified:** Branch `feature/phase-8-enhancements` — 28 files modified across `backend/src/{game,socket}`, `src/app/core/`, `src/app/pages/live/{host-dashboard,host-lobby,host-session,leaderboard,player-game}`, `src/environments/`, `package.json` (qrcode added)
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`
@@ -233,7 +246,9 @@
 - EC2 instance: `i-042b91a08364b6e01` | Elastic IP: `47.130.41.30` | nip.io domain: `api.47.130.41.30.nip.io`
 - SSH key: `~/Desktop/live-quiz-backend-key.pem` (chmod 400) — SSH: `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30`
 - EC2 setup script: `scripts/ec2-setup.sh` — run P6-B3 through P6-B8 sections via SSH
-- Pre-demo check script: `scripts/pre-demo-check.sh` — update FRONTEND URL after CloudFront is created
+- EC2 lifecycle helper: `./scripts/ec2-backend-lifecycle.sh status|start|stop|restart` — defaults to profile `clf-quiz`, region `ap-southeast-1`, instance `i-042b91a08364b6e01`, and API `https://api.47.130.41.30.nip.io`
+- Stopping EC2 makes the live backend unavailable until `./scripts/ec2-backend-lifecycle.sh start` succeeds and `/health` passes; storage/static IP costs may still apply.
+- Pre-demo check script: `scripts/pre-demo-check.sh` — uses `https://aws-clf-prac-app.vercel.app` and `https://api.47.130.41.30.nip.io`; run after starting EC2 and before classroom use
 - Backend is EC2 **t2.micro** (free tier, always-on) — SSL via Let's Encrypt + nip.io
 - Angular `environment.prod.ts` `wsUrl` MUST be `https://` — browsers block `ws://` from HTTPS pages
 - Use `export AWS_PROFILE=clf-quiz` per terminal session before AWS CLI commands

@@ -362,6 +362,24 @@
 
 ---
 
+## Operations — Backend EC2 Lifecycle
+
+> Goal: Allow the classroom backend EC2 instance to be stopped when idle and
+> started again safely before demos, without duplicating work or breaking the
+> production health checks.
+
+- [x] **OPS-T1:** Add idempotent EC2 lifecycle helper at `scripts/ec2-backend-lifecycle.sh`.
+  - Supports `status`, `start`, `stop`, and `restart`.
+  - Defaults to profile `clf-quiz`, region `ap-southeast-1`, instance `i-042b91a08364b6e01`, and API `https://api.47.130.41.30.nip.io`.
+  - `start` waits for EC2 `instance-running`, EC2 status checks, and backend `/health`.
+  - `stop` no-ops if already stopped and waits for `instance-stopped`.
+  - **Acceptance:** Running the same action repeatedly does not fail solely because the instance is already in the requested state.
+
+- [ ] **OPS-T2:** Before classroom use after a stop, run:
+  - `./scripts/ec2-backend-lifecycle.sh start`
+  - `./scripts/pre-demo-check.sh`
+  - Confirm `https://api.47.130.41.30.nip.io/health` returns `{"status":"ok"}`.
+
 ---
 
 ## Phase 7 — CLF-C02 Question Bank Audit & Upgrade
@@ -388,12 +406,12 @@
 
 ## Phase 8 — Live Session Feature Enhancements
 
-> **Branch:** `feature/phase-8-enhancements` (create from `master` before any code changes)
-> **Goal:** Six targeted UX and feature improvements to the live quiz session experience. Do NOT merge to master until all tasks pass. See PLAN.md §19 for full implementation details.
+> **Branch:** `feature/phase-8-enhancements` (created from `master`)
+> **Goal:** Six targeted UX and feature improvements to the live quiz session experience. P8-T1 through P8-T6 are implemented; P8-T7 remains a user-run manual smoke test before Phase 8 is marked complete. User requested deploying these changes to `master` on 2026-04-30 before P8-T7 completion.
 
 ---
 
-- [ ] **P8-T1:** Full per-answer reveal after submission (Backend + Frontend).
+- [x] **P8-T1:** Full per-answer reveal after submission (Backend + Frontend).
   - **Backend:** Expand `QuestionRevealPayload` in `types.ts` to `{ answers: RevealAnswer[], explanation: string }` where `RevealAnswer = { label: string; text: string; isCorrect: boolean; explanation: string }`.
   - **Backend:** Update `QuestionLoader.ts` to preserve `explanation` on `LiveAnswer` objects (add optional `explanation?: string` field).
   - **Backend:** Add `buildRevealPayload()` to `GameSession.ts`; update `playerHandlers.ts` (already emits `question:reveal` line 93) to use the new payload; also broadcast `question:reveal` from `hostHandlers.ts` on timer-expiry and `host:next`.
@@ -403,13 +421,13 @@
   - **Frontend `HostSessionComponent`:** Show the same per-answer reveal panel in the host view after timer ends or all players answer.
   - **Acceptance:** Submitting a wrong answer shows all four options with their correct/incorrect status and individual explanations. Host screen shows the same reveal.
 
-- [ ] **P8-T2:** Fix `totalQuestions` count display in `HostSessionComponent`.
+- [x] **P8-T2:** Fix `totalQuestions` count display in `HostSessionComponent`.
   - Trace `questionCount` from dashboard form → `host:create` payload → `GameManager.createSession()` → `GameSessionData.totalQuestions` → `QuestionPayload.total` → host session header template.
   - Identify and fix the point where the count diverges from the user-selected value (likely the dashboard input default or validation upper-bound being passed as `questionCount`).
   - Verify `HostDashboardComponent` question-count input defaults to `20` and passes the actual form value (not the max/upper-bound) to `createSession()`.
   - **Acceptance:** Host session header shows "Question N of 20" (or whatever was selected), not the full domain question count.
 
-- [ ] **P8-T3:** QR code + shareable link in `HostLobbyComponent`.
+- [x] **P8-T3:** QR code + shareable link in `HostLobbyComponent`.
   - Add `frontendBaseUrl` to `src/environments/environment.ts` (`'http://localhost:4200'`) and `environment.prod.ts` (`'https://aws-clf-prac-app.vercel.app'`).
   - Install `qrcode` and `@types/qrcode` in the Angular project root (`npm install qrcode @types/qrcode`).
   - In `HostLobbyComponent`, generate a QR code data URL for `${environment.frontendBaseUrl}/join?code=${sessionCode}` using `QRCode.toDataURL()`.
@@ -418,7 +436,7 @@
   - Both elements must be large and legible when screen-shared on a projector.
   - **Acceptance:** Host lobby shows QR code + URL; scanning the QR on a phone navigates to `/join?code=<code>` with the code pre-filled.
 
-- [ ] **P8-T4:** CSV export of session results in `LeaderboardComponent` (host view only).
+- [x] **P8-T4:** CSV export of session results in `LeaderboardComponent` (host view only).
   - Add `isHost = input<boolean>(false)` and `sessionCode = input<string>('')` inputs to `LeaderboardComponent`.
   - When `isHost()` is `true`, render a "Download Results CSV" PrimeNG `p-button` with a download icon.
   - `downloadCsv()`: build CSV string with header row `Rank,Nickname,Score,Correct,Total Questions,Accuracy %,Streak`; fill rows from `finalLeaderboard`; create a `Blob('text/csv')`; trigger `<a download>` click.
@@ -427,7 +445,7 @@
   - Extend `LeaderboardEntry` in `live-quiz.model.ts` to include `correctCount: number` and `streak: number` if not already present; propagate from `Ranking` through `game:ended` payload.
   - **Acceptance:** On the final leaderboard as host, clicking "Download Results CSV" downloads a valid CSV with one row per player.
 
-- [ ] **P8-T5:** Scoring mode toggle — `'speed'` vs `'points'` (Backend + Frontend).
+- [x] **P8-T5:** Scoring mode toggle — `'speed'` vs `'points'` (Backend + Frontend).
   - **Backend `types.ts`:** Add `export type ScoringMode = 'speed' | 'points'`; add `scoringMode: ScoringMode` to `GameSessionData`.
   - **Backend `GameSession.ts`:** `calculatePoints()` branches on `this.data.scoringMode`: `'speed'` uses existing formula; `'points'` returns flat `1000` if correct, `0` if not.
   - **Backend `hostHandlers.ts`:** Read `scoringMode` from `host:create` payload; default to `'speed'`. Echo `scoringMode` back in `session:created` response.
@@ -437,7 +455,7 @@
   - **Frontend `HostSessionComponent`:** Show scoring mode badge in the header bar.
   - **Acceptance:** Selecting "Points Only" in the dashboard results in flat 1000 pts per correct answer; no time or streak bonus; host session header shows the active mode.
 
-- [ ] **P8-T6:** "Waiting for Host Action" UX state in `PlayerGameComponent`.
+- [x] **P8-T6:** "Waiting for Host Action" UX state in `PlayerGameComponent`.
   - Replace the ad-hoc `submitted: boolean` and `showLeaderboard: boolean` flags with a single `playerViewState: 'answering' | 'answered' | 'leaderboard' | 'waiting' | 'paused'` property.
   - Update all `effect()` blocks and event listeners to set `playerViewState` correctly per the transition table in PLAN.md §19.6.
   - Template becomes a `@switch` on `playerViewState`:
@@ -463,8 +481,8 @@
   - Verify host session header shows correct question total.
   - Manual validation handoff: user will run the local smoke test before this task is marked complete.
   - Commit after smoke passes: `docs(P8-T7): smoke test passed; phase 8 complete`
-  - Branch is already pushed; push again only for the final completion/fix commit.
-  - **Do NOT merge to master.**
+  - Branch is being merged/deployed to `master` by explicit user request before this validation task is complete.
+  - **Do NOT mark Phase 8 complete until the user-run smoke test passes.**
 
 ---
 

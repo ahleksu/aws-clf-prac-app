@@ -981,20 +981,54 @@ pm2 restart live-quiz-backend
 
 Optional — auto-deploy backend on push via GitHub Actions (add `appleboy/ssh-action` step to a separate `deploy-backend.yml` workflow).
 
+#### 13B-6: Temporarily Stop/Start Backend EC2
+
+Use `scripts/ec2-backend-lifecycle.sh` from the local machine when the live
+backend is not needed. The script is idempotent: starting an already-running
+instance and stopping an already-stopped instance are safe no-ops.
+
+```bash
+# Check EC2 state and backend health.
+./scripts/ec2-backend-lifecycle.sh status
+
+# Stop backend compute when there is no demo/classroom session.
+./scripts/ec2-backend-lifecycle.sh stop
+
+# Start backend again before testing or class. This waits for EC2 checks and /health.
+./scripts/ec2-backend-lifecycle.sh start
+
+# Optional one-command stop/start cycle.
+./scripts/ec2-backend-lifecycle.sh restart
+```
+
+Defaults:
+
+```bash
+AWS_PROFILE=clf-quiz
+AWS_REGION=ap-southeast-1
+INSTANCE_ID=i-042b91a08364b6e01
+API_URL=https://api.47.130.41.30.nip.io
+```
+
+Stopping EC2 makes live quiz sessions unavailable. It pauses compute, but
+attached storage/static IP costs may still apply. Run the pre-demo health check
+after starting the instance and before any classroom session.
+
 ---
 
 ### 13C. Pre-Demo Reliability Checklist
 
-Save as `scripts/pre-demo-check.sh`. Replace the two URL values with your actual deployed URLs after Phase 6.
+Save as `scripts/pre-demo-check.sh`. Run it from the local machine before each
+classroom session. If the backend EC2 instance was stopped to avoid idle compute
+cost, run `./scripts/ec2-backend-lifecycle.sh start` first.
 
 ```bash
-#!/bin/bash
+#!/usr/bin/env bash
 # Usage: ./scripts/pre-demo-check.sh
-set -e
+set -euo pipefail
 
-# Edit these two values after deployment
-API="https://api.54.123.45.67.nip.io"           # ← your nip.io or Route 53 domain
-FRONTEND="https://dXXXXXXXXXXXX.cloudfront.net" # ← your CloudFront domain
+API="${API:-https://api.47.130.41.30.nip.io}"
+FRONTEND="${FRONTEND:-https://aws-clf-prac-app.vercel.app}"
 
 echo "=== Pre-Demo Health Check ==="
 
@@ -1006,7 +1040,7 @@ STATUS=$(curl -o /dev/null -s -w "%{http_code}" "$FRONTEND")
 [ "$STATUS" = "200" ] && echo "OK: HTTP $STATUS" || echo "FAIL: HTTP $STATUS"
 
 echo "[3] PM2 process status (run on EC2 via SSH):"
-echo "    ssh ubuntu@<ELASTIC-IP> 'pm2 status'"
+echo "    ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30 'pm2 status'"
 
 echo "[4] WebSocket smoke test (requires wscat: npm i -g wscat):"
 echo "    wscat -c 'wss://${API#https://}/socket.io/?EIO=4&transport=websocket'"
