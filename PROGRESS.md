@@ -18,7 +18,7 @@
 | P6 | AWS Deployment (Hybrid: Vercel + EC2) | **Complete** ✅ | 14 / 14 | Frontend: https://aws-clf-prac-app.vercel.app · Backend: https://api.47.130.41.30.nip.io |
 | OPS | Backend EC2 Lifecycle | **Active** | 1 / 2 | Idempotent helper added for EC2 status/start/stop/restart; start-before-demo check remains an operator task |
 | P7 | CLF-C02 Question Bank Audit | **Not Started** | 0 / 7 | Comprehensive audit + EC2 redeploy; see TODOs.md |
-| P8 | Live Session Feature Enhancements | **In Progress** | 6 / 7 | T1–T6 implemented; P8-T6 UI/UX follow-up fixed; production builds pass; user requested master deployment before T7; T7 pending user-run local smoke test |
+| P8 | Live Session Feature Enhancements | **In Progress** | 6 / 7 | T1–T6 implemented and deployed to master/EC2 by user request; production builds pass; T7 pending user-run local smoke test |
 
 ---
 
@@ -231,8 +231,8 @@
 | Health check | https://api.47.130.41.30.nip.io/health |
 | EC2 SSH | `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30` |
 
-**Last task completed:** Added `scripts/ec2-backend-lifecycle.sh` for idempotent backend EC2 `status/start/stop/restart`, corrected `scripts/pre-demo-check.sh` to use the Vercel frontend URL, and confirmed Phase 8 backend source changes exist on this branch (`backend/src/game/*`, `backend/src/socket/hostHandlers.ts`). The latest UI polish did not require additional backend source changes.
-**Next task to work on:** Promote `feature/phase-8-enhancements` to `master` by explicit user request, redeploy the EC2 backend from `master`, then keep Phase 8 at **6/7** until the user-run P8-T7 multi-tab smoke test passes.
+**Last task completed:** Promoted `feature/phase-8-enhancements` to `master` by explicit user request, pushed `master` to GitHub/Vercel, deployed the EC2 backend from `master`, and verified both public frontend and backend health. Added `scripts/ec2-backend-lifecycle.sh` for idempotent backend EC2 `status/start/stop/restart`; corrected `scripts/pre-demo-check.sh` to use the Vercel frontend URL. Phase 8 backend source changes are now on `master` (`backend/src/game/*`, `backend/src/socket/hostHandlers.ts`).
+**Next task to work on:** Phase 8 — P8-T7 user-run local multi-tab smoke test. Keep Phase 8 at **6/7** until the smoke test passes; then tick P8-T7 and mark Phase 8 complete.
 **Files recently modified:** Branch `feature/phase-8-enhancements` — 28 files modified across `backend/src/{game,socket}`, `src/app/core/`, `src/app/pages/live/{host-dashboard,host-lobby,host-session,leaderboard,player-game}`, `src/environments/`, `package.json` (qrcode added)
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`

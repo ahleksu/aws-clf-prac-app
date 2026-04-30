@@ -407,7 +407,7 @@
 ## Phase 8 — Live Session Feature Enhancements
 
 > **Branch:** `feature/phase-8-enhancements` (created from `master`)
-> **Goal:** Six targeted UX and feature improvements to the live quiz session experience. P8-T1 through P8-T6 are implemented; P8-T7 remains a user-run manual smoke test before Phase 8 is marked complete. User requested deploying these changes to `master` on 2026-04-30 before P8-T7 completion.
+> **Goal:** Six targeted UX and feature improvements to the live quiz session experience. P8-T1 through P8-T6 are implemented and deployed to `master`; P8-T7 remains a user-run manual smoke test before Phase 8 is marked complete. User requested deploying these changes to `master` on 2026-04-30 before P8-T7 completion.
 
 ---
 
@@ -481,7 +481,7 @@
   - Verify host session header shows correct question total.
   - Manual validation handoff: user will run the local smoke test before this task is marked complete.
   - Commit after smoke passes: `docs(P8-T7): smoke test passed; phase 8 complete`
-  - Branch is being merged/deployed to `master` by explicit user request before this validation task is complete.
+  - Branch was merged/deployed to `master` by explicit user request before this validation task was complete.
   - **Do NOT mark Phase 8 complete until the user-run smoke test passes.**
 
 ---
