@@ -92,4 +92,12 @@ export class JoinComponent implements OnInit {
     this.joining = true;
     this.quiz.joinSession(this.sessionCode, this.nickname);
   }
+
+  cancelSession(): void {
+    this.joining = false;
+    this.sessionCode = '';
+    this.nickname = '';
+    this.quiz.clearPlayerState();
+    this.router.navigate(['/']);
+  }
 }

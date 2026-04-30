@@ -186,7 +186,7 @@
 
 ## Phase 9 — Live Session UX + Instructor Answer Key
 
-- [x] P9-T1: Host dashboard cancel, host lobby cancel, and player lobby leave actions clear relevant live-session state and route home; backend `player:leave` removes the player from a `lobby`-state session and updates host counts.
+- [x] P9-T1: Host dashboard cancel, join form cancel, host lobby cancel, and player lobby leave actions clear relevant live-session state and route home; backend `player:leave` removes the player from a `lobby`-state session and updates host counts.
 - [x] P9-T2: Live host/player routes call `LiveQuizService.validateSession()` against `GET /session/:code` on entry and render a shared `SessionMissingComponent` with Back to Home when the session is missing or ended.
 - [x] P9-T3: Backend `GET /api/instructor/questions` requires `INSTRUCTOR_KEY` via Bearer or `x-instructor-key`; returns question key/ID/domain/answers/correct labels/explanations/resource. Rate-limited; 401 when unauthorized; 503 when not configured.
 - [x] P9-T4: `/instructor/answer-key` page prompts for key (sessionStorage-only), searches by domain/ID/text, and renders dense expandable answers + clickable resource links.
@@ -245,9 +245,9 @@
 | Health check | https://api.47.130.41.30.nip.io/health |
 | EC2 SSH | `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30` |
 
-**Last task completed:** Added the host dashboard **Cancel Session** setup action: it clears stale host live-session state, returns to `/`, and is documented under Phase 9 cancel UX. Earlier Phase 9 T1–T6 work remains in place: lobby cancel/leave with state cleanup, missing-session fallback on all live routes, secured `/api/instructor/questions` endpoint (`INSTRUCTOR_KEY`), `/instructor/answer-key` UI, `questionKey` plumbed through live payloads + headers, and resource links in host/player reveal panels.
+**Last task completed:** Added the join form **Cancel Session** action: it clears code/nickname entry plus stale player live-session state, returns to `/`, and is documented under Phase 9 cancel UX. Earlier Phase 9 T1–T6 work remains in place: dashboard/lobby cancel/leave with state cleanup, missing-session fallback on all live routes, secured `/api/instructor/questions` endpoint (`INSTRUCTOR_KEY`), `/instructor/answer-key` UI, `questionKey` plumbed through live payloads + headers, and resource links in host/player reveal panels.
 **Next task to work on:** P9-T7 manual smoke validation by the user (lobby leave flows, stale route fallback, unauthorized/authorized instructor endpoint + UI, live question key lookup, reveal resource links). Phase 8 still has P8-T7 pending user smoke; do not mark Phase 8 complete without explicit confirmation.
-**Files recently modified:** `src/app/pages/live/host-dashboard/host-dashboard.component.{ts,html}` for the setup cancel action; `PLAN.md`, `TODOs.md`, `PROGRESS.md` updated with Phase 9 cancel UX coverage. Recent production implementation remains Phase 8 across `backend/src/{game,socket}`, `src/app/core/`, `src/app/pages/live/{host-dashboard,host-lobby,host-session,leaderboard,player-game}`, `src/environments/`, `package.json` (qrcode added).
+**Files recently modified:** `src/app/pages/live/join/join.component.{ts,html}` for the join-form cancel action; `PLAN.md`, `TODOs.md`, `PROGRESS.md` updated with Phase 9 cancel UX coverage. Recent production implementation remains Phase 8 across `backend/src/{game,socket}`, `src/app/core/`, `src/app/pages/live/{host-dashboard,host-lobby,host-session,leaderboard,player-game}`, `src/environments/`, `package.json` (qrcode added).
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`
 - Admin IAM user is named `clf-quiz-admin-policy` (matches policy name — works fine)

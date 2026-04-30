@@ -499,6 +499,9 @@
 - [x] **P9-T1:** Lobby Back-to-Home / Cancel UX.
   - Add host dashboard **Cancel Session** action to abandon setup, clear stale
     host live-session state, and navigate to `/` without submitting the form.
+  - Add join form **Cancel Session** action to abandon code/nickname entry,
+    clear stale player live-session state, and navigate to `/` without
+    submitting the form.
   - Add host lobby **Cancel Session / Back to Home** action.
   - Add player lobby **Leave Lobby / Back to Home** action.
   - Host cancel confirms intent, ends/cancels the session, clears host token,
