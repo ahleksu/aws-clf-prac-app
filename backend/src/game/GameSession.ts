@@ -149,7 +149,9 @@ export class GameSession {
       type: q.type,
       answers: q.answers.map((a) => ({ text: a.text, label: a.label })),
       timeLimit: this.data.timePerQuestion,
-      domain: q.domain
+      domain: q.domain,
+      questionId: q.id,
+      questionKey: q.questionKey
     };
   }
 
@@ -169,7 +171,10 @@ export class GameSession {
     return {
       answerLabels: [...q.correctAnswers],
       explanation: q.explanation,
-      answers
+      answers,
+      questionId: q.id,
+      questionKey: q.questionKey,
+      resource: q.resource
     };
   }
 

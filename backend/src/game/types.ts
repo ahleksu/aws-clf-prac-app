@@ -20,6 +20,8 @@ export interface LiveQuestion {
   id: number;
   question: string;
   domain: string;
+  domainSlug: string;
+  questionKey: string;
   type: 'single' | 'multiple';
   answers: LiveAnswer[];
   correctAnswers: string[];
@@ -84,6 +86,8 @@ export interface QuestionPayload {
   answers: ClientAnswer[];
   timeLimit: number;
   domain: string;
+  questionId: number;
+  questionKey: string;
 }
 
 export interface RevealAnswer {
@@ -97,6 +101,9 @@ export interface QuestionRevealPayload {
   answerLabels: string[];
   explanation: string;
   answers: RevealAnswer[];
+  questionId: number;
+  questionKey: string;
+  resource?: string;
 }
 
 export interface AnswerResult {

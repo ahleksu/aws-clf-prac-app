@@ -4,6 +4,33 @@
   background: #f3f4f6;
 }
 
+.question-key {
+  margin-left: 0.4rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 800;
+  color: #1d4ed8;
+  font-size: 0.85em;
+}
+
+.reveal-resource {
+  margin: 0.85rem 0;
+  font-weight: 700;
+  text-align: center;
+}
+
+.reveal-resource a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.reveal-resource a:hover {
+  text-decoration: underline;
+}
+
+.reveal-resource i {
+  margin-right: 0.35rem;
+}
+
 .player-game * {
   box-sizing: border-box;
 }

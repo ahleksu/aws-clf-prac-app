@@ -30,6 +30,8 @@ export interface QuestionPayload {
   timeLimit: number;
   timeRemaining?: number;
   domain: string;
+  questionId?: number;
+  questionKey?: string;
 }
 
 export interface PlayerState {
@@ -90,6 +92,9 @@ export interface QuestionReveal {
   answerLabels: string[];
   explanation: string;
   answers?: RevealAnswer[];
+  questionId?: number;
+  questionKey?: string;
+  resource?: string;
 }
 
 export interface CreateSessionConfig {
