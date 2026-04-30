@@ -579,7 +579,7 @@
   - **Acceptance:** After answers reveal, host and player can open the source
     link for the current question when the JSON provides one.
 
-- [ ] **P9-T7 (Validation):**
+- [x] **P9-T7 (Validation):** ✅ Completed 2026-04-30 by user smoke validation.
   - `npm run build -- --configuration production` passes.
   - `cd backend && npm run build` passes.
   - Manual UX smoke: host/player lobby leave flows clear state and route home.

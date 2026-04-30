@@ -1403,8 +1403,9 @@ game:ended                               → navigate to /leaderboard/:code
 
 ## 20. Phase 9 — Live Session UX + Instructor Answer Key
 
-> **Status:** T1–T6 implemented on `feature/phase-9-live-session-ux-answer-key`.
-> Production builds pass. T7 manual smoke validation pending user sign-off.
+> **Status:** T1–T7 complete on `feature/phase-9-live-session-ux-answer-key`.
+> Production builds pass and manual smoke validation was confirmed on
+> 2026-04-30. Ready to merge to `master` and update EC2.
 
 **Goal:** Improve live-session recovery/cancel UX and give the instructor a
 controlled way to look up answer keys, explanations, and resource links while

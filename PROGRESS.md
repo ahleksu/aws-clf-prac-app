@@ -19,7 +19,7 @@
 | OPS | Backend EC2 Lifecycle | **Active** | 1 / 2 | Idempotent helper added for EC2 status/start/stop/restart; start-before-demo check remains an operator task |
 | P7 | CLF-C02 Question Bank Audit | **Not Started** | 0 / 7 | Comprehensive audit + EC2 redeploy; see TODOs.md |
 | P8 | Live Session Feature Enhancements | **In Progress** | 6 / 7 | T1–T6 implemented and deployed to master/EC2 by user request; production builds pass; T7 pending user-run local smoke test |
-| P9 | Live Session UX + Instructor Answer Key | **In Progress** | 6 / 7 | T1–T6 implemented on `feature/phase-9-live-session-ux-answer-key`; answer-key runbook + host-only key visibility refinement complete; T7 manual smoke pending user validation |
+| P9 | Live Session UX + Instructor Answer Key | **Complete** | 7 / 7 | T1–T7 complete on `feature/phase-9-live-session-ux-answer-key`; user smoke validation confirmed 2026-04-30 |
 
 ---
 
@@ -192,7 +192,7 @@
 - [x] P9-T4: `/instructor/answer-key` page prompts for key (sessionStorage-only), searches by domain/ID/text, and renders dense expandable answers + clickable resource links.
 - [x] P9-T5: `LiveQuestion` now carries `domainSlug`/`questionKey`; `QuestionPayload` and `QuestionRevealPayload` expose `questionId`/`questionKey` for host/instructor use; the host session header displays `· ID <questionKey>` for answer-key lookup, while player question/reveal payloads and UI must hide question IDs/keys.
 - [x] P9-T6: Reveal payload includes source `resource`; host and player reveal panels render `View AWS reference` links with `target="_blank" rel="noopener noreferrer"`.
-- [ ] P9-T7: Production builds pass (`npm run build -- --configuration production` and `cd backend && npm run build`). Manual UX smoke (lobby leave, stale fallback, instructor auth/search, host-only live key lookup, reveal resource links) pending user validation.
+- [x] P9-T7: Production builds pass (`npm run build -- --configuration production` and `cd backend && npm run build`). Manual UX smoke confirmed by user 2026-04-30: lobby leave, stale fallback, instructor auth/search, host-only live key lookup, and reveal resource links.
 
 ---
 
@@ -245,9 +245,9 @@
 | Health check | https://api.47.130.41.30.nip.io/health |
 | EC2 SSH | `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30` |
 
-**Last task completed:** Documented the answer-key endpoint operator workflow and made question IDs/keys host-only: player headers no longer render them, backend `game:question` / `question:reveal` emissions to player sockets are sanitized, and both production builds pass.
-**Next task to work on:** P9-T7 manual smoke validation by the user (lobby leave flows, stale route fallback, unauthorized/authorized instructor endpoint + UI, host-only live key lookup, reveal resource links). Phase 8 still has P8-T7 pending user smoke; do not mark Phase 8 complete without explicit confirmation.
-**Files recently modified:** `PLAN.md`, `TODOs.md`, `PROGRESS.md` updated with answer-key endpoint usage and host-only key visibility intent; `src/app/pages/live/player-game/player-game.component.{html,css}` updated so player screens no longer display question IDs/keys; `backend/src/socket/{sessionHelpers,hostHandlers,playerHandlers}.ts` and `backend/src/game/types.ts` updated so player socket payloads do not include question IDs/keys.
+**Last task completed:** P9-T7 user smoke validation confirmed 2026-04-30. Phase 9 is complete and ready for `master` merge plus EC2 backend update.
+**Next task to work on:** Merge `feature/phase-9-live-session-ux-answer-key` to `master`, push for Vercel deployment, set `INSTRUCTOR_KEY` on EC2, rebuild/restart the backend, and verify `/health` plus instructor endpoint auth behavior. Phase 8 still has P8-T7 pending user smoke; do not mark Phase 8 complete without explicit confirmation.
+**Files recently modified:** `PLAN.md`, `TODOs.md`, `PROGRESS.md` updated to mark P9-T7 complete. Phase 9 implementation includes lobby/join cancel actions, missing-session fallback, instructor answer-key endpoint/UI, host-only question keys, resource links, and player payload sanitization.
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`
 - Admin IAM user is named `clf-quiz-admin-policy` (matches policy name — works fine)
