@@ -19,7 +19,7 @@
 | OPS | Backend EC2 Lifecycle | **Active** | 1 / 2 | Idempotent helper added for EC2 status/start/stop/restart; start-before-demo check remains an operator task |
 | P7 | CLF-C02 Question Bank Audit | **Not Started** | 0 / 7 | Comprehensive audit + EC2 redeploy; see TODOs.md |
 | P8 | Live Session Feature Enhancements | **In Progress** | 6 / 7 | T1–T6 implemented and deployed to master/EC2 by user request; production builds pass; T7 pending user-run local smoke test |
-| P9 | Live Session UX + Instructor Answer Key | **Planned** | 0 / 7 | New requested work: lobby leave/back-home UX, missing-session fallback, secured instructor answer-key lookup, live question IDs, and resource links in reveal |
+| P9 | Live Session UX + Instructor Answer Key | **In Progress** | 6 / 7 | T1–T6 implemented on `feature/phase-9-live-session-ux-answer-key`; production builds pass; T7 manual smoke pending user validation |
 
 ---
 
@@ -186,13 +186,13 @@
 
 ## Phase 9 — Live Session UX + Instructor Answer Key
 
-- [ ] P9-T1: Add host/player lobby Back-to-Home / Cancel actions that intentionally clear host token, nickname, session code, role, cached live state, and update lobby counts as needed.
-- [ ] P9-T2: Add missing/ended session fallback for stale host/player live routes so users see a clear "Session no longer exists" state with Back to Home instead of an endless spinner.
-- [ ] P9-T3: Add secured backend instructor answer-key endpoint for all domains; require `INSTRUCTOR_KEY` and return question key, ID, domain, answers, correct labels, explanations, and resource links.
-- [ ] P9-T4: Add instructor answer-key UI (`/instructor/answer-key`) with key prompt, search/filter, expandable answers, explanations, correct/skipped status, and clickable resource links.
-- [ ] P9-T5: Add stable `questionId`/`questionKey` to live payloads and display it in host/player live-session headers for deterministic instructor lookup.
-- [ ] P9-T6: Attach source `resource` links to post-answer reveal/review panels for host and player when available.
-- [ ] P9-T7: Build + manual validation: lobby leave flows, stale route fallback, unauthorized/authorized answer-key endpoint/UI, live question key lookup, and reveal resource links.
+- [x] P9-T1: Host lobby cancel + player lobby leave actions clear host token, nickname, session code, role, cached signals, and `sessionStorage`; backend `player:leave` removes the player from a `lobby`-state session and updates host counts.
+- [x] P9-T2: Live host/player routes call `LiveQuizService.validateSession()` against `GET /session/:code` on entry and render a shared `SessionMissingComponent` with Back to Home when the session is missing or ended.
+- [x] P9-T3: Backend `GET /api/instructor/questions` requires `INSTRUCTOR_KEY` via Bearer or `x-instructor-key`; returns question key/ID/domain/answers/correct labels/explanations/resource. Rate-limited; 401 when unauthorized; 503 when not configured.
+- [x] P9-T4: `/instructor/answer-key` page prompts for key (sessionStorage-only), searches by domain/ID/text, and renders dense expandable answers + clickable resource links.
+- [x] P9-T5: `LiveQuestion` now carries `domainSlug`/`questionKey`; `QuestionPayload` and `QuestionRevealPayload` expose `questionId`/`questionKey`; host and player session headers display `· ID <questionKey>`.
+- [x] P9-T6: Reveal payload includes source `resource`; host and player reveal panels render `View AWS reference` links with `target="_blank" rel="noopener noreferrer"`.
+- [ ] P9-T7: Production builds pass (`npm run build -- --configuration production` and `cd backend && npm run build`). Manual UX smoke (lobby leave, stale fallback, instructor auth/search, live key lookup, reveal resource links) pending user validation.
 
 ---
 
@@ -245,8 +245,8 @@
 | Health check | https://api.47.130.41.30.nip.io/health |
 | EC2 SSH | `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30` |
 
-**Last task completed:** Reviewed and updated context files for the current production state and added Phase 9 planning for live-session UX + instructor answer-key work. Phase 8 T1–T6 are already on `master` and deployed to Vercel/EC2; P8-T7 remains pending user-run smoke validation.
-**Next task to work on:** If validating Phase 8, run P8-T7 manual multi-tab smoke and only then mark Phase 8 complete. If implementing new requested work, create `feature/phase-9-live-session-ux-answer-key` from `master` and start with P9-T1/P9-T2 before the secured answer-key tasks.
+**Last task completed:** Implemented Phase 9 T1–T6 on `feature/phase-9-live-session-ux-answer-key`: lobby cancel/leave with state cleanup, missing-session fallback on all live routes, secured `/api/instructor/questions` endpoint (`INSTRUCTOR_KEY`), `/instructor/answer-key` UI, `questionKey` plumbed through live payloads + headers, and resource links in host/player reveal panels. Both production builds pass.
+**Next task to work on:** P9-T7 manual smoke validation by the user (lobby leave flows, stale route fallback, unauthorized/authorized instructor endpoint + UI, live question key lookup, reveal resource links). Phase 8 still has P8-T7 pending user smoke; do not mark Phase 8 complete without explicit confirmation.
 **Files recently modified:** `PLAN.md`, `TODOs.md`, `PROGRESS.md` updated with Phase 9 scope and current handoff. Recent production implementation remains Phase 8 across `backend/src/{game,socket}`, `src/app/core/`, `src/app/pages/live/{host-dashboard,host-lobby,host-session,leaderboard,player-game}`, `src/environments/`, `package.json` (qrcode added).
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`

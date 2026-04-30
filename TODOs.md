@@ -496,7 +496,7 @@
 > **Important:** P8-T7 is still pending user smoke validation. Do not mark Phase
 > 8 complete as part of Phase 9 work.
 
-- [ ] **P9-T1:** Lobby Back-to-Home / Cancel UX.
+- [x] **P9-T1:** Lobby Back-to-Home / Cancel UX.
   - Add host lobby **Cancel Session / Back to Home** action.
   - Add player lobby **Leave Lobby / Back to Home** action.
   - Host cancel confirms intent, ends/cancels the session, clears host token,
@@ -508,7 +508,7 @@
   - **Acceptance:** Host/player can leave waiting lobbies cleanly; returning to
     `/join` or `/host` starts fresh without stale nickname/token/session state.
 
-- [ ] **P9-T2:** Missing/ended session fallback.
+- [x] **P9-T2:** Missing/ended session fallback.
   - Validate `/host/lobby/:code`, `/host/session/:code`, `/play/:code`, and
     `/play/:code/game` on route entry using backend session state.
   - Convert missing/ended/invalid session responses and socket `session:error`
@@ -518,7 +518,7 @@
   - **Acceptance:** Stale host/player URLs never spin forever; they show a
     stable error state and a working route home.
 
-- [ ] **P9-T3:** Secured instructor answer-key endpoint.
+- [x] **P9-T3:** Secured instructor answer-key endpoint.
   - Add a backend-only read endpoint, e.g.
     `GET /api/instructor/questions?domain=all&q=&id=`.
   - Protect it with `INSTRUCTOR_KEY` via `Authorization: Bearer <key>` or
@@ -534,7 +534,7 @@
   - **Acceptance:** Unauthorized requests get 401/403; authorized requests can
     filter/search across all domains and include answer explanations + links.
 
-- [ ] **P9-T4:** Instructor answer-key UI.
+- [x] **P9-T4:** Instructor answer-key UI.
   - Add a route such as `/instructor/answer-key`.
   - Prompt for instructor key and store it in `sessionStorage` only.
   - Provide filters/search by domain, numeric ID, composite key, and question
@@ -544,7 +544,7 @@
   - **Acceptance:** Instructor can search for a displayed live question ID/key
     and see the answer key, explanations, and official resource link quickly.
 
-- [ ] **P9-T5:** Question ID/key display in live session.
+- [x] **P9-T5:** Question ID/key display in live session.
   - Add `questionId` and `questionKey` to backend `QuestionPayload`,
     `QuestionRevealPayload`, and frontend live models.
   - Display `Question N of M · ID <questionKey>` in host and player live
@@ -554,7 +554,7 @@
   - **Acceptance:** The instructor can read an ID/key from the live screen and
     find that exact question in the instructor answer-key page.
 
-- [ ] **P9-T6:** Resource links in live answer reveal.
+- [x] **P9-T6:** Resource links in live answer reveal.
   - Preserve source JSON `resource` through the backend reveal payload.
   - Render a `View AWS reference` link in host and player post-answer reveal
     panels when a resource is available.

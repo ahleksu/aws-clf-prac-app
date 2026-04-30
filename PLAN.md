@@ -1402,9 +1402,8 @@ game:ended                               → navigate to /leaderboard/:code
 
 ## 20. Phase 9 — Live Session UX + Instructor Answer Key
 
-> **Status:** Planned, not implemented. Create a new branch from `master`
-> before implementation, recommended name:
-> `feature/phase-9-live-session-ux-answer-key`.
+> **Status:** T1–T6 implemented on `feature/phase-9-live-session-ux-answer-key`.
+> Production builds pass. T7 manual smoke validation pending user sign-off.
 
 **Goal:** Improve live-session recovery/cancel UX and give the instructor a
 controlled way to look up answer keys, explanations, and resource links while
