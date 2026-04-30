@@ -44,5 +44,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/live/leaderboard/leaderboard.component')
             .then((m) => m.LeaderboardComponent)
     },
+    {
+        path: 'instructor/answer-key',
+        loadComponent: () => import('./pages/instructor/answer-key.component')
+            .then((m) => m.InstructorAnswerKeyComponent)
+    },
     {path: '**', redirectTo: ''} // Redirect to home for any unknown routes
 ];

@@ -1,0 +1,123 @@
+<main class="instructor-page mx-auto max-w-6xl px-4 py-6">
+  <header class="instructor-header">
+    <div>
+      <p class="eyebrow">Instructor</p>
+      <h1>Answer Key Lookup</h1>
+      <p class="subtitle">
+        Search the live question bank for IDs displayed in the host or player session header.
+      </p>
+    </div>
+    <p-button
+      *ngIf="!authPrompt()"
+      label="Forget key"
+      icon="pi pi-sign-out"
+      severity="secondary"
+      (onClick)="forgetKey()"
+    />
+  </header>
+
+  <section *ngIf="authPrompt()" class="auth-card">
+    <h2>Enter instructor key</h2>
+    <p>The key is required for every search. Stored only in this browser tab.</p>
+    <form (submit)="$event.preventDefault(); saveKey()" class="auth-form">
+      <input
+        pInputText
+        type="password"
+        [(ngModel)]="draftKey"
+        name="instructor-key"
+        placeholder="instructor key"
+        autocomplete="off"
+      />
+      <p-button label="Continue" icon="pi pi-key" type="submit" />
+    </form>
+    <p *ngIf="errorMessage()" class="error">{{ errorMessage() }}</p>
+  </section>
+
+  <section *ngIf="!authPrompt()" class="filters-card">
+    <form (submit)="$event.preventDefault(); search()" class="filters-form">
+      <label>
+        <span>Domain</span>
+        <p-select
+          [options]="domains"
+          [(ngModel)]="domainFilter"
+          name="domain"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+        />
+      </label>
+      <label>
+        <span>Question ID or key</span>
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="idFilter"
+          name="id"
+          placeholder="e.g. 15 or cloud_concepts:15"
+        />
+      </label>
+      <label>
+        <span>Search text</span>
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="textFilter"
+          name="text"
+          placeholder="words in question or answer"
+        />
+      </label>
+      <div class="filter-actions">
+        <p-button label="Search" icon="pi pi-search" type="submit" [loading]="loading()" />
+      </div>
+    </form>
+    <p *ngIf="errorMessage()" class="error">{{ errorMessage() }}</p>
+  </section>
+
+  <section *ngIf="!authPrompt()" class="results-card">
+    <div class="results-meta">
+      <strong>{{ resultCount() }}</strong> matching question{{ resultCount() === 1 ? '' : 's' }}
+      <span *ngIf="resultCount() > results().length"> — showing {{ results().length }}</span>
+    </div>
+
+    <ul class="result-list" *ngIf="results().length; else emptyState">
+      <li *ngFor="let q of results()" class="result-row">
+        <button class="result-summary" type="button" (click)="toggle(q.questionKey)">
+          <span class="result-key">{{ q.questionKey }}</span>
+          <span class="result-domain">{{ q.domain }}</span>
+          <span class="result-question">{{ q.question }}</span>
+          <span class="result-correct">Correct: {{ q.correctLabels.join(', ') || '—' }}</span>
+          <i class="pi" [ngClass]="isExpanded(q.questionKey) ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+        </button>
+
+        <div *ngIf="isExpanded(q.questionKey)" class="result-detail">
+          <p class="meta-row">
+            <span>Type: {{ q.type === 'multiple' ? 'Multiple answers' : 'Single answer' }}</span>
+            <span>ID: {{ q.id }}</span>
+          </p>
+          <ol class="answer-list">
+            <li *ngFor="let a of q.answers" [ngClass]="answerClass(a)">
+              <div class="answer-heading">
+                <span class="answer-label">{{ a.label }}</span>
+                <strong>{{ a.text }}</strong>
+                <em *ngIf="a.status === 'correct'">Correct</em>
+                <em *ngIf="a.status !== 'correct'" class="muted">Distractor</em>
+              </div>
+              <p *ngIf="a.explanation">{{ a.explanation }}</p>
+              <p *ngIf="!a.explanation" class="muted">No explanation.</p>
+            </li>
+          </ol>
+          <p *ngIf="q.resource" class="resource-row">
+            <a [href]="q.resource" target="_blank" rel="noopener noreferrer">
+              <i class="pi pi-external-link"></i> View AWS reference
+            </a>
+          </p>
+          <p *ngIf="!q.resource" class="muted">Reference link pending (Phase 7).</p>
+        </div>
+      </li>
+    </ul>
+
+    <ng-template #emptyState>
+      <p class="muted">No questions match those filters yet. Try a broader search.</p>
+    </ng-template>
+  </section>
+</main>

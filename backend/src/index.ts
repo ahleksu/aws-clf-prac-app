@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 import { Server as SocketIoServer } from 'socket.io';
 import { GameManager } from './game/GameManager';
 import { buildApiRouter } from './routes/api.routes';
+import { buildInstructorRouter } from './routes/instructor.routes';
 import { registerHostHandlers } from './socket/hostHandlers';
 import { registerPlayerHandlers } from './socket/playerHandlers';
 
@@ -27,7 +28,16 @@ const apiLimiter = rateLimit({
 });
 app.use('/session', apiLimiter);
 
+const instructorLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false
+});
+app.use('/api/instructor', instructorLimiter);
+
 app.use(buildApiRouter(manager));
+app.use(buildInstructorRouter());
 
 const httpServer = http.createServer(app);
 

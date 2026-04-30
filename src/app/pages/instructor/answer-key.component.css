@@ -1,0 +1,263 @@
+:host { display: block; box-sizing: border-box; }
+:host * { box-sizing: border-box; }
+
+.instructor-page {
+  display: grid;
+  gap: 1.25rem;
+  color: #111827;
+}
+
+.instructor-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0.25rem 0 0.35rem;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.subtitle {
+  margin: 0;
+  color: #4b5563;
+}
+
+.auth-card,
+.filters-card,
+.results-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1.25rem;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.auth-card h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+
+.auth-form {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 0.85rem;
+}
+
+.auth-form input {
+  flex: 1;
+}
+
+.error {
+  margin-top: 0.85rem;
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+.filters-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem;
+  align-items: end;
+}
+
+.filters-form label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.filter-actions {
+  display: flex;
+  align-items: end;
+  justify-content: flex-end;
+}
+
+.results-meta {
+  margin-bottom: 0.85rem;
+  color: #4b5563;
+  font-weight: 700;
+}
+
+.result-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.result-row {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  overflow: hidden;
+}
+
+.result-summary {
+  display: grid;
+  grid-template-columns: minmax(120px, max-content) minmax(140px, max-content) 1fr minmax(120px, max-content) auto;
+  gap: 0.85rem;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.result-summary:hover {
+  background: #f1f5f9;
+}
+
+.result-key {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 800;
+  color: #1d4ed8;
+}
+
+.result-domain {
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.result-question {
+  color: #111827;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.result-correct {
+  font-weight: 700;
+  color: #166534;
+}
+
+.result-detail {
+  padding: 0 1rem 1rem;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+}
+
+.meta-row {
+  display: flex;
+  gap: 1rem;
+  margin: 0.85rem 0;
+  color: #4b5563;
+  font-weight: 700;
+}
+
+.answer-list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.answer-list li {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.75rem 0.85rem;
+  background: #ffffff;
+}
+
+.answer-list li.answer-correct {
+  border-color: #16a34a;
+  background: #f0fdf4;
+}
+
+.answer-list li.answer-other {
+  background: #f9fafb;
+}
+
+.answer-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.answer-label {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border-radius: 6px;
+  background: #0f172a;
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.answer-list em {
+  font-style: normal;
+  font-weight: 800;
+  color: #166534;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.answer-list em.muted {
+  color: #6b7280;
+}
+
+.answer-list p {
+  margin: 0.4rem 0 0;
+  color: #374151;
+}
+
+.answer-list .muted {
+  color: #9ca3af;
+}
+
+.resource-row {
+  margin-top: 0.85rem;
+  font-weight: 700;
+}
+
+.resource-row a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.resource-row a:hover {
+  text-decoration: underline;
+}
+
+.muted {
+  color: #6b7280;
+}
+
+@media (max-width: 720px) {
+  .result-summary {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "key chevron"
+      "domain chevron"
+      "question question"
+      "correct correct";
+  }
+  .result-key { grid-area: key; }
+  .result-domain { grid-area: domain; }
+  .result-question { grid-area: question; white-space: normal; }
+  .result-correct { grid-area: correct; }
+  .result-summary > i { grid-area: chevron; }
+}
