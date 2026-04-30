@@ -7,6 +7,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { ConfirmationService } from 'primeng/api';
 import { LiveQuizService } from '../../../core/live-quiz.service';
 import { RevealAnswer } from '../../../core/live-quiz.model';
+import { SessionMissingComponent } from '../session-missing/session-missing.component';
 
 @Component({
   selector: 'app-host-session',
@@ -15,7 +16,8 @@ import { RevealAnswer } from '../../../core/live-quiz.model';
     CommonModule,
     ButtonModule,
     ConfirmDialogModule,
-    ProgressBarModule
+    ProgressBarModule,
+    SessionMissingComponent
   ],
   providers: [ConfirmationService],
   templateUrl: './host-session.component.html',
@@ -29,6 +31,8 @@ export class HostSessionComponent implements OnInit {
 
   sessionCode = '';
   sessionError = '';
+  sessionMissing = false;
+  validating = true;
 
   constructor() {
     effect(() => {
@@ -52,8 +56,15 @@ export class HostSessionComponent implements OnInit {
       return;
     }
     this.sessionCode = code;
-    sessionStorage.setItem('liveHostSessionCode', code);
-    this.quiz.reconnectHost(code, sessionStorage.getItem('liveHostToken') ?? '');
+    this.quiz.validateSession(code).then(({ valid, state }) => {
+      this.validating = false;
+      if (!valid || state === 'ended') {
+        this.sessionMissing = true;
+        return;
+      }
+      sessionStorage.setItem('liveHostSessionCode', code);
+      this.quiz.reconnectHost(code, sessionStorage.getItem('liveHostToken') ?? '');
+    });
   }
 
   progressValue(): number {

@@ -3,11 +3,12 @@ import { Component, OnInit, effect, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { LiveQuizService } from '../../../core/live-quiz.service';
+import { SessionMissingComponent } from '../session-missing/session-missing.component';
 
 @Component({
   selector: 'app-player-lobby',
   standalone: true,
-  imports: [CommonModule, ButtonModule],
+  imports: [CommonModule, ButtonModule, SessionMissingComponent],
   templateUrl: './player-lobby.component.html',
   styleUrl: './player-lobby.component.css'
 })
@@ -18,6 +19,8 @@ export class PlayerLobbyComponent implements OnInit {
 
   sessionCode = '';
   lobbyError = '';
+  sessionMissing = false;
+  validating = true;
 
   constructor() {
     effect(() => {
@@ -40,18 +43,30 @@ export class PlayerLobbyComponent implements OnInit {
       return;
     }
     this.sessionCode = code;
-    const saved = this.savedSession();
-    if (!this.quiz.myProfile().nickname && saved?.sessionCode === code) {
-      this.quiz.joinSession(saved.sessionCode, saved.nickname);
-      return;
-    }
-    if (!this.quiz.myProfile().nickname) {
-      this.router.navigate(['/join'], { queryParams: { code } });
-    }
+    this.quiz.validateSession(code).then(({ valid, state }) => {
+      this.validating = false;
+      if (!valid || state === 'ended') {
+        this.sessionMissing = true;
+        return;
+      }
+      const saved = this.savedSession();
+      if (!this.quiz.myProfile().nickname && saved?.sessionCode === code) {
+        this.quiz.joinSession(saved.sessionCode, saved.nickname);
+        return;
+      }
+      if (!this.quiz.myProfile().nickname) {
+        this.router.navigate(['/join'], { queryParams: { code } });
+      }
+    });
   }
 
   backToJoin(): void {
     this.router.navigate(['/join'], { queryParams: { code: this.sessionCode } });
+  }
+
+  leaveLobby(): void {
+    this.quiz.leaveSession();
+    this.router.navigate(['/']);
   }
 
   private savedSession(): { sessionCode: string; nickname: string } | null {

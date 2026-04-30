@@ -147,11 +147,80 @@ export class LiveQuizService {
     this.socket.emit('host:end', { sessionCode: this.sessionCode() });
   }
 
+  leaveSession(): void {
+    const code = this.sessionCode();
+    if (code) {
+      this.socket.emit('player:leave', { sessionCode: code });
+    }
+    this.clearPlayerState();
+  }
+
+  cancelHostSession(): void {
+    const code = this.sessionCode();
+    if (code) {
+      this.socket.emit('host:end', { sessionCode: code });
+    }
+    this.clearHostState();
+  }
+
+  clearPlayerState(): void {
+    this.role.set(null);
+    this.sessionCode.set('');
+    this.gameState.set('lobby');
+    this.currentQuestion.set(null);
+    this.players.set([]);
+    this.rankings.set([]);
+    this.finalLeaderboard.set([]);
+    this.questionStats.set({ answered: 0, total: 0 });
+    this.timeRemainingMs.set(0);
+    this.answerReveal.set(null);
+    this.answerResult.set(null);
+    this.joinConfirmed.set(false);
+    this.answeredCurrentQuestion.set(false);
+    this.lastError.set(null);
+    this.paused.set(false);
+    this.hostDisconnected.set(false);
+    this.totalQuestions.set(0);
+    this.myProfile.set({ nickname: '', score: 0, rank: 0, streak: 0 });
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem('livePlayerSession');
+    }
+  }
+
+  clearHostState(): void {
+    this.resetHostState();
+    this.role.set(null);
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem('liveHostSessionCode');
+      sessionStorage.removeItem('liveHostToken');
+    }
+  }
+
   submitAnswer(answers: string[]): void {
     this.socket.emit('player:answer', {
       sessionCode: this.sessionCode(),
       answers
     });
+  }
+
+  async validateSession(sessionCode: string): Promise<{ valid: boolean; state: SessionState | null }> {
+    const code = this.normalizeCode(sessionCode);
+    if (!code) {
+      return { valid: false, state: null };
+    }
+    try {
+      const response = await fetch(`${environment.apiUrl}/session/${code}`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        return { valid: false, state: null };
+      }
+      const data = await response.json() as { valid: boolean; state: SessionState | null };
+      return { valid: !!data.valid, state: data.state ?? null };
+    } catch {
+      return { valid: false, state: null };
+    }
   }
 
   reconnectHost(sessionCode: string, hostToken = ''): void {

@@ -1,9 +1,17 @@
 <p-confirmdialog />
 
-<main class="host-session mx-auto max-w-7xl px-4 py-6">
+<app-session-missing
+  *ngIf="sessionMissing"
+  message="The host session you tried to open has ended or was cancelled."
+></app-session-missing>
+
+<main *ngIf="!sessionMissing && !validating" class="host-session mx-auto max-w-7xl px-4 py-6">
   <header class="session-bar">
     <div *ngIf="quiz.currentQuestion() as question">
-      <p>Question {{ question.questionNumber }} of {{ question.total }}</p>
+      <p>
+        Question {{ question.questionNumber }} of {{ question.total }}
+        <span *ngIf="question.questionKey" class="question-key">· ID {{ question.questionKey }}</span>
+      </p>
       <h1>{{ sessionCode }}</h1>
       <span class="scoring-badge" [class.points-mode]="quiz.scoringMode() === 'points'">
         <i class="pi" [ngClass]="scoringModeIcon()"></i>
@@ -70,6 +78,12 @@
         </ul>
 
         <p *ngIf="!hasReveal() && reveal.explanation">{{ reveal.explanation }}</p>
+
+        <p *ngIf="reveal.resource" class="reveal-resource">
+          <a [href]="reveal.resource" target="_blank" rel="noopener noreferrer">
+            <i class="pi pi-external-link"></i> View AWS reference
+          </a>
+        </p>
       </div>
     </article>
 

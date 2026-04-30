@@ -8,11 +8,12 @@ import QRCode from 'qrcode';
 import { environment } from '../../../../environments/environment';
 import { LiveQuizService } from '../../../core/live-quiz.service';
 import { PlayerState } from '../../../core/live-quiz.model';
+import { SessionMissingComponent } from '../session-missing/session-missing.component';
 
 @Component({
   selector: 'app-host-lobby',
   standalone: true,
-  imports: [CommonModule, ButtonModule, ToastModule],
+  imports: [CommonModule, ButtonModule, ToastModule, SessionMissingComponent],
   providers: [MessageService],
   templateUrl: './host-lobby.component.html',
   styleUrl: './host-lobby.component.css'
@@ -28,6 +29,8 @@ export class HostLobbyComponent implements OnInit {
   qrDataUrl = '';
   starting = false;
   lobbyError = '';
+  sessionMissing = false;
+  validating = true;
 
   constructor() {
     effect(() => {
@@ -53,14 +56,21 @@ export class HostLobbyComponent implements OnInit {
       return;
     }
     this.sessionCode = code;
-    this.joinUrl = `${environment.frontendBaseUrl}/join?code=${code}`;
-    QRCode.toDataURL(this.joinUrl, { width: 220, margin: 2 })
-      .then((url) => {
-        this.qrDataUrl = url;
-      })
-      .catch((err) => console.error('[host-lobby] QR generation failed', err));
-    sessionStorage.setItem('liveHostSessionCode', code);
-    this.quiz.reconnectHost(code, sessionStorage.getItem('liveHostToken') ?? '');
+    this.quiz.validateSession(code).then(({ valid, state }) => {
+      this.validating = false;
+      if (!valid || state === 'ended') {
+        this.sessionMissing = true;
+        return;
+      }
+      this.joinUrl = `${environment.frontendBaseUrl}/join?code=${code}`;
+      QRCode.toDataURL(this.joinUrl, { width: 220, margin: 2 })
+        .then((url) => {
+          this.qrDataUrl = url;
+        })
+        .catch((err) => console.error('[host-lobby] QR generation failed', err));
+      sessionStorage.setItem('liveHostSessionCode', code);
+      this.quiz.reconnectHost(code, sessionStorage.getItem('liveHostToken') ?? '');
+    });
   }
 
   connectedPlayers(): PlayerState[] {
@@ -75,9 +85,8 @@ export class HostLobbyComponent implements OnInit {
   }
 
   cancelSession(): void {
-    this.quiz.endSession();
-    sessionStorage.removeItem('liveHostSessionCode');
-    this.router.navigate(['/host']);
+    this.quiz.cancelHostSession();
+    this.router.navigate(['/']);
   }
 
   copyJoinUrl(): void {

@@ -117,6 +117,25 @@ export function registerPlayerHandlers(
     autoAdvanceIfDone(io, session);
   });
 
+  socket.on('player:leave', (payload: { sessionCode?: string }) => {
+    const code = (payload?.sessionCode || '').trim().toUpperCase();
+    const session = manager.getSession(code);
+    if (!session) return;
+    if (session.isHost(socket.id)) return;
+    if (session.state === 'lobby') {
+      session.removePlayer(socket.id);
+    } else {
+      session.markDisconnected(socket.id);
+    }
+    socket.leave(session.code);
+    io.to(session.hostSocketId).emit('lobby:update', {
+      players: session.listPlayers()
+    });
+    io.to(session.code).except(session.hostSocketId).emit('lobby:update', {
+      playerCount: session.connectedPlayerCount()
+    });
+  });
+
   socket.on('disconnect', () => {
     for (const session of manager.listSessions()) {
       if (session.isHost(socket.id)) continue;

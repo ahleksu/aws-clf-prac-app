@@ -129,6 +129,12 @@ h1 {
   font-weight: 700;
 }
 
+.lobby-actions {
+  margin-top: 1.25rem;
+  display: flex;
+  justify-content: center;
+}
+
 .notice,
 .error-box {
   margin-top: 1rem;

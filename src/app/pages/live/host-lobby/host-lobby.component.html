@@ -1,6 +1,11 @@
 <p-toast />
 
-<main class="host-lobby mx-auto max-w-6xl px-4 py-8">
+<app-session-missing
+  *ngIf="sessionMissing"
+  message="The host session you tried to open has ended or never existed. Start a fresh session from the host dashboard."
+></app-session-missing>
+
+<main *ngIf="!sessionMissing && !validating" class="host-lobby mx-auto max-w-6xl px-4 py-8">
   <section class="lobby-header">
     <div class="lobby-header-text">
       <p class="eyebrow">Live session code</p>
@@ -73,8 +78,8 @@
           (onClick)="startQuiz()"
         />
         <p-button
-          label="Cancel"
-          icon="pi pi-times"
+          label="Cancel Session & Back to Home"
+          icon="pi pi-home"
           severity="secondary"
           styleClass="w-full"
           (onClick)="cancelSession()"

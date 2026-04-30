@@ -8,13 +8,14 @@ import { MessageService } from 'primeng/api';
 import { LiveQuizService } from '../../../core/live-quiz.service';
 import { SocketService } from '../../../core/socket.service';
 import { RevealAnswer } from '../../../core/live-quiz.model';
+import { SessionMissingComponent } from '../session-missing/session-missing.component';
 
 type PlayerViewState = 'answering' | 'answered' | 'leaderboard' | 'waiting' | 'paused';
 
 @Component({
   selector: 'app-player-game',
   standalone: true,
-  imports: [CommonModule, ButtonModule, ToastModule],
+  imports: [CommonModule, ButtonModule, ToastModule, SessionMissingComponent],
   providers: [MessageService],
   templateUrl: './player-game.component.html',
   styleUrl: './player-game.component.css'
@@ -33,6 +34,8 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
   submittedAnswers: string[] = [];
   timeLeftSeconds = 0;
   timerFraction = 1;
+  sessionMissing = false;
+  validating = true;
   playerViewState: PlayerViewState = 'answering';
   private prePauseState: PlayerViewState = 'answering';
   private activeQuestionKey = '';
@@ -114,15 +117,22 @@ export class PlayerGameComponent implements OnInit, OnDestroy {
       return;
     }
     this.sessionCode = code;
-    const saved = this.savedSession();
-    if (!this.quiz.myProfile().nickname && saved?.sessionCode === code) {
-      this.quiz.joinSession(saved.sessionCode, saved.nickname);
-    }
-    if (!this.quiz.myProfile().nickname && !saved) {
-      this.router.navigate(['/join'], { queryParams: { code } });
-    }
-    this.persistSession();
-    this.watchReconnect();
+    this.quiz.validateSession(code).then(({ valid, state }) => {
+      this.validating = false;
+      if (!valid || state === 'ended') {
+        this.sessionMissing = true;
+        return;
+      }
+      const saved = this.savedSession();
+      if (!this.quiz.myProfile().nickname && saved?.sessionCode === code) {
+        this.quiz.joinSession(saved.sessionCode, saved.nickname);
+      }
+      if (!this.quiz.myProfile().nickname && !saved) {
+        this.router.navigate(['/join'], { queryParams: { code } });
+      }
+      this.persistSession();
+      this.watchReconnect();
+    });
   }
 
   ngOnDestroy(): void {

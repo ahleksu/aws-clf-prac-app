@@ -1,10 +1,18 @@
 <p-toast />
 
-<main class="player-game">
+<app-session-missing
+  *ngIf="sessionMissing"
+  message="The live session has ended or is no longer available."
+></app-session-missing>
+
+<main *ngIf="!sessionMissing && !validating" class="player-game">
   <section *ngIf="quiz.currentQuestion() as question; else waiting" class="game-shell">
     <header class="game-header">
       <div>
-        <p>Question {{ question.questionNumber }} of {{ question.total }}</p>
+        <p>
+          Question {{ question.questionNumber }} of {{ question.total }}
+          <span *ngIf="question.questionKey" class="question-key">· ID {{ question.questionKey }}</span>
+        </p>
         <h1>{{ quiz.myProfile().nickname }}</h1>
       </div>
 
@@ -133,6 +141,12 @@
           </small>
         </div>
       </section>
+
+      <p *ngIf="quiz.answerReveal()?.resource as resource" class="reveal-resource">
+        <a [href]="resource" target="_blank" rel="noopener noreferrer">
+          <i class="pi pi-external-link"></i> View AWS reference
+        </a>
+      </p>
 
       <ul class="reveal-explanations">
         <li *ngFor="let answer of revealAnswers()" [ngClass]="revealClass(answer)">

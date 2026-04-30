@@ -1,4 +1,9 @@
-<main class="player-lobby">
+<app-session-missing
+  *ngIf="sessionMissing"
+  message="The session you tried to join has ended or never existed. Ask the host for a new code."
+></app-session-missing>
+
+<main *ngIf="!sessionMissing && !validating" class="player-lobby">
   <div class="motion-bg" aria-hidden="true">
     <span></span>
     <span></span>
@@ -21,6 +26,15 @@
     <p *ngIf="quiz.hostDisconnected()" class="notice">
       Host disconnected. Waiting for the session to resume.
     </p>
+
+    <div class="lobby-actions">
+      <p-button
+        label="Leave Lobby & Back to Home"
+        icon="pi pi-home"
+        severity="secondary"
+        (onClick)="leaveLobby()"
+      />
+    </div>
 
     <div *ngIf="lobbyError" class="error-box">
       <p>{{ lobbyError }}</p>
