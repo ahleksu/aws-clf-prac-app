@@ -123,7 +123,7 @@
 - [ ] P6-A4: Add 4 GitHub Secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET`, `CF_DISTRIBUTION_ID`) — pending distribution ID from P6-A2
 - [x] P6-A5: Create `.github/workflows/deploy-frontend.yml` — ✅ 2026-04-29 (created; targets `dist/aws-clf-prac-app/browser/`)
 
-**Part B — Backend (EC2 t2.micro, always-on free tier)**
+**Part B — Backend (EC2 t2.micro, start/stop managed)**
 - [x] P6-B1: Launch EC2 **t2.micro** Ubuntu 22.04 LTS + security group `live-quiz-sg` — ✅ 2026-04-29
   - Instance: `i-042b91a08364b6e01` | AMI: `ami-0b63ddeab4f8a92db` | AZ: `ap-southeast-1b`
   - Key pair: `live-quiz-backend-key` → saved to `~/Desktop/live-quiz-backend-key.pem` (chmod 400)
@@ -238,6 +238,8 @@
 | 2026-04-30 | OPS-T1 | Added an idempotent EC2 lifecycle helper instead of relying on manual console stop/start | `scripts/ec2-backend-lifecycle.sh` lets the operator stop backend compute when idle and start it again with EC2 waiters plus `/health` verification. Stopping EC2 makes the live backend unavailable until `start` succeeds. |
 | 2026-04-30 | P8 deploy | User requested promoting Phase 8 changes to `master` before the P8-T7 manual smoke test is marked complete | Vercel and the EC2 backend need the latest UI/backend changes on `master`; Phase 8 remains **In Progress (6/7)** until the user-run multi-tab smoke test passes. |
 | 2026-04-30 | P9 planning | Added Phase 9 as a new live-session UX + instructor answer-key work package | The user requested clean lobby cancellation, stale-session fallback, instructor answer-key lookup, live question IDs, and resource links in reveal panels. The answer-key endpoint should be protected by `INSTRUCTOR_KEY`, but current solo mode still exposes full quiz JSON under `public/quiz/`, so true answer secrecy requires a later public-quiz sanitization refactor. |
+| 2026-05-04 | Security | Hardened root `.gitignore` to catch `.env`, `.env.local`, `.env.*.local`, `*.pem`, `*.key` | Root `.gitignore` previously had no catch-all for env/secret files; backend `.gitignore` was the only guard. Redacted the AWS account ID from `PLAN.md`, `TODOs.md`, and `PROGRESS.md`, then rewrote Git history so the exact account ID is replaced with `<REDACTED>` in historical docs. Local scans found no committed `.env`, private key files, AWS access key IDs, or private-key blocks. |
+| 2026-05-04 | P10 deploy | EC2 backend intentionally stopped after Phase 10 offline-UX work was deployed | Phase 10 adds graceful degradation so the frontend handles a stopped backend without broken spinners. EC2 stopped via `./scripts/ec2-backend-lifecycle.sh stop`. Frontend offline banners are live on Vercel. Run `./scripts/ec2-backend-lifecycle.sh start` and `./scripts/pre-demo-check.sh` before classroom use. |
 
 ---
 
@@ -245,18 +247,39 @@
 
 > Keep this section updated so you can pick up exactly where you left off after a context reset.
 
-**PROJECT STATUS: ✅ FULLY DEPLOYED AND LIVE**
+**PROJECT STATUS: ✅ FRONTEND LIVE · ⏹ BACKEND STOPPED (intentional)**
 
-| Resource | URL |
+| Resource | URL / Info |
 |---|---|
 | Frontend (Vercel) | https://aws-clf-prac-app.vercel.app |
-| Backend API + WSS (EC2) | https://api.47.130.41.30.nip.io |
+| Backend API + WSS (EC2) | https://api.47.130.41.30.nip.io — **currently stopped** |
 | Health check | https://api.47.130.41.30.nip.io/health |
 | EC2 SSH | `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30` |
 
-**Last task completed:** Phase 10 complete — `ServerHealthService` added; `HomeComponent`, `JoinComponent`, and `HostDashboardComponent` all call `checkHealth()` on init and gate live-session UI behind the signal result. Production build passes (warnings are pre-existing, not new to Phase 10).
-**Next task to work on:** P8-T7 still pending user smoke test (do not mark Phase 8 complete without confirmation). P7 (question bank audit) not started. Push `master` to Vercel + EC2 when ready to deploy Phase 10 changes.
-**Files recently modified:** `src/app/core/server-health.service.ts` (new), `src/app/pages/home/home.component.ts/.html`, `src/app/pages/live/join/join.component.ts/.html/.css`, `src/app/pages/live/host-dashboard/host-dashboard.component.ts/.html/.css`, `PROGRESS.md`.
+**To reactivate backend before class:**
+```bash
+./scripts/ec2-backend-lifecycle.sh start   # waits for EC2 ready + /health 200
+./scripts/pre-demo-check.sh                # verifies frontend + backend
+```
+See PLAN.md §7 (EC2 Reactivation) for the Console-based alternative.
+
+**Last pushed work:** Phase 10 offline UX + security-history cleanup
+- Phase 10: `ServerHealthService` + amber offline banners on Home, Join, HostDashboard
+- Security: root `.gitignore` hardened with `.env`/`*.pem`/`*.key` catch-alls; AWS account ID redacted from current docs and historical docs
+- EC2 backend stopped after deployment; offline banners are live on Vercel
+
+**Next tasks:**
+- **P8-T7** — User-run local multi-tab smoke test still pending. Do NOT mark Phase 8 complete without confirmation.
+- **P7** — CLF-C02 question bank audit (0/7). Start only after P8-T7 passes.
+
+**Files modified in last session:**
+- `src/app/core/server-health.service.ts` (new)
+- `src/app/pages/home/home.component.ts/.html`
+- `src/app/pages/live/join/join.component.ts/.html/.css`
+- `src/app/pages/live/host-dashboard/host-dashboard.component.ts/.html/.css`
+- `.gitignore` (security hardening)
+- `PLAN.md`, `TODOs.md`, `PROGRESS.md` (AWS account ID redacted and history cleanup recorded)
+
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`
 - Admin IAM user is named `clf-quiz-admin-policy` (matches policy name — works fine)
@@ -271,16 +294,9 @@
 - SSH security group now includes the observed admin source `136.158.152.66/32`; temporary `0.0.0.0/0` SSH debug access was removed immediately after deployment.
 - EC2 setup script: `scripts/ec2-setup.sh` — run P6-B3 through P6-B8 sections via SSH
 - EC2 lifecycle helper: `./scripts/ec2-backend-lifecycle.sh status|start|stop|restart` — defaults to profile `clf-quiz`, region `ap-southeast-1`, instance `i-042b91a08364b6e01`, and API `https://api.47.130.41.30.nip.io`
-- Stopping EC2 makes the live backend unavailable until `./scripts/ec2-backend-lifecycle.sh start` succeeds and `/health` passes; storage/static IP costs may still apply.
+- EC2 is currently **stopped**. Run `./scripts/ec2-backend-lifecycle.sh start` before any demo/classroom use. Storage/static IP costs may still apply while stopped.
 - Pre-demo check script: `scripts/pre-demo-check.sh` — uses `https://aws-clf-prac-app.vercel.app` and `https://api.47.130.41.30.nip.io`; run after starting EC2 and before classroom use
-- Backend is EC2 **t2.micro** (free tier, always-on) — SSL via Let's Encrypt + nip.io
+- Backend is EC2 **t2.micro** (free tier) — SSL via Let's Encrypt + nip.io
 - Angular `environment.prod.ts` `wsUrl` MUST be `https://` — browsers block `ws://` from HTTPS pages
 - Use `export AWS_PROFILE=clf-quiz` per terminal session before AWS CLI commands
 - GitHub Actions workflow targets `dist/aws-clf-prac-app/browser/` (Angular 19 output path — verified)
-- Phase 9 implementation notes:
-  - Use branch `feature/phase-9-live-session-ux-answer-key` from `master`.
-  - Add lobby cancel/leave buttons for host and player waiting lobbies; intentional leave must clear host token, nickname, role, session code, current question, reveal payload, rankings, and any related `sessionStorage`.
-  - Add missing/ended session fallback for stale host/player live URLs; do not leave users in a spinner.
-  - Add secured instructor answer-key endpoint protected by `INSTRUCTOR_KEY`; current `public/quiz/*.json` still exposes solo-mode answer data, so do not claim strong secrecy until public quiz JSON is sanitized. Configure `INSTRUCTOR_KEY`, restart the backend, verify unauthenticated `401` and authenticated data before relying on it.
-  - Add `questionId`/`questionKey` to live payloads and show it only in the host header. Player screens should not display question IDs/keys.
-  - Add post-answer resource links in reveal panels using source JSON `resource` values when present.

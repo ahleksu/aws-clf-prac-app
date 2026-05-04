@@ -4,24 +4,26 @@
 
 ---
 
-## 🚀 Deployment Status (as of 2026-04-30)
+## 🚀 Deployment Status (as of 2026-05-04)
 
 | Layer | Service | URL | Status |
 |---|---|---|---|
 | Frontend | Vercel | https://aws-clf-prac-app.vercel.app | ✅ Live |
-| Backend API + WSS | EC2 t2.micro (ap-southeast-1b) | https://api.47.130.41.30.nip.io | ✅ Live |
-| Backend health | — | https://api.47.130.41.30.nip.io/health | ✅ `{"status":"ok"}` |
+| Backend API + WSS | EC2 t2.micro (ap-southeast-1b) | https://api.47.130.41.30.nip.io | ⏹ Stopped (intentional; run `./scripts/ec2-backend-lifecycle.sh start` before class) |
+| Backend health | — | https://api.47.130.41.30.nip.io/health | ⏹ Offline until EC2 is started |
 | CI/CD | Vercel (auto on push to master) | — | ✅ Active |
 | TLS (frontend) | Vercel (`*.vercel.app`) | — | ✅ Auto |
-| TLS (backend) | Let's Encrypt via nip.io | Expires 2026-07-27, auto-renews | ✅ Active |
+| TLS (backend) | Let's Encrypt via nip.io | Expires 2026-07-27, auto-renews | ✅ Active (cert persists while stopped) |
+
+**Offline UX:** When the EC2 backend is stopped, the Angular frontend degrades gracefully: Home disables live-session buttons and shows an amber "Server Offline" banner; `/join` and `/host` replace their forms with the same offline banner and a "Back to Home" button.
 
 **Note on original S3+CloudFront plan:** S3 bucket `aws-clf-quiz-frontend` (ap-southeast-1) and OAC `E37IFEDVTLC7J6` remain provisioned. CloudFront activation pending AWS Support case (account verification). Can migrate frontend from Vercel to S3+CloudFront at any time.
 
-**Current production branch:** `master` includes Phase 9 T1–T7 as of commit
-`8dd7a5b`. Vercel auto-deploys from `master`. The EC2 backend has pulled that
-commit, rebuilt, restarted PM2, and verified `/health` plus instructor endpoint
-auth behavior. Phase 8 still remains **In Progress** until P8-T7 is manually
-smoke-tested.
+**Current production branch:** `master` includes Phase 10 offline-backend UX
+and repository security hardening. Vercel auto-deploys from `master`. The EC2
+backend was intentionally stopped on 2026-05-04 to reduce idle compute costs.
+Phase 8 still remains **In Progress** until P8-T7 is manually smoke-tested. See
+§7 for EC2 reactivation steps.
 
 ---
 
@@ -70,7 +72,7 @@ Scholars & Host (Browsers)
     │  HTTPS (Angular SPA)                │  WSS (WebSocket / Socket.io)
     ▼                                     ▼
 ┌───────────────────────────┐    ┌──────────────────────────────────────┐
-│  CloudFront Distribution  │    │  EC2 t2.micro (free tier, always-on) │
+│  CloudFront Distribution  │    │  EC2 t2.micro (free tier, start/stop)│
 │  + AWS Shield Standard    │    │                                      │
 │  (free DDoS, L3/L4)       │    │  ┌──────────────────────────────┐   │
 │           │               │    │  │ nginx (port 443)              │   │
@@ -237,8 +239,8 @@ Cost: $0.25/month (domain) + $0.50/month (Route 53 hosted zone) = **$0.75/month*
 | Frontend S3 | 5 GB storage, 2K PUTs | Yes | $0.00 |
 | Frontend CDN | CloudFront 1 TB transfer | Yes (12 mo) | $0.00 |
 | Frontend SSL | ACM cert on CloudFront | Always free | $0.00 |
-| Backend compute | EC2 t2.micro always-on | Yes (12 mo) | $0.00 |
-| Backend static IP | Elastic IP while running | Free when running | $0.00 |
+| Backend compute | EC2 t2.micro, started before class | Yes (12 mo) | $0.00 while within free-tier hours |
+| Backend static IP | Elastic/static public IPv4 | Pricing depends on current AWS public IPv4 billing | Check AWS billing |
 | Backend SSL | Let's Encrypt (certbot + nip.io) | Always free | $0.00 |
 | CI/CD | GitHub Actions (public repo) | Always free | $0.00 |
 | DDoS frontend | AWS Shield Standard on CF | Always free | $0.00 |
@@ -858,7 +860,7 @@ jobs:
 
 ---
 
-### 13B. Backend: EC2 t2.micro (Free Tier, Always-On)
+### 13B. Backend: EC2 t2.micro (Free Tier, Start/Stop Managed)
 
 #### 13B-1: Launch EC2 Instance
 

@@ -338,10 +338,10 @@
 
 ---
 
-### Part B — Backend: EC2 t2.micro (Free Tier, Always-On)
+### Part B — Backend: EC2 t2.micro (Free Tier, Start/Stop Managed)
 
 - [x] **P6-B1:** EC2 t2.micro `i-042b91a08364b6e01`, Ubuntu 22.04, SG `sg-0f43142600ef6bc09`. ✅ 2026-04-29
-- [x] **P6-B2:** Elastic IP `47.130.41.30` attached. Instance always-on. ✅ 2026-04-29
+- [x] **P6-B2:** Elastic IP `47.130.41.30` attached. Instance can be stopped when idle and restarted before class. ✅ 2026-04-29
 - [x] **P6-B3:** Node.js v20.20.2, PM2 6.0.14, nginx, certbot installed. ✅ 2026-04-29
 - [x] **P6-B4:** Repo cloned, quiz JSON copied, `npm run build` → `dist/index.js`. ✅ 2026-04-29
 - [x] **P6-B5:** nip.io domain: `api.47.130.41.30.nip.io`. ✅ 2026-04-29
@@ -602,13 +602,20 @@
 
 > Goal: Handle offline backend gracefully since EC2 is manually turned off to save AWS costs, and document reactivation workflows.
 
-- [ ] **P10-T1:** Add "Reactivating the Backend Server" documentation into `PLAN.md` (detailing AWS CLI and AWS Console methods).
-- [ ] **P10-T2:** Create `src/app/core/server-health.service.ts` to perform a fast HTTP GET check to `/health` with a timeout mechanism.
-- [ ] **P10-T3:** Update `HomeComponent` UI to show "⚠️ Server Offline: The backend is shut down to save costs. If you need it turned on, contact John Alex Robles via LinkedIn." and disable Host/Join buttons when `/health` fails.
-- [ ] **P10-T4:** Update `JoinComponent` and `HostDashboardComponent` form templates to replace the forms with the LinkedIn fallback warning if a user accesses the links directly while offline.
+- [x] **P10-T1:** Add "Reactivating the Backend Server" documentation into `PLAN.md` (detailing AWS CLI and AWS Console methods). ✅ 2026-05-04
+- [x] **P10-T2:** Create `src/app/core/server-health.service.ts` to perform a fast HTTP GET check to `/health` with a timeout mechanism. ✅ 2026-05-04
+- [x] **P10-T3:** Update `HomeComponent` UI to show amber offline banner with "Contact me on LinkedIn" CTA and disable Host/Join buttons when `/health` fails. ✅ 2026-05-04
+- [x] **P10-T4:** Update `JoinComponent` and `HostDashboardComponent` form templates to replace the forms with the offline fallback warning if a user accesses the links directly while the backend is stopped. ✅ 2026-05-04
 
 
 ---
+
+## Repository Hygiene — Sensitive Data
+
+> Goal: Keep public repository history free of accidental secrets or sensitive account metadata.
+
+- [x] **SEC-T1:** Review current files and Git history for committed `.env`, private key files, AWS access key IDs, private-key blocks, and the exposed AWS account ID. ✅ 2026-05-04
+- [x] **SEC-T2:** Rewrite local and remote Git history so the exposed AWS account ID is redacted from historical `PLAN.md`, `PROGRESS.md`, and `TODOs.md` entries. ✅ 2026-05-04
 
 ## Optional Enhancements (Post-V1)
 
