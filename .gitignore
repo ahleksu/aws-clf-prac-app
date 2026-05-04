@@ -11,6 +11,13 @@
 npm-debug.log
 yarn-error.log
 
+# Environment / secrets — never commit real values
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
 # IDEs and editors
 .idea/
 .project

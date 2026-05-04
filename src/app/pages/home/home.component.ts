@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { trigger, style, animate, transition } from '@angular/animations';
+import { ServerHealthService } from '../../core/server-health.service';
 
 
 @Component({
@@ -20,8 +21,13 @@ import { trigger, style, animate, transition } from '@angular/animations';
     ]),
   ],
 })
-export class HomeComponent {
-  constructor(private router: Router) {}
+export class HomeComponent implements OnInit {
+  private readonly router = inject(Router);
+  readonly serverHealth = inject(ServerHealthService);
+
+  ngOnInit(): void {
+    this.serverHealth.checkHealth();
+  }
 
   startQuiz(type: string) {
     this.router.navigate(['/quiz'], { queryParams: { type } });

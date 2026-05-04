@@ -85,3 +85,48 @@
     padding: 1.25rem;
   }
 }
+
+.offline-fallback {
+  display: grid;
+  gap: 1rem;
+}
+
+.offline-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border: 1px solid #fcd34d;
+  border-radius: 6px;
+  background: #fffbeb;
+  padding: 0.875rem 1rem;
+}
+
+.offline-icon {
+  color: #d97706;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.offline-title {
+  margin: 0 0 0.25rem;
+  color: #92400e;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.offline-body {
+  margin: 0;
+  color: #92400e;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.offline-link {
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.offline-link:hover {
+  color: #78350f;
+}

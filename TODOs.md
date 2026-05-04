@@ -598,6 +598,18 @@
 
 ---
 
+## Phase 10 — Cost Management & UX Fallbacks
+
+> Goal: Handle offline backend gracefully since EC2 is manually turned off to save AWS costs, and document reactivation workflows.
+
+- [ ] **P10-T1:** Add "Reactivating the Backend Server" documentation into `PLAN.md` (detailing AWS CLI and AWS Console methods).
+- [ ] **P10-T2:** Create `src/app/core/server-health.service.ts` to perform a fast HTTP GET check to `/health` with a timeout mechanism.
+- [ ] **P10-T3:** Update `HomeComponent` UI to show "⚠️ Server Offline: The backend is shut down to save costs. If you need it turned on, contact John Alex Robles via LinkedIn." and disable Host/Join buttons when `/health` fails.
+- [ ] **P10-T4:** Update `JoinComponent` and `HostDashboardComponent` form templates to replace the forms with the LinkedIn fallback warning if a user accesses the links directly while offline.
+
+
+---
+
 ## Optional Enhancements (Post-V1)
 
 These are nice-to-haves. Do NOT implement until Phase 6 is complete and tested.

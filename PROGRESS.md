@@ -20,7 +20,7 @@
 | P7 | CLF-C02 Question Bank Audit | **Not Started** | 0 / 7 | Comprehensive audit + EC2 redeploy; see TODOs.md |
 | P8 | Live Session Feature Enhancements | **In Progress** | 6 / 7 | T1–T6 implemented and deployed to master/EC2 by user request; production builds pass; T7 pending user-run local smoke test |
 | P9 | Live Session UX + Instructor Answer Key | **Complete** | 7 / 7 | T1–T7 complete; merged/pushed to `master`, Vercel triggered, EC2 backend updated, instructor endpoint verified 2026-04-30 |
-
+| P10 | Cost Management & UX Fallbacks | **Complete** | 4 / 4 | ServerHealthService + offline banners on Home, Join, HostDashboard |
 ---
 
 ## Phase IAM — AWS Identity Setup
@@ -196,6 +196,15 @@
 
 ---
 
+## Phase 10 — Cost Management & UX Fallbacks
+
+- [x] P10-T1: Add backend reactivation guide to `PLAN.md` (CLI + Console) — ✅ Already present in PLAN.md §7 (lines 471–486); CLI script + console steps documented
+- [x] P10-T2: Create `ServerHealthService` (HTTP `/health` check with timeout) — ✅ `src/app/core/server-health.service.ts`; signal-based (`null`=checking, `true`=online, `false`=offline); 5 s timeout
+- [x] P10-T3: Update `HomeComponent` (UX fallback + disabled buttons) — ✅ Amber offline banner + disabled Host/Join buttons when offline; spinner while checking
+- [x] P10-T4: Update direct route fallback logic in `JoinComponent` & `HostDashboardComponent` — ✅ Both components call `checkHealth()` on init and gate form content behind `isOnline() === true`; offline replaces form with amber banner + Back to Home; spinner while checking
+
+--- 
+
 ## Blockers
 
 > Record any blockers here. Include: what the blocker is, when it was encountered, and how it was resolved (or if it's still open).
@@ -245,9 +254,9 @@
 | Health check | https://api.47.130.41.30.nip.io/health |
 | EC2 SSH | `ssh -i ~/Desktop/live-quiz-backend-key.pem ubuntu@47.130.41.30` |
 
-**Last task completed:** Phase 9 was merged and pushed to `master` at `8dd7a5b`, Vercel deployment was triggered, and the EC2 backend pulled `master`, rebuilt, restarted PM2, and verified `/health`. The instructor endpoint now has `INSTRUCTOR_KEY` configured on EC2; unauthenticated requests return `401`, and authenticated lookup for `cloud_concepts:15` returns data.
-**Next task to work on:** Phase 8 still has P8-T7 pending user smoke; do not mark Phase 8 complete without explicit confirmation. For Phase 9 follow-up, use `/instructor/answer-key` with the configured instructor key and rotate the key if it is shared outside the instructor group.
-**Files recently modified:** `PLAN.md`, `TODOs.md`, `PROGRESS.md` updated to record Phase 9 merge/deployment and EC2 instructor endpoint verification.
+**Last task completed:** Phase 10 complete — `ServerHealthService` added; `HomeComponent`, `JoinComponent`, and `HostDashboardComponent` all call `checkHealth()` on init and gate live-session UI behind the signal result. Production build passes (warnings are pre-existing, not new to Phase 10).
+**Next task to work on:** P8-T7 still pending user smoke test (do not mark Phase 8 complete without confirmation). P7 (question bank audit) not started. Push `master` to Vercel + EC2 when ready to deploy Phase 10 changes.
+**Files recently modified:** `src/app/core/server-health.service.ts` (new), `src/app/pages/home/home.component.ts/.html`, `src/app/pages/live/join/join.component.ts/.html/.css`, `src/app/pages/live/host-dashboard/host-dashboard.component.ts/.html/.css`, `PROGRESS.md`.
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`
 - Admin IAM user is named `clf-quiz-admin-policy` (matches policy name — works fine)

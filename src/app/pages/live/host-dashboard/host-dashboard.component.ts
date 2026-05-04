@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject } from '@angular/core';
+import { Component, OnInit, effect, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -10,6 +10,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { LiveQuizService } from '../../../core/live-quiz.service';
+import { ServerHealthService } from '../../../core/server-health.service';
 import { QuizDomain, ScoringMode } from '../../../core/live-quiz.model';
 
 const MIN_SESSION_QUESTIONS = 5;
@@ -31,11 +32,12 @@ const MAX_SESSION_QUESTIONS = 65;
   templateUrl: './host-dashboard.component.html',
   styleUrl: './host-dashboard.component.css'
 })
-export class HostDashboardComponent {
+export class HostDashboardComponent implements OnInit {
   private readonly quiz = inject(LiveQuizService);
   private readonly router = inject(Router);
   private readonly messages = inject(MessageService);
   private readonly http = inject(HttpClient);
+  readonly serverHealth = inject(ServerHealthService);
 
   readonly domainOptions: { label: string; value: QuizDomain }[] = [
     { label: 'All Domains', value: 'all' },
@@ -87,6 +89,10 @@ export class HostDashboardComponent {
     });
 
     this.loadQuestionCounts();
+  }
+
+  ngOnInit(): void {
+    this.serverHealth.checkHealth();
   }
 
   createSession(): void {

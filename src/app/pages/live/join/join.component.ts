@@ -8,6 +8,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { LiveQuizService } from '../../../core/live-quiz.service';
+import { ServerHealthService } from '../../../core/server-health.service';
 
 @Component({
   selector: 'app-join',
@@ -23,6 +24,7 @@ export class JoinComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly messages = inject(MessageService);
+  readonly serverHealth = inject(ServerHealthService);
 
   sessionCode = '';
   nickname = '';
@@ -53,6 +55,7 @@ export class JoinComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.serverHealth.checkHealth();
     this.route.queryParamMap
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((params) => {

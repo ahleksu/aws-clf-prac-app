@@ -60,18 +60,42 @@
     >
       <h2 class="text-xl font-semibold mb-2">Live Session</h2>
       <p class="mb-4">Run a real-time classroom quiz with host controls and live scoring.</p>
+
+      <!-- Offline warning banner -->
+      @if (serverHealth.isOnline() === false) {
+        <div class="flex items-start gap-3 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 mb-4 text-sm text-amber-900">
+          <i class="pi pi-exclamation-triangle mt-0.5 shrink-0 text-amber-500"></i>
+          <span>
+            <strong>Server Offline</strong> — The live session backend is temporarily unavailable.
+            <a
+              href="https://www.linkedin.com/in/ahleksu"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-semibold underline hover:text-amber-700"
+            >Contact me on LinkedIn</a> for further details.
+          </span>
+        </div>
+      }
+
       <div class="flex flex-col sm:flex-row gap-3">
         <p-button
           label="Host a Session"
           icon="pi pi-desktop"
+          [disabled]="serverHealth.isOnline() !== true"
           (onClick)="hostSession()"
         />
         <p-button
           label="Join a Session"
           icon="pi pi-sign-in"
           severity="secondary"
+          [disabled]="serverHealth.isOnline() !== true"
           (onClick)="joinSession()"
         />
+        @if (serverHealth.isOnline() === null) {
+          <span class="self-center text-sm text-gray-400">
+            <i class="pi pi-spin pi-spinner mr-1"></i>Checking server…
+          </span>
+        }
       </div>
     </div>
 

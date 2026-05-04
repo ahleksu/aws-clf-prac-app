@@ -467,6 +467,23 @@ All events use Socket.io rooms where the room name = session code (e.g. `"CLF001
 | `host:disconnected` | `{}` | Host left (show waiting message) |
 | `host:reconnected` | `{}` | Host returned; clear disconnected overlay while session remains paused |
 
+### Reactivating the Backend Server (EC2)
+
+To prevent unwanted compute costs, the backend EC2 server (`i-042b91a08364b6e01`) is kept stopped. Before hosting a live classroom session, you must start the server.
+
+**Option A: Using the AWS CLI (Integrated Script)**
+1. Ensure your `clf-quiz` AWS CLI profile is valid and active.
+2. From the project root, run the lifecycle script:
+   `./scripts/ec2-backend-lifecycle.sh start`
+3. The script will automatically trigger the instance and gracefully wait for the `/health` endpoint to return a 200 OK.
+
+**Option B: Using the AWS Console (Manual)**
+1. Log in to the AWS Console and navigate to **EC2 > Instances**.
+2. Select the instance named `aws-clf-quiz-backend` (ID: `i-042b91a08364b6e01`).
+3. Click **Instance state** > **Start instance**.
+4. Wait approximately 2–3 minutes for the instance status checks to pass. PM2 and Nginx are configured to start automatically on system boot.
+5. Verify the backend is up by visiting: `https://api.47.130.41.30.nip.io/health`
+
 ---
 
 ## 8. Scoring Algorithm
