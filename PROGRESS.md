@@ -28,10 +28,10 @@
 - [x] PIAM-T1: Create IAM user `clf-quiz-admin-policy` (admin user) — ✅ 2026-04-28
 - [x] PIAM-T2: Create `clf-quiz-admin-policy` customer managed policy — ✅ 2026-04-28
 - [x] PIAM-T3: Attach `clf-quiz-admin-policy` to admin user — ✅ Verified via CLI
-- [x] PIAM-T4: Create IAM user `clf-quiz-github-actions` — ✅ 2026-04-28
+- [x] PIAM-T4: Create IAM user `clf-quiz-github-actions` — ✅ 2026-04-28 (legacy S3/CloudFront deploy user; currently unused while Vercel is active)
 - [x] PIAM-T5: Create `clf-quiz-github-actions-policy` — ✅ 2026-04-28
 - [x] PIAM-T6: Attach `clf-quiz-github-actions-policy` to github-actions user — ✅ Verified via CLI
-- [x] PIAM-T7: Generate access keys for both users; store github-actions keys securely — ✅ 2026-04-28
+- [x] PIAM-T7: Generate access keys for both users — ✅ 2026-04-28 (`clf-quiz-github-actions` key is no longer needed for active frontend deployment)
 - [x] PIAM-T8: Configure `clf-quiz` AWS CLI profile — ✅ 2026-04-28
 - [x] PIAM-T9: Verified profile with `aws sts get-caller-identity` → `<REDACTED>:user/clf-quiz-admin-policy` — ✅
 - [x] PIAM-T10: Fix policy: add `s3:PutBucketPublicAccessBlock` and `s3:GetBucketPublicAccessBlock` to `clf-quiz-admin-policy` — ✅ 2026-04-29 (created policy v2 via CLI; verified with NoSuchBucket response, not AccessDenied)
@@ -120,8 +120,8 @@
 - [x] P6-A1: Create private S3 bucket (`aws-clf-quiz-frontend`, ap-southeast-1, all public access blocked) — ✅ 2026-04-29
 - [ ] P6-A2: Create CloudFront distribution (OAC, 404→/index.html, redirect HTTP→HTTPS) — 🔄 In progress via console (CLI blocked — new account needs verification). OAC `E37IFEDVTLC7J6` pre-created. Distribution wizard completed through Review step; pending post-creation config: default root object `index.html`, custom error pages 403/404→/index.html→200.
 - [ ] P6-A3: ACM cert + Route 53 A record — **Skipped**: using default `*.cloudfront.net` URL (Free plan includes TLS cert automatically; no custom domain for now)
-- [ ] P6-A4: Add 4 GitHub Secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET`, `CF_DISTRIBUTION_ID`) — pending distribution ID from P6-A2
-- [x] P6-A5: Create `.github/workflows/deploy-frontend.yml` — ✅ 2026-04-29 (created; targets `dist/aws-clf-prac-app/browser/`)
+- [x] P6-A4: GitHub Secrets — N/A for Vercel. No S3/CloudFront deploy secrets are required while Vercel is active. ✅ 2026-04-29
+- [x] P6-A5: Removed obsolete `.github/workflows/deploy-frontend.yml`; Vercel owns frontend CI/CD. ✅ 2026-05-04
 
 **Part B — Backend (EC2 t2.micro, start/stop managed)**
 - [x] P6-B1: Launch EC2 **t2.micro** Ubuntu 22.04 LTS + security group `live-quiz-sg` — ✅ 2026-04-29
@@ -240,6 +240,7 @@
 | 2026-04-30 | P9 planning | Added Phase 9 as a new live-session UX + instructor answer-key work package | The user requested clean lobby cancellation, stale-session fallback, instructor answer-key lookup, live question IDs, and resource links in reveal panels. The answer-key endpoint should be protected by `INSTRUCTOR_KEY`, but current solo mode still exposes full quiz JSON under `public/quiz/`, so true answer secrecy requires a later public-quiz sanitization refactor. |
 | 2026-05-04 | Security | Hardened root `.gitignore` to catch `.env`, `.env.local`, `.env.*.local`, `*.pem`, `*.key` | Root `.gitignore` previously had no catch-all for env/secret files; backend `.gitignore` was the only guard. Redacted the AWS account ID from `PLAN.md`, `TODOs.md`, and `PROGRESS.md`, then rewrote Git history so the exact account ID is replaced with `<REDACTED>` in historical docs. Local scans found no committed `.env`, private key files, AWS access key IDs, or private-key blocks. |
 | 2026-05-04 | P10 deploy | EC2 backend intentionally stopped after Phase 10 offline-UX work was deployed | Phase 10 adds graceful degradation so the frontend handles a stopped backend without broken spinners. EC2 stopped via `./scripts/ec2-backend-lifecycle.sh stop`. Frontend offline banners are live on Vercel. Run `./scripts/ec2-backend-lifecycle.sh start` and `./scripts/pre-demo-check.sh` before classroom use. |
+| 2026-05-04 | Frontend CI/CD | Removed obsolete S3/CloudFront GitHub Actions workflow | Vercel is the active frontend deploy path from `master`, so `.github/workflows/deploy-frontend.yml` and its S3/CloudFront secret requirements were removed from the repo and docs. |
 
 ---
 
@@ -283,7 +284,7 @@ See PLAN.md §7 (EC2 Reactivation) for the Console-based alternative.
 **Anything the next session needs to know:**
 - AWS account: `<REDACTED>`, region: `ap-southeast-1`, CLI profile: `clf-quiz`
 - Admin IAM user is named `clf-quiz-admin-policy` (matches policy name — works fine)
-- `clf-quiz-github-actions` access keys stored securely — go into GitHub Secrets in P6-A4
+- `clf-quiz-github-actions` is a legacy S3/CloudFront deployment user; unused while Vercel owns frontend CI/CD
 - S3 bucket `aws-clf-quiz-frontend` created in `ap-southeast-1` (not us-east-1 — see Decisions Log)
 - CloudFront OAC `E37IFEDVTLC7J6` (named `aws-clf-quiz-frontend-oac`) pre-created via CLI
 - CloudFront blocked: new account requires verification. AWS Support case submitted 2026-04-29. Case type: Account and Billing > CloudFront > General.
@@ -299,4 +300,4 @@ See PLAN.md §7 (EC2 Reactivation) for the Console-based alternative.
 - Backend is EC2 **t2.micro** (free tier) — SSL via Let's Encrypt + nip.io
 - Angular `environment.prod.ts` `wsUrl` MUST be `https://` — browsers block `ws://` from HTTPS pages
 - Use `export AWS_PROFILE=clf-quiz` per terminal session before AWS CLI commands
-- GitHub Actions workflow targets `dist/aws-clf-prac-app/browser/` (Angular 19 output path — verified)
+- Vercel owns frontend CI/CD from `master`; no S3/CloudFront GitHub Actions workflow is active.

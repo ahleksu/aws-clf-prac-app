@@ -72,23 +72,21 @@ Scholars & Host (Browsers)
     │  HTTPS (Angular SPA)                │  WSS (WebSocket / Socket.io)
     ▼                                     ▼
 ┌───────────────────────────┐    ┌──────────────────────────────────────┐
-│  CloudFront Distribution  │    │  EC2 t2.micro (free tier, start/stop)│
-│  + AWS Shield Standard    │    │                                      │
-│  (free DDoS, L3/L4)       │    │  ┌──────────────────────────────┐   │
-│           │               │    │  │ nginx (port 443)              │   │
-│           ▼               │    │  │  • TLS via Let's Encrypt      │   │
-│   S3 Bucket (private)     │    │  │    (cert on nip.io subdomain  │   │
-│   Angular SPA dist/       │    │  │     OR custom Route 53 domain)│   │
-│   Origin Access Control   │    │  │  • limit_conn 120/IP          │   │
-│   (S3 not public)         │    │  │  • proxy_pass → :3000         │   │
+│  Vercel Frontend Hosting  │    │  EC2 t2.micro (free tier, start/stop)│
+│  + HTTPS + SPA routing    │    │                                      │
+│                           │    │  ┌──────────────────────────────┐   │
+│  Angular SPA dist/        │    │  │ nginx (port 443)              │   │
+│  Auto-deploys from        │    │  │  • TLS via Let's Encrypt      │   │
+│  GitHub master            │    │  │    (cert on nip.io subdomain) │   │
+│                           │    │  │  • limit_conn 120/IP          │   │
+│                           │    │  │  • proxy_pass → :3000         │   │
 └───────────────────────────┘    │  └──────────────────────────────┘   │
            │                     │  ┌──────────────────────────────┐   │
-   GitHub Actions CI/CD          │  │ Node.js 20 + Socket.io       │   │
-   (ng build → s3 sync           │  │  • PM2 (auto-restart)        │   │
-    → CF invalidation)           │  │  • express-rate-limit        │   │
-           │                     │  │  • In-memory GameManager     │   │
-           ▼                     │  └──────────────────────────────┘   │
-   GitHub (master branch)        │  Elastic IP: FREE (instance running)│
+   Vercel CI/CD                  │  │ Node.js 20 + Socket.io       │   │
+   (ng build on push)            │  │  • PM2 (auto-restart)        │   │
+           │                     │  │  • express-rate-limit        │   │
+           ▼                     │  │  • In-memory GameManager     │   │
+   GitHub (master branch)        │  └──────────────────────────────┘   │
                                  └──────────────────────────────────────┘
 ```
 
@@ -96,12 +94,12 @@ Scholars & Host (Browsers)
 
 | Layer | Service | Free Tier? | SSL | DDoS |
 |---|---|---|---|---|
-| Frontend hosting | S3 (private bucket) | Yes (5 GB free) | ACM via CloudFront | — |
-| Frontend CDN | CloudFront | Yes (1 TB/mo free) | ACM (always free) | AWS Shield Standard |
+| Frontend hosting | Vercel | Yes | Auto | Platform managed |
+| Frontend CDN | Vercel edge network | Yes | Auto | Platform managed |
 | Backend compute | EC2 t2.micro | Yes (750 hrs/mo, 12 mo) | Let's Encrypt (certbot) | Security Group + nginx |
 | Backend process | PM2 + nginx | Yes (no cost) | nginx TLS termination | `limit_conn` / `limit_req` |
 | Static IP | Elastic IP | Free while instance runs | — | — |
-| CI/CD | GitHub Actions | Yes (free public repo) | — | — |
+| CI/CD | Vercel auto-deploy from `master` | Yes | — | — |
 
 ---
 
@@ -134,7 +132,7 @@ Scholars & Host (Browsers)
 - Create a `SocketService` and `LiveQuizService`
 - Add 6 new route pages; all existing pages untouched
 - Current production: Vercel auto-builds and deploys from `master`
-- Historical/fallback path: build output (`ng build --configuration production`) can be synced to S3 via GitHub Actions once CloudFront is unblocked
+- Historical S3/CloudFront infrastructure remains provisioned, but there is no active S3 GitHub Actions workflow; Vercel is the frontend deployment path.
 
 ### Frontend Hosting: Vercel Current, S3 + CloudFront Fallback
 
@@ -148,17 +146,17 @@ project can migrate to S3+CloudFront later.
 | Option | Monthly Cost | DDoS Protection | SSL | CI/CD | Notes |
 |---|---|---|---|---|---|
 | **Vercel** ← current production | $0 | Platform managed | Auto | Auto on `master` | Active because CloudFront is blocked pending account verification |
-| **S3 + CloudFront** ← AWS fallback | **~$0.05–$1.50** | AWS Shield Standard | ACM (free) | GitHub Actions | Educational, AWS-native, most control once CloudFront is available |
+| **S3 + CloudFront** ← archived fallback | **~$0.05–$1.50** | AWS Shield Standard | ACM (free) | Manual if reactivated | Educational AWS-native option, but not currently needed |
 | AWS Amplify Hosting | $0 (free tier) | CloudFront + Shield | Auto | Built-in | Easier but hides infrastructure |
 | EC2 + nginx (static files) | $0 extra | EC2 security group only | Let's Encrypt | Manual | Single point of failure, no CDN |
 | Netlify / GitHub Pages | $0 | CDN varies | Auto | Built-in | Not AWS; less relevant for re/Start |
 
-S3 + CloudFront remains the AWS-native fallback because it:
+S3 + CloudFront remains an archived AWS-native fallback because it:
 1. Teaches students the proper AWS static hosting pattern relevant to CLF-C02
 2. AWS Shield Standard (free) blocks Layer 3/4 volumetric attacks at edge
 3. ACM provides free, auto-renewing TLS — no certificate expiry during demo
 4. CloudFront caches assets globally so all 30 students get fast, parallel loads
-5. GitHub Actions can deploy it with `aws s3 sync dist/ s3://bucket`
+5. It can be reactivated manually later if the project intentionally moves away from Vercel.
 
 ### Angular Socket.io Client: `socket.io-client` (direct, no wrapper)
 
@@ -236,14 +234,12 @@ Cost: $0.25/month (domain) + $0.50/month (Route 53 hosted zone) = **$0.75/month*
 
 | Resource | Service | Free Tier? | Monthly |
 |---|---|---|---|
-| Frontend S3 | 5 GB storage, 2K PUTs | Yes | $0.00 |
-| Frontend CDN | CloudFront 1 TB transfer | Yes (12 mo) | $0.00 |
-| Frontend SSL | ACM cert on CloudFront | Always free | $0.00 |
+| Frontend hosting/CDN | Vercel | Yes | $0.00 |
+| Archived S3 bucket | `aws-clf-quiz-frontend` storage only | Small free-tier usage | Check AWS billing if retained |
 | Backend compute | EC2 t2.micro, started before class | Yes (12 mo) | $0.00 while within free-tier hours |
 | Backend static IP | Elastic/static public IPv4 | Pricing depends on current AWS public IPv4 billing | Check AWS billing |
 | Backend SSL | Let's Encrypt (certbot + nip.io) | Always free | $0.00 |
-| CI/CD | GitHub Actions (public repo) | Always free | $0.00 |
-| DDoS frontend | AWS Shield Standard on CF | Always free | $0.00 |
+| CI/CD | Vercel auto-deploy | Yes | $0.00 |
 | **Total (12 months)** | | | **$0.00/mo** |
 
 ---
@@ -254,10 +250,6 @@ The new backend is a **separate Node.js project** inside the existing repo under
 
 ```
 aws-clf-prac-app/
-├── .github/
-│   └── workflows/
-│       └── deploy-frontend.yml    ← NEW: GitHub Actions CI/CD (ng build → S3 sync → CF invalidation)
-│
 ├── backend/                       ← NEW: Node.js backend
 │   ├── src/
 │   │   ├── index.ts               ← Express + Socket.io server entry
@@ -633,7 +625,7 @@ Stateful service using Angular signals or RxJS BehaviorSubjects:
 | IAM Username | Role | Local CLI Profile | Status |
 |---|---|---|---|
 | `clf-quiz-admin-policy` | Developer / AI agent infrastructure admin | `clf-quiz` | ✅ Created & verified |
-| `clf-quiz-github-actions` | GitHub Actions CI/CD only | GitHub Secrets (Phase 6-A4) | ✅ Created |
+| `clf-quiz-github-actions` | Legacy S3/CloudFront CI/CD user | Not used while Vercel is active | ✅ Created, inactive |
 
 > **Naming note:** The admin user was created with the name `clf-quiz-admin-policy` (same as the policy name). This is a minor naming inconsistency — functionally identical. No action needed.
 
@@ -673,18 +665,12 @@ export AWS_PROFILE=clf-quiz   # set once per terminal session
 # OR pass --profile clf-quiz to every aws command
 ```
 
-### GitHub Actions Credentials (Store Securely Now)
+### Legacy GitHub Actions Credentials
 
-The `clf-quiz-github-actions` access key was generated. **Store it now** in a password manager or secure note — it goes into GitHub Secrets in Phase 6-A4. If lost, delete the key in IAM and regenerate.
-
-The 4 GitHub Secrets to add (Settings → Secrets → Actions):
-
-| Secret Name | Value | When to Add |
-|---|---|---|
-| `AWS_ACCESS_KEY_ID` | `clf-quiz-github-actions` access key ID | Phase 6-A4 |
-| `AWS_SECRET_ACCESS_KEY` | `clf-quiz-github-actions` secret key | Phase 6-A4 |
-| `S3_BUCKET` | `aws-clf-quiz-frontend` | Phase 6-A4 |
-| `CF_DISTRIBUTION_ID` | CloudFront distribution ID (after 6-A2) | Phase 6-A4 |
+The `clf-quiz-github-actions` IAM user was created for the earlier S3 +
+CloudFront deployment plan. It is not used while Vercel owns frontend CI/CD, and
+no S3/CloudFront GitHub repository secrets are required. If the project never
+reactivates S3 deployment, rotate or delete this unused access key in IAM.
 
 ---
 
@@ -764,7 +750,9 @@ aws s3api put-public-access-block \
 
 These are **critical for Angular SPA routing** — without them, any direct URL or page refresh returns a raw 403/404 from S3 instead of the app.
 
-**Note the distribution ID** (starts with `E`, e.g. `E1ABCDEF12345`) and the **CloudFront domain** (`dXXXXX.cloudfront.net`) — both needed for GitHub Secrets and `environment.prod.ts`.
+**Archived note:** If S3/CloudFront is ever reactivated, record the distribution
+ID and CloudFront domain for that migration. They are not needed while Vercel is
+the active frontend host.
 
 #### 13A-3: Configure Route 53 (if using custom domain)
 
@@ -775,88 +763,12 @@ These are **critical for Angular SPA routing** — without them, any direct URL 
 4. Create A record: api.awsquiz.click → A → EC2 Elastic IP
 ```
 
-#### 13A-4: GitHub Actions CI/CD (`deploy-frontend.yml`)
+#### 13A-4: S3 GitHub Actions Workflow
 
-Create `.github/workflows/deploy-frontend.yml`:
-
-```yaml
-name: Deploy Frontend to S3
-
-on:
-  push:
-    branches: [master]
-    paths:
-      - 'src/**'
-      - 'public/**'
-      - 'angular.json'
-      - 'package.json'
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - run: npm ci
-
-      - run: npx ng build --configuration production
-        env:
-          NODE_OPTIONS: '--max-old-space-size=4096'
-
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Sync to S3
-        run: |
-          aws s3 sync dist/aws-clf-prac-app/browser/ s3://${{ secrets.S3_BUCKET }} \
-            --delete \
-            --cache-control "public, max-age=31536000, immutable" \
-            --exclude "index.html"
-          aws s3 cp dist/aws-clf-prac-app/browser/index.html s3://${{ secrets.S3_BUCKET }}/index.html \
-            --cache-control "no-cache, no-store, must-revalidate"
-
-      - name: Invalidate CloudFront cache
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} \
-            --paths "/*"
-```
-
-**GitHub Secrets to add** (Settings → Secrets → Actions):
-- `AWS_ACCESS_KEY_ID` — IAM user with S3 write + CloudFront invalidation permissions
-- `AWS_SECRET_ACCESS_KEY` — same IAM user
-- `S3_BUCKET` — bucket name (e.g. `aws-clf-quiz-frontend`)
-- `CF_DISTRIBUTION_ID` — CloudFront distribution ID (starts with `E`)
-
-**IAM Policy for the GitHub Actions user (minimal permissions):**
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": ["s3:PutObject", "s3:DeleteObject", "s3:ListBucket"],
-      "Resource": [
-        "arn:aws:s3:::BUCKET_NAME",
-        "arn:aws:s3:::BUCKET_NAME/*"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": "cloudfront:CreateInvalidation",
-      "Resource": "arn:aws:cloudfront::ACCOUNT_ID:distribution/DIST_ID"
-    }
-  ]
-}
-```
+**Status: Removed 2026-05-04.** The S3/CloudFront GitHub Actions workflow was
+deleted because the frontend is deployed by Vercel from `master`. Do not recreate
+`.github/workflows/deploy-frontend.yml` unless the project explicitly migrates
+off Vercel and reactivates S3/CloudFront deployment.
 
 ---
 

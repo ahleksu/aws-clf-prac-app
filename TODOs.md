@@ -6,7 +6,7 @@
 
 ## Phase IAM — AWS Identity Setup (Prerequisite)
 
-> Goal: Two IAM users configured — one for local CLI/AI agent work, one for GitHub Actions CI/CD. Both verified before any infrastructure work begins. See PLAN.md §12.5 for full details and account info.
+> Goal: Two IAM users configured — one for local CLI/AI agent work, one originally created for the now-archived S3/CloudFront CI/CD path. Both verified before infrastructure work began. See PLAN.md §12.5 for full details and account info.
 
 - [x] **PIAM-T1:** Create IAM user `clf-quiz-admin-policy` (admin user; note: named after the policy by mistake — functionally correct).
   - **Acceptance:** User exists in IAM console. ✅ Done 2026-04-28.
@@ -17,16 +17,16 @@
 - [x] **PIAM-T3:** Attach `clf-quiz-admin-policy` to `clf-quiz-admin-policy` user.
   - **Acceptance:** `aws iam list-attached-user-policies --user-name clf-quiz-admin-policy --profile clf-quiz` returns the policy. ✅ Verified.
 
-- [x] **PIAM-T4:** Create IAM user `clf-quiz-github-actions` (CI/CD only user).
+- [x] **PIAM-T4:** Create IAM user `clf-quiz-github-actions` (legacy S3/CloudFront CI/CD user; currently unused while Vercel is active).
   - **Acceptance:** User exists in IAM console. ✅ Done 2026-04-28.
 
-- [x] **PIAM-T5:** Create customer managed policy `clf-quiz-github-actions-policy` using the JSON from PLAN.md §12.5 (S3 sync + CloudFront invalidation only).
+- [x] **PIAM-T5:** Create customer managed policy `clf-quiz-github-actions-policy` using the JSON from PLAN.md §12.5 (legacy S3/CloudFront deploy permissions).
   - **Acceptance:** Policy created. ✅ Done 2026-04-28.
 
 - [x] **PIAM-T6:** Attach `clf-quiz-github-actions-policy` to `clf-quiz-github-actions` user.
   - **Acceptance:** `aws iam list-attached-user-policies --user-name clf-quiz-github-actions --profile clf-quiz` returns the policy. ✅ Verified.
 
-- [x] **PIAM-T7:** Generate access keys for both IAM users. Store `clf-quiz-github-actions` keys securely (password manager) — they go into GitHub Secrets in Phase 6-A4.
+- [x] **PIAM-T7:** Generate access keys for both IAM users. `clf-quiz-github-actions` is now unused while Vercel owns frontend CI/CD; rotate/delete if S3 deployment will not be reactivated.
   - **Acceptance:** Both users have active access keys. ✅ Done 2026-04-28.
 
 - [x] **PIAM-T8:** Configure local AWS CLI `clf-quiz` profile:
@@ -334,7 +334,7 @@
   - `.vercelignore`: excludes `backend/` and `scripts/` so Vercel only sees the Angular root.
 - [x] **P6-A3:** ACM/Route53 — Skipped. Vercel provides free HTTPS on `*.vercel.app`. ✅ 2026-04-29
 - [x] **P6-A4:** GitHub Secrets — N/A for Vercel. Vercel CI/CD auto-deploys on push to master. ✅ 2026-04-29
-- [x] **P6-A5:** `.github/workflows/deploy-frontend.yml` kept for reference (S3 path). ✅ 2026-04-29
+- [x] **P6-A5:** Removed obsolete `.github/workflows/deploy-frontend.yml`; Vercel owns frontend CI/CD, so no S3/CloudFront GitHub Actions workflow is needed. ✅ 2026-05-04
 
 ---
 
